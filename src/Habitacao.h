@@ -8,10 +8,13 @@ protected:
 	string morada;
 	string codigoPostal;
 public:
+	virtual ~Habitacao(){};
 	Habitacao(string morada, string codigoPostal){
 		this->morada = morada;
 		this->codigoPostal = codigoPostal;
 	}
+	virtual float calcRenda() const = 0;
+	virtual void info() const = 0;
 };
 
 class Vivenda: public Habitacao {
@@ -25,19 +28,23 @@ public:
 		this->areaExterior = areaExterior;
 		this->piscina = piscina;
 	}
+	float calcRenda() const;
+	void info() const;
 };
 
 class Apartamento: public Habitacao {
 private:
-	string tipologia;
+	int tipologia;
 	float areaInterior;
 	int piso;
 public:
-	Apartamento(string morada, string codigoPostal, string tipologia, float areaInterior, int piso):Habitacao(morada, codigoPostal){
+	Apartamento(string morada, string codigoPostal, int tipologia, float areaInterior, int piso):Habitacao(morada, codigoPostal){
 		this->tipologia = tipologia;
 		this->areaInterior = areaInterior;
 		this->piso = piso;
 	}
+	float calcRenda() const;
+	void info() const;
 };
 
 #endif
