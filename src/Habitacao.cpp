@@ -9,7 +9,7 @@ float Apartamento::calcRenda() const{
 }
 
 void Vivenda::info() const{
-	cout << "Info Vivenda:" << "\n"
+	cout << "Info Vivenda:" << "\n";
 	cout << "Morada - " << morada + ", " + codigoPostal << "\n"; //Estava a dar "invalid overload" se usasse o endl, cenas do eclipse
 	cout << "Area Habitacional = " << areaInterior << "\n";
 	cout << "Area Exterior = " << areaExterior << "\n" << endl;

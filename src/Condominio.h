@@ -6,12 +6,14 @@
 
 class Condominio{
 private:
-	int numFuncionarios = 0;
-	float fundos = 0;
+	int numFuncionarios;
+	float fundos;
 	vector <Condomino *> moradores;
 public:
 	Condominio(){
 		this->fundos = 5000;
+		this->numFuncionarios = 0;
+		this->fundos = 0;
 	}
 	void fimDoMes();
 	bool contratarFuncionarios(); //TODO
