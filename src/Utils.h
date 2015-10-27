@@ -34,6 +34,8 @@ using namespace std;
 #define LIGHTMAGENTA 13
 #define YELLOW 14
 #define WHITE 15 
+
+void setcolor(unsigned int, unsigned int);
 //==========================================================================================
 void clrscr(void) {
 	COORD coordScreen = { 0, 0 }; // upper left corner
@@ -51,6 +53,7 @@ void clrscr(void) {
 			&cCharsWritten);
 	// cursor to upper left corner
 	SetConsoleCursorPosition(hCon, coordScreen);
+	setcolor(WHITE, BLACK);
 }
 //==========================================================================================
 // Position the cursor at column 'x', line 'y'

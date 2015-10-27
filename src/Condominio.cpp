@@ -22,13 +22,14 @@ const std::string currentDateTime() {
 	return buf;
 }
 
+// Displays time using currentDateTime()
 void displayTime() {
 	string time = currentDateTime();
 	gotoxy(0, 20);
 	cout << time;
 }
 
-//Returns a vector with vectors of strings, containing the options for each menu.
+// Returns a vector with vectors of strings, containing the options for each menu.
 vector<vector<string> > createMenuOptions() {
 	vector<vector<string> > menuOptions;
 
@@ -36,25 +37,95 @@ vector<vector<string> > createMenuOptions() {
 	menuOptions.push_back(menuInicial);
 
 	menuOptions[0].push_back("Login");
-	menuOptions[0].push_back("Exit");
+	menuOptions[0].push_back("Registo");
+	menuOptions[0].push_back("Sair");
+
+	vector<string> menuAdmin;
+	menuOptions.push_back(menuAdmin);
+
+	//
+	//
+
+	vector<string> menuCondomino;
+	menuOptions.push_back(menuCondomino);
+
+	//
+	//
 
 	return menuOptions;
+}
+
+// Prints a Menu Select screen
+int displayMenuOptions(vector<vector<string> > &menu, int position,
+		int &option) {
+	if (option >= menu.size())
+		return -1;
+
+	for (size_t i = 0; i < menu[position].size(); i++) {
+		if (i == option) {
+			setcolor(BLACK, LIGHTGREY);
+			cout << " " << left << setw(10) << setfill(' ') << menu[position][option] << endl;
+			setcolor(WHITE, BLACK);
+		} else
+			cout << menu[position][i] << endl;
+	}
+	return 0;
+}
+
+bool verificarLogin(string utilizador, string password) {
+	fstream myfile("../savedata/utilizadores.txt");
+	string line;
+	bool found = false;
+
+	if (myfile.is_open()) {
+		while (getline(myfile, line)) {
+			if (line == "0" || line == "1") {
+				getline(myfile, line);
+				if (line == utilizador) {
+					getline(myfile, line);
+					if (line == password) {
+						found = true;
+						break;
+					} else
+						break;
+				}
+			}
+		}
+		myfile.close();
+	} else
+		cout
+				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro de utilizadores.\n";
+	return found;
+}
+
+int menuLogin(vector<vector<string> > &menu, int &option) {
+	string utilizador;
+	string password;
+
+	clrscr();
+	cout << "LOGIN\n" << endl;
+	cout << "Introduza os seus dados de login:\n";
+	cout << "Utilizador: ";
+	getline(cin, utilizador);
+	cout << "Password: ";
+	getline(cin, password);
+
+	if (verificarLogin(utilizador, password))
+		cout << "Sucesso\n";
+	else
+		cout << "Dados invalidos\n";
+	system("pause");
+	//else
+	//menuLogin(menu,option);
+	displayTime();
+	return 0;
 }
 
 int menuInicial(vector<vector<string> > &menu, int &option) {
 
 	clrscr();
-
-	setcolor(WHITE, BLACK);
 	cout << "CONDOMINIO\n" << endl;
-	for (size_t i = 0; i < menu[0].size(); i++) {
-		if (i == option) {
-			setcolor(BLACK, LIGHTGREY);
-			cout << menu[0][option] << endl;
-			setcolor(WHITE, BLACK);
-		} else
-			cout << menu[0][i] << endl;
-	}
+	displayMenuOptions(menu, 0, option);
 
 	displayTime();
 
@@ -63,15 +134,16 @@ int menuInicial(vector<vector<string> > &menu, int &option) {
 	case KEY_UP:
 		if (option - 1 >= 0)
 			option--;
-		menuInicial(menu, option);
 		break;
 	case KEY_DOWN:
-		if (option + 1 <= 1)
+		if (option + 1 < menu[0].size())
 			option++;
-		menuInicial(menu, option);
 		break;
 	case KEY_ENTER:
-		exit(EXIT_SUCCESS);
+		if (option == 0) {
+			menuLogin(menu, option);
+		} else
+			return 0;
 		break;
 	default:
 		break;
@@ -86,5 +158,6 @@ int main() {
 	vector<vector<string> > menu = createMenuOptions();
 	int option = 0;
 	menuInicial(menu, option);
-	return 0;
+
+	return EXIT_SUCCESS;
 }
