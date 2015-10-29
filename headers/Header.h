@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iterator>
 #include <iomanip>
+#include <stdlib.h>
 
 using namespace std;
 

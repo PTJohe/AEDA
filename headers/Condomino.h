@@ -1,8 +1,8 @@
 #ifndef SRC_CONDOMINO_H_
 #define SRC_CONDOMINO_H_
 
-#include "Header.h"
-#include "Habitacao.h"
+#include "../headers/Habitacao.h"
+#include "../headers/Header.h"
 
 class Condomino {
 private:

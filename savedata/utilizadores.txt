@@ -5,3 +5,11 @@ admin
 0
 cliente
 cliente
+
+0
+maria
+maria
+
+1
+joao
+joao
