@@ -9,10 +9,14 @@ private:
 	vector<vector<string> > menu;
 	int option = 0;
 	vector<Utilizador> utilizadores;
-	Utilizador* currentUser;
+	Utilizador* currentUser = NULL;
 
 public:
 	Main(){} //default constructor
+
+	bool importUtilizadores();
+	bool exportUtilizadores();
+	int exitFunction();
 
 	void setMenus(vector<vector<string> > menu);
 	void setUtilizadores(vector<Utilizador> utilizadores);
@@ -22,13 +26,18 @@ public:
 	int menuLogin();
 	int menuRegisto();
 	int menuUtilizador();
+	int menuEditDadosConta();
 
 	void resetOption();
 	int displayMenuOptions(int position);
 	void displayUsers() const;
+	void displayCurrentUser() const;
+	bool editDadosConta(int option);
+	void editDadosCondomino();
 	bool validLogin(string utilizador, string password);
 	bool validRegister(string utilizador, string password);
 	bool addUtilizador(Utilizador utilizador);
+	bool eraseUtilizador(string nomeUtilizador);
 };
 
 const string currentDateTime();

@@ -18,6 +18,7 @@ public:
 	void requisitarLimpeza(); //TODO
 	void requisitarCanalizacao(); //TODO
 	void requisitarPintura(); //TODO
+	void display() const;
 };
 
 #endif

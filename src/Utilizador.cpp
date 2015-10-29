@@ -1,6 +1,12 @@
 #include "../headers/Utilizador.h"
 
 //Construtores
+Utilizador::Utilizador(string nomeUtilizador) {
+	this->nomeUtilizador = nomeUtilizador;
+	this->password = "";
+	this->admin = false;
+	this->dados = NULL;
+}
 Utilizador::Utilizador(string nomeUtilizador, string password) {
 	this->nomeUtilizador = nomeUtilizador;
 	this->password = password;
@@ -25,21 +31,37 @@ Utilizador::Utilizador(string nomeUtilizador, string password, bool admin,
 string Utilizador::getNomeUtilizador() const {
 	return nomeUtilizador;
 }
-
+string Utilizador::getPassword() const {
+	return password;
+}
 Condomino* Utilizador::getDados() const {
 	return dados;
+}
+bool Utilizador::isAdmin() const {
+	return admin;
+}
+
+void Utilizador::setNomeUtilizador(string novoNome) {
+	this->nomeUtilizador = novoNome;
+}
+void Utilizador::setPassword(string novaPassword) {
+	this->password = novaPassword;
+}
+void Utilizador::setDados(Condomino* dados) {
+	this->dados = dados;
 }
 void Utilizador::setAdmin() {
 	this->admin = true;
 }
-bool Utilizador::setDados(Condomino* dados) {
-	this->dados = dados;
-}
 
 //Funcoes
-bool Utilizador::isAdmin() const {
-	return this->admin;
+bool Utilizador::hasDados() const {
+	if (this->dados == NULL)
+		return false;
+	else
+		return true;
 }
+
 bool Utilizador::validPassword(string password) {
 	if (this->password == password)
 		return true;
@@ -47,16 +69,13 @@ bool Utilizador::validPassword(string password) {
 		return false;
 }
 
-bool Utilizador::operator < (const Utilizador u1) const{
-	if(this->admin > u1.admin)
-		return true;
-	else return (this->nomeUtilizador < u1.nomeUtilizador);
+bool Utilizador::operator <(const Utilizador u1) const {
+	return (this->nomeUtilizador < u1.nomeUtilizador);
 }
 
-bool Utilizador::operator == (const Utilizador u1) const{
-	if(this->nomeUtilizador == u1.nomeUtilizador)
-		if(this->password == u1.password)
-			return true;
+bool Utilizador::operator ==(const Utilizador u1) const {
+	if (this->nomeUtilizador == u1.nomeUtilizador)
+		return true;
 	return false;
 }
 

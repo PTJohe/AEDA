@@ -6,8 +6,12 @@
 #include "../sort&search/insertionSort.h"
 #include "../sort&search/sequentialSearch.h"
 
+#define pathLogo "../savedata/logo.txt"
+#define pathUtilizadores "../savedata/utilizadores.txt"
+
 const string currentDateTime();
 void displayTime();
+void displayLogo();
 void pressEnterToContinue();
 bool hasWhitespace(string s);
 
@@ -32,6 +36,15 @@ bool Main::addUtilizador(Utilizador utilizador) {
 	return true;
 }
 
+bool Main::eraseUtilizador(string nomeUtilizador) {
+	Utilizador u1 = Utilizador(nomeUtilizador);
+	int pos = sequentialSearch(this->utilizadores, u1);
+	if (pos == -1)
+		return false;
+	this->utilizadores.erase(utilizadores.begin() + pos);
+	return true;
+}
+
 // Resets menu option. Called every time we switch to a new menu.
 void Main::resetOption() {
 	this->option = 0;
@@ -42,9 +55,10 @@ int Main::displayMenuOptions(int position) {
 		return -1;
 
 	for (size_t i = 0; i < menu[position].size(); i++) {
+		gotoxy(25, 10 + i);
 		if (i == option) {
 			setcolor(BLACK, LIGHTGREY);
-			cout << " " << left << setw(10) << setfill(' ')
+			cout << "=> " << left << setw(15) << setfill(' ')
 					<< menu[position][option] << endl;
 			setcolor(WHITE, BLACK);
 		} else
@@ -58,6 +72,8 @@ bool Main::validLogin(string utilizador, string password) {
 	Utilizador u1 = Utilizador(utilizador, password);
 	int pos = sequentialSearch(this->utilizadores, u1);
 	if (pos == -1)
+		return false;
+	if (utilizadores[pos].getPassword() != password)
 		return false;
 	this->currentUser = &utilizadores[pos];
 	return true;
@@ -82,16 +98,18 @@ bool Main::validRegister(string utilizador, string password) {
 		return false;
 	}
 	Utilizador u1 = Utilizador(utilizador, password);
-	if (addUtilizador(u1) == false) {
+	int pos = sequentialSearch(this->utilizadores, u1);
+	if (pos == -1)
+		return true;
+	else {
 		cout << "\nO nome de utilizador nao esta disponivel." << endl;
 		return false;
 	}
-	return true;
 }
 
 void Main::displayUsers() const {
-	clrscr();
-	cout << "CONDOMINIO\n" << endl;
+	displayLogo();
+	gotoxy(0, 8);
 	cout << "Lista de utilizadores:\n" << endl;
 
 	for (size_t i = 0; i < this->utilizadores.size(); i++) {
@@ -104,21 +122,103 @@ void Main::displayUsers() const {
 	cout << endl;
 	pressEnterToContinue();
 }
+bool Main::editDadosConta(int option) {
+	displayLogo();
+	if (option == 0) {
+		cout << "Alterar nome de utilizador:\n" << endl;
+		string utilizadorActual = this->currentUser->getNomeUtilizador();
+		cout << "Nome actual: " << utilizadorActual << endl;
+		string utilizadorNovo = "";
+		cout << "Introduza o novo nome de utilizador: ";
+		getline(cin, utilizadorNovo);
+		string password = "";
+		cout << "Introduza a sua password: ";
+		getline(cin, password);
+		if (password != this->currentUser->getPassword()) {
+			cout << "\nNao foi possivel alterar o nome de utilizador." << endl;
+			cout << "Password invalida." << endl;
+			pressEnterToContinue();
+			return false;
+		}
+		if (utilizadorActual == utilizadorNovo) {
+			cout << "\nNao foi possivel alterar o nome de utilizador." << endl;
+			cout << "O novo nome tem que ser diferente do actual." << endl;
+			pressEnterToContinue();
+			return false;
+		}
+		if (validRegister(utilizadorNovo, this->currentUser->getPassword())) {
+			this->currentUser->setNomeUtilizador(utilizadorNovo);
+			cout << "\nNome de utilizador alterado." << endl;
+			pressEnterToContinue();
+			return true;
+		} else
+			pressEnterToContinue();
+		return false;
+	}
+	if (option == 1) {
+		cout << "Alterar password:\n" << endl;
+		string passwordActual = this->currentUser->getPassword();
+		string password = "";
+		cout << "Introduza a sua password actual: ";
+		getline(cin, password);
+		if (password != passwordActual) {
+			cout << "\nPassword invalida." << endl;
+			pressEnterToContinue();
+			return false;
+		}
+		string passwordNova = "";
+		cout << "Introduza a nova password: ";
+		getline(cin, passwordNova);
+		if (passwordActual == passwordNova) {
+			cout << "\nNao foi possivel alterar a password." << endl;
+			cout << "A nova password tem que ser diferente da actual." << endl;
+			pressEnterToContinue();
+			return false;
+		}
+		if (validRegister(this->currentUser->getNomeUtilizador(),
+				passwordNova)) {
+			this->currentUser->setPassword(passwordNova);
+			cout << "\nPassword alterada." << endl;
+			pressEnterToContinue();
+			return true;
+		} else
+			return false;
+	}
+	return false;
+}
 
+void Main::editDadosCondomino() {
+	displayLogo();
+	if (this->currentUser->hasDados()) {
+
+	}
+
+}
+
+void Main::displayCurrentUser() const {
+	displayLogo();
+	gotoxy(0, 8);
+	if (this->currentUser->hasDados())
+		this->currentUser->getDados()->display();
+	else
+		cout << "Dados ainda nao foram definidos." << endl;
+	pressEnterToContinue();
+}
 /*
  * Menu functions
  */
 
 int Main::menuInicial() {
-	clrscr();
-	cout << "CONDOMINIO\n" << endl;
+	displayLogo();
+	gotoxy(30, 8);
+	cout << "MENU INICIAL\n" << endl;
 
 	displayMenuOptions(0);
 
 	displayTime();
 
-	int c = 0;
-	switch ((c = getch())) {
+	int c = getch();
+	switch (c) {
 	case KEY_UP:
 		if (option - 1 >= 0)
 			option--;
@@ -145,14 +245,13 @@ int Main::menuInicial() {
 }
 
 int Main::menuLogin() {
-	clrscr();
-	cout << "CONDOMINIO\n" << endl;
-
+	displayLogo();
+	gotoxy(30, 8);
 	cout << "LOGIN\n" << endl;
 	cout << "Introduza os seus dados de login:\n";
 
-	string utilizador;
-	string password;
+	string utilizador = "";
+	string password = "";
 
 	cout << "Utilizador: ";
 	getline(cin, utilizador);
@@ -166,20 +265,19 @@ int Main::menuLogin() {
 		cout << "\nDados invalidos\n";
 		pressEnterToContinue();
 		resetOption();
-		return menuLogin();
+		return menuInicial();
 	}
 	return EXIT_SUCCESS;
 }
 
 int Main::menuRegisto() {
-	clrscr();
-	cout << "CONDOMINIO\n" << endl;
-
+	displayLogo();
+	gotoxy(30, 8);
 	cout << "REGISTO\n" << endl;
 	cout << "Introduza os seus dados de login:\n";
 
-	string utilizador;
-	string password;
+	string utilizador = "";
+	string password = "";
 
 	cout << "Utilizador: ";
 	getline(cin, utilizador);
@@ -187,6 +285,8 @@ int Main::menuRegisto() {
 	getline(cin, password);
 
 	if (validRegister(utilizador, password)) {
+		Utilizador u1 = Utilizador(utilizador, password);
+		this->addUtilizador(u1);
 		cout << "\nConta criada com sucesso!\n" << "Ja pode fazer login."
 				<< endl;
 	} else {
@@ -198,24 +298,27 @@ int Main::menuRegisto() {
 }
 
 int Main::menuUtilizador() {
-	clrscr();
-	cout << "CONDOMINIO\n" << endl;
+	displayLogo();
 
+	gotoxy(10, 6);
 	cout << "Bem-vindo, " << this->currentUser->getNomeUtilizador() << "\n"
 			<< endl;
+	gotoxy(30, 8);
 
-	int menuOption;
-	if (this->currentUser->isAdmin())
+	int menuOption {};
+	if (this->currentUser->isAdmin()) {
 		menuOption = 1; //Admin mode
-	else
+		cout << "MENU ADMIN";
+	} else {
 		menuOption = 2; //Normal mode
-
+		cout << "MENU UTILIZADOR";
+	}
 	displayMenuOptions(menuOption);
 
 	displayTime();
 
-	int c = 0;
-	switch ((c = getch())) {
+	int c = getch();
+	switch (c) {
 	case KEY_UP:
 		if (option - 1 >= 0)
 			option--;
@@ -227,14 +330,26 @@ int Main::menuUtilizador() {
 	case KEY_ENTER:
 		if (menuOption == 1)
 			if (option == 0) {
+				resetOption();
+				return menuEditDadosConta();
+			} else if (option == 1) {
+				displayCurrentUser();
+			} else if (option == 3) {
 				displayUsers();
 			} else {
 				resetOption();
 				return menuInicial();
 			}
 		else if (menuOption == 2) {
-			resetOption();
-			return menuInicial();
+			if (option == 0) {
+				resetOption();
+				return menuEditDadosConta();
+			} else if (option == 1) {
+				displayCurrentUser();
+			} else {
+				resetOption();
+				return menuInicial();
+			}
 		}
 		break;
 	default:
@@ -242,6 +357,112 @@ int Main::menuUtilizador() {
 	}
 
 	return menuUtilizador();
+}
+
+
+
+int Main::menuEditDadosConta() {
+	displayLogo();
+	gotoxy(30, 8);
+	cout << "ALTERAR DADOS\n" << endl;
+	displayMenuOptions(3);
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[0].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) {
+			editDadosConta(0);
+			resetOption();
+			return menuUtilizador();
+		} else if (option == 1) {
+			editDadosConta(1);
+			resetOption();
+			return menuUtilizador();
+		} else if (option == 2)
+			resetOption();
+		return menuUtilizador();
+		break;
+	default:
+		break;
+	}
+	return menuEditDadosConta();
+}
+
+// Extracts data from utilizadores.txt to create a vector of users.
+bool Main::importUtilizadores() {
+	ifstream myfile(pathUtilizadores);
+	string line = "";
+	string nomeUtilizador = "";
+	string password = "";
+	bool admin = false;
+
+	vector<Utilizador> utilizadores;
+
+	if (myfile.is_open()) {
+		while (getline(myfile, line)) {
+			if (line == "1") {
+				admin = true;
+			} else if (line == "0") {
+				admin = false;
+			}
+			getline(myfile, nomeUtilizador);
+			getline(myfile, password);
+			getline(myfile, line);
+			Utilizador u = Utilizador(nomeUtilizador, password, admin);
+			utilizadores.push_back(u);
+		}
+		myfile.close();
+		this->setUtilizadores(utilizadores);
+	} else {
+		displayLogo();
+		cout
+				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro de utilizadores.\n";
+		pressEnterToContinue();
+		return false;
+	}
+	return false;
+}
+
+bool Main::exportUtilizadores() {
+	ofstream myfile(pathUtilizadores, ios::trunc);
+
+	if (myfile.is_open()) {
+		for (size_t i = 0; i < this->utilizadores.size(); i++) {
+			if (this->utilizadores[i].isAdmin())
+				myfile << "1" << endl;
+			else
+				myfile << "0" << endl;
+			myfile << this->utilizadores[i].getNomeUtilizador() << endl;
+			myfile << this->utilizadores[i].getPassword() << endl;
+			myfile << endl;
+		}
+		myfile.close();
+		return true;
+	} else {
+		displayLogo();
+		cout
+				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro de utilizadores.\n";
+		pressEnterToContinue();
+		return false;
+	}
+	return false;
+}
+
+int Main::exitFunction() {
+	if (this->exportUtilizadores())
+		return EXIT_SUCCESS;
+	else
+		return EXIT_FAILURE;
 }
 
 /*
@@ -262,8 +483,24 @@ const string currentDateTime() {
 // Displays time using currentDateTime()
 void displayTime() {
 	string time = currentDateTime();
-	gotoxy(0, 20);
+	gotoxy(50, 20);
 	cout << time;
+}
+
+// Displays the program logo
+void displayLogo() {
+	ifstream myfile(pathLogo);
+	string line = "";
+	clrscr();
+	if (myfile.is_open()) {
+		while (getline(myfile, line)) {
+			cout << line << endl;
+		}
+		myfile.close();
+	} else {
+		cout << "ERRO: Ocorreu um problema ao aceder ao ficheiro do logo."
+				<< endl;
+	}
 }
 
 // Waits until user presses Enter
@@ -288,68 +525,58 @@ vector<vector<string> > createMenuOptions() {
 	vector<string> menuInicial;
 	menuOptions.push_back(menuInicial);
 
-	menuOptions[0].push_back("Login");
-	menuOptions[0].push_back("Registo");
-	menuOptions[0].push_back("Sair");
+	menuOptions[0].push_back("Login");									//0
+	menuOptions[0].push_back("Registo");								//1
+	menuOptions[0].push_back("Sair");									//2
 
 	vector<string> menuAdmin;
 	menuOptions.push_back(menuAdmin);
 
-	menuOptions[1].push_back("Ver lista de utilizadores.");
-	menuOptions[1].push_back("Sair.");
+	menuOptions[1].push_back("Alterar dados da conta"); 				//0
+	menuOptions[1].push_back("Ver dados de condomino"); 				//1
+	menuOptions[1].push_back("Alterar dados de condomino");				//2
+	menuOptions[1].push_back("Ver lista de todos os utilizadores");		//3
+	menuOptions[1].push_back("Sair");									//4
 
 	vector<string> menuCondomino;
 	menuOptions.push_back(menuCondomino);
 
-	menuOptions[2].push_back("Sair.");
+	menuOptions[2].push_back("Alterar dados da conta");					//0
+	menuOptions[2].push_back("Ver dados de condomino");					//1
+	menuOptions[2].push_back("Alterar dados de condomino");				//2
+	menuOptions[2].push_back("Sair");									//3
 
-	//
-	//
+	vector<string> menuDadosConta;
+	menuOptions.push_back(menuDadosConta);
+
+	menuOptions[3].push_back("Alterar nome de utilizador");			//0
+	menuOptions[3].push_back("Alterar password");						//1
+	menuOptions[3].push_back("Voltar atras");							//2
+
+	vector<string> menuDadosCondomino;
+	menuOptions.push_back(menuDadosCondomino);
+
+	menuOptions[4].push_back("Alterar nome");							//0
+	menuOptions[4].push_back("Alterar NIF");							//1
+	menuOptions[4].push_back("Voltar atras");							//2
+
+//
+//
 
 	return menuOptions;
-}
-
-// Extracts data from utilizadores.txt to create a vector of users.
-vector<Utilizador> createUtilizadores() {
-	fstream myfile("../savedata/utilizadores.txt");
-	string line;
-	string nomeUtilizador;
-	string password;
-	bool admin;
-
-	vector<Utilizador> utilizadores;
-
-	if (myfile.is_open()) {
-		while (getline(myfile, line)) {
-			if (line == "1") {
-				admin = true;
-			} else if (line == "0") {
-				admin = false;
-			}
-			getline(myfile, nomeUtilizador);
-			getline(myfile, password);
-			getline(myfile, line);
-			Utilizador u = Utilizador(nomeUtilizador, password, admin);
-			utilizadores.push_back(u);
-		}
-		myfile.close();
-		return utilizadores;
-	} else
-		cout
-				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro de utilizadores.\n";
-	return utilizadores;
 }
 
 // Main function
 int main() {
 	Main main = Main();
+
 	vector<vector<string> > menu = createMenuOptions();
-	vector<Utilizador> utilizadores = createUtilizadores();
 	main.setMenus(menu);
-	main.setUtilizadores(utilizadores);
+
+	main.importUtilizadores();
 
 	main.menuInicial();
 
-	return EXIT_SUCCESS;
+	return main.exitFunction();
 }
 
