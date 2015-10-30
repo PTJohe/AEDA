@@ -13,11 +13,12 @@ private:
 	vector <Condomino *> moradores;
 	vector <Habitacao *> propriedades;
 public:
-	Condominio(){
-		this->fundos = 5000;
-		this->numFuncionarios = 0;
-		this->fundos = 0;
-	}
+	Condominio();
+	vector <Condomino*> getMoradores();
+	vector <Habitacao*> getPropriedades();
+	void setMoradores(vector<Condomino*> moradores);
+	void setPropriedades(vector<Habitacao*> propriedades);
+
 	void fimDoMes();
 	bool contratarFuncionarios(); //TODO
 };

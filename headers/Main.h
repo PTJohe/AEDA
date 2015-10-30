@@ -18,6 +18,8 @@ public:
 
 	bool importUtilizadores();
 	bool exportUtilizadores();
+	bool importCondominos();
+	bool exportCondominos();
 	int exitFunction();
 
 	void setMenus(vector<vector<string> > menu);

@@ -5,6 +5,7 @@
 
 #define pathLogo "../savedata/logo.txt"
 #define pathUtilizadores "../savedata/utilizadores.txt"
+#define pathCondominos "../savedata/condominos.txt"
 
 const string currentDateTime();
 void displayTime();
@@ -466,7 +467,64 @@ int Main::menuEditDadosConta() {
 	}
 	return menuEditDadosConta();
 }
+// Extracts data from condominos.txt to create a vector of owners.
+bool Main::importCondominos() {
+	ifstream myfile(pathCondominos);
+	string line = "";
+	string nomeUtilizador = "";
+	string nome = "";
+	string NIF = "";
 
+	vector<Condomino*> moradores;
+
+	if (myfile.is_open()) {
+		while (getline(myfile, line)) {
+			nomeUtilizador = line;
+			getline(myfile, nome);
+			getline(myfile, NIF);
+			getline(myfile, line);
+			Utilizador u1 = Utilizador(nomeUtilizador);
+			int pos = sequentialSearch(this->utilizadores, u1);
+			if (pos != -1) {
+				Condomino* c1 = new Condomino(nome, NIF);
+				moradores.push_back(c1);
+				utilizadores[pos].setDados(c1);
+			}
+		}
+		myfile.close();
+		this->condominio.setMoradores(moradores);
+		return true;
+	} else {
+		displayLogo();
+		cout
+				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro de condominos.\n";
+		pressEnterToContinue();
+		return false;
+	}
+
+}
+bool Main::exportCondominos() {
+	ofstream myfile(pathCondominos, ios::trunc);
+
+	if (myfile.is_open()) {
+		for (size_t i = 0; i < this->utilizadores.size(); i++) {
+			if (this->utilizadores[i].hasDados()) {
+				myfile << this->utilizadores[i].getNomeUtilizador() << endl;
+				myfile << this->utilizadores[i].getDados()->getNome() << endl;
+				myfile << this->utilizadores[i].getDados()->getNIF() << endl;
+				myfile << endl;
+			}
+		}
+		myfile.close();
+		return true;
+	} else {
+		displayLogo();
+		cout
+				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro de condominos.\n";
+		pressEnterToContinue();
+		return false;
+	}
+}
 // Extracts data from utilizadores.txt to create a vector of users.
 bool Main::importUtilizadores() {
 	ifstream myfile(pathUtilizadores);
@@ -492,6 +550,7 @@ bool Main::importUtilizadores() {
 		}
 		myfile.close();
 		this->setUtilizadores(utilizadores);
+		return true;
 	} else {
 		displayLogo();
 		cout
@@ -499,7 +558,6 @@ bool Main::importUtilizadores() {
 		pressEnterToContinue();
 		return false;
 	}
-	return false;
 }
 
 bool Main::exportUtilizadores() {
@@ -524,14 +582,13 @@ bool Main::exportUtilizadores() {
 		pressEnterToContinue();
 		return false;
 	}
-	return false;
 }
 
 int Main::exitFunction() {
-	if (this->exportUtilizadores())
-		return EXIT_SUCCESS;
-	else
+	if (!this->exportUtilizadores() || !this->exportCondominos())
 		return EXIT_FAILURE;
+	else
+		return EXIT_SUCCESS;
 }
 
 /*
@@ -679,6 +736,7 @@ int main() {
 	main.setMenus(menu);
 
 	main.importUtilizadores();
+	main.importCondominos();
 
 	main.menuInicial();
 

@@ -1,0 +1,12 @@
+admin
+NAO DEFINIDO
+123456789
+
+cliente
+Cliente
+987654321
+
+joao
+Joao Araujo
+263788210
+

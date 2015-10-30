@@ -56,7 +56,7 @@ void Utilizador::setAdmin() {
 
 //Funcoes
 bool Utilizador::hasDados() const {
-	if (this->dados->getNome() == "NAO DEFINIDO" || this->dados->getNIF() == "NAO DEFINIDO")
+	if (this->dados->getNome() == "NAO DEFINIDO" && this->dados->getNIF() == "NAO DEFINIDO")
 		return false;
 	else
 		return true;
