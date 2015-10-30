@@ -1,7 +1,6 @@
 #ifndef HEADERS_UTILIZADOR_H_
 #define HEADERS_UTILIZADOR_H_
 
-#include "../headers/Header.h"
 #include "../headers/Condomino.h"
 
 class Utilizador {
@@ -18,7 +17,7 @@ public:
 
 	string getNomeUtilizador() const;
 	string getPassword() const;
-	Condomino* getDados() const;
+	Condomino* getDados() ;
 	bool isAdmin() const;
 
 	void setNomeUtilizador(string novoNome);

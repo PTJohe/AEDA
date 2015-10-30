@@ -3,9 +3,6 @@
 #include "../headers/Header.h"
 #include "../headers/Utils.h"
 
-#include "../sort&search/insertionSort.h"
-#include "../sort&search/sequentialSearch.h"
-
 #define pathLogo "../savedata/logo.txt"
 #define pathUtilizadores "../savedata/utilizadores.txt"
 
@@ -14,6 +11,8 @@ void displayTime();
 void displayLogo();
 void pressEnterToContinue();
 bool hasWhitespace(string s);
+bool isNumber(string s);
+bool isName(string s);
 
 /*
  * Class functions
@@ -124,6 +123,7 @@ void Main::displayUsers() const {
 }
 bool Main::editDadosConta(int option) {
 	displayLogo();
+	gotoxy(0, 8);
 	if (option == 0) {
 		cout << "Alterar nome de utilizador:\n" << endl;
 		string utilizadorActual = this->currentUser->getNomeUtilizador();
@@ -154,8 +154,7 @@ bool Main::editDadosConta(int option) {
 		} else
 			pressEnterToContinue();
 		return false;
-	}
-	if (option == 1) {
+	} else if (option == 1) {
 		cout << "Alterar password:\n" << endl;
 		string passwordActual = this->currentUser->getPassword();
 		string password = "";
@@ -187,21 +186,52 @@ bool Main::editDadosConta(int option) {
 	return false;
 }
 
-void Main::editDadosCondomino() {
+bool Main::editDadosCondomino(int option) {
 	displayLogo();
-	if (this->currentUser->hasDados()) {
+	gotoxy(0, 8);
+	if (option == 0) {
+		cout << "Alterar nome:\n" << endl;
+		string nomeActual = this->currentUser->getDados()->getNome();
+		cout << "Nome actual: " << nomeActual << endl;
+		string nomeNovo = "";
+		cout << "Introduza o novo nome: ";
+		getline(cin, nomeNovo);
+		if (!isName(nomeNovo)) {
+			cout << "\nERRO: O nome que introduziu nao e valido." << endl;
+			pressEnterToContinue();
+			return false;
+		}
+		this->currentUser->getDados()->setNome(nomeNovo);
+		cout << "\nNome alterado." << endl;
+		pressEnterToContinue();
+		return true;
+	} else if (option == 1) {
+		cout << "Alterar NIF:\n" << endl;
+		string nifActual = this->currentUser->getDados()->getNIF();
+		cout << "NIF actual: " << nifActual << endl;
 
+		string nifNovo = "";
+		cout << "Introduza o novo NIF: ";
+		getline(cin, nifNovo);
+		if (nifNovo.size() != 9 || !isNumber(nifNovo)) {
+			cout
+					<< "\nERRO: O NIF tem que ser um inteiro positivo de 9 digitos."
+					<< endl;
+			pressEnterToContinue();
+			return false;
+		}
+		this->currentUser->getDados()->setNIF(nifNovo);
+		cout << "\nNIF alterado." << endl;
+		pressEnterToContinue();
+		return true;
 	}
-
+	return false;
 }
 
 void Main::displayCurrentUser() const {
 	displayLogo();
 	gotoxy(0, 8);
-	if (this->currentUser->hasDados())
-		this->currentUser->getDados()->display();
-	else
-		cout << "Dados ainda nao foram definidos." << endl;
+	this->currentUser->getDados()->info();
 	pressEnterToContinue();
 }
 /*
@@ -305,7 +335,7 @@ int Main::menuUtilizador() {
 			<< endl;
 	gotoxy(30, 8);
 
-	int menuOption {};
+	int menuOption { };
 	if (this->currentUser->isAdmin()) {
 		menuOption = 1; //Admin mode
 		cout << "MENU ADMIN";
@@ -334,6 +364,9 @@ int Main::menuUtilizador() {
 				return menuEditDadosConta();
 			} else if (option == 1) {
 				displayCurrentUser();
+			} else if (option == 2) {
+				resetOption();
+				return menuEditDadosCondomino();
 			} else if (option == 3) {
 				displayUsers();
 			} else {
@@ -346,6 +379,9 @@ int Main::menuUtilizador() {
 				return menuEditDadosConta();
 			} else if (option == 1) {
 				displayCurrentUser();
+			} else if (option == 2) {
+				resetOption();
+				return menuEditDadosCondomino();
 			} else {
 				resetOption();
 				return menuInicial();
@@ -358,9 +394,42 @@ int Main::menuUtilizador() {
 
 	return menuUtilizador();
 }
+int Main::menuEditDadosCondomino() {
+	displayLogo();
+	gotoxy(30, 8);
+	cout << "ALTERAR DADOS\n" << endl;
+	displayMenuOptions(4);
 
+	displayTime();
 
-
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[0].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) {
+			editDadosCondomino(0);
+			resetOption();
+			return menuUtilizador();
+		} else if (option == 1) {
+			editDadosCondomino(1);
+			resetOption();
+			return menuUtilizador();
+		} else if (option == 2)
+			resetOption();
+		return menuUtilizador();
+		break;
+	default:
+		break;
+	}
+	return menuEditDadosCondomino();
+}
 int Main::menuEditDadosConta() {
 	displayLogo();
 	gotoxy(30, 8);
@@ -510,12 +579,48 @@ void pressEnterToContinue() {
 	fflush(stdin);
 }
 
+// Checks if string has at least one space
 bool hasWhitespace(string s) {
 	for (size_t i = 0; i < s.size(); i++) {
 		if (s[i] == ' ')
 			return true;
 	}
 	return false;
+}
+
+// Checks if string is a positive integer
+bool isNumber(string s) {
+	string::const_iterator it = s.begin();
+	while (it != s.end() && std::isdigit(*it))
+		++it;
+	return (!s.empty() && it == s.end());
+}
+
+// Checks if string is a valid name:
+// - Name must start with an uppercase letter;
+// - No consecutive spaces;
+// - Letter after space must be uppercase;
+// - Name must end with a letter;
+bool isName(string s) {
+	if (s.empty() || islower(s[0]) || s[0] == ' ')
+		return false;
+
+	bool prevSpace = false;
+	for (size_t i = 1; i < s.size(); i++) {
+		if (prevSpace) {
+			if (!isupper(s[i]))
+				return false;
+			else
+				prevSpace = false;
+		} else if (s[i] == ' ') {
+			prevSpace = true;
+		} else if (!islower(s[i]))
+			return false;
+	}
+
+	if (s[s.size() - 1] == ' ')
+		return false;
+	return true;
 }
 
 // Returns a vector with vectors of strings, containing the options for each menu.

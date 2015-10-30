@@ -5,19 +5,19 @@ Utilizador::Utilizador(string nomeUtilizador) {
 	this->nomeUtilizador = nomeUtilizador;
 	this->password = "";
 	this->admin = false;
-	this->dados = NULL;
+	this->dados = new Condomino();
 }
 Utilizador::Utilizador(string nomeUtilizador, string password) {
 	this->nomeUtilizador = nomeUtilizador;
 	this->password = password;
 	this->admin = false;
-	this->dados = NULL;
+	this->dados = new Condomino();
 }
 Utilizador::Utilizador(string nomeUtilizador, string password, bool admin) {
 	this->nomeUtilizador = nomeUtilizador;
 	this->password = password;
 	this->admin = admin;
-	this->dados = NULL;
+	this->dados = new Condomino();
 }
 Utilizador::Utilizador(string nomeUtilizador, string password, bool admin,
 		Condomino* dados) {
@@ -34,7 +34,7 @@ string Utilizador::getNomeUtilizador() const {
 string Utilizador::getPassword() const {
 	return password;
 }
-Condomino* Utilizador::getDados() const {
+Condomino* Utilizador::getDados()  {
 	return dados;
 }
 bool Utilizador::isAdmin() const {
@@ -56,7 +56,7 @@ void Utilizador::setAdmin() {
 
 //Funcoes
 bool Utilizador::hasDados() const {
-	if (this->dados == NULL)
+	if (this->dados->getNome() == "NAO DEFINIDO" || this->dados->getNIF() == "NAO DEFINIDO")
 		return false;
 	else
 		return true;

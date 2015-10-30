@@ -1,5 +1,5 @@
-#ifndef SRC_HEADER_H_
-#define SRC_HEADER_H_
+#ifndef HEADERS_HEADER_H_
+#define HEADERS_HEADER_H_
 
 #include <string>
 #include <vector>
@@ -8,6 +8,9 @@
 #include <iterator>
 #include <iomanip>
 #include <stdlib.h>
+
+#include "../sort&search/insertionSort.h"
+#include "../sort&search/sequentialSearch.h"
 
 using namespace std;
 

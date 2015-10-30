@@ -3,12 +3,14 @@
 
 #include "../headers/Header.h"
 #include "../headers/Utilizador.h"
+#include "../headers/Condominio.h"
 
 class Main {
 private:
 	vector<vector<string> > menu;
 	int option = 0;
 	vector<Utilizador> utilizadores;
+	Condominio condominio;
 	Utilizador* currentUser = NULL;
 
 public:
@@ -27,13 +29,14 @@ public:
 	int menuRegisto();
 	int menuUtilizador();
 	int menuEditDadosConta();
+	int menuEditDadosCondomino();
 
 	void resetOption();
 	int displayMenuOptions(int position);
 	void displayUsers() const;
 	void displayCurrentUser() const;
 	bool editDadosConta(int option);
-	void editDadosCondomino();
+	bool editDadosCondomino(int option);
 	bool validLogin(string utilizador, string password);
 	bool validRegister(string utilizador, string password);
 	bool addUtilizador(Utilizador utilizador);
