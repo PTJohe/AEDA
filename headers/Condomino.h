@@ -37,7 +37,7 @@ public:
 	void setNIF(string NIF);
 	void setPropriedades(vector<Habitacao*> propriedades);
 	bool addPropriedade(Habitacao* h1);
-	bool operator== (const Condomino* c1) const;
+	bool operator== (const Condomino c1) const;
 
 	void requisitarLimpeza(); //TODO requisitarLimpeza()
 	void requisitarCanalizacao(); //TODO requisitarCanalizacao()

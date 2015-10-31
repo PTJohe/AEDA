@@ -550,13 +550,9 @@ bool Main::importHabitacoes() {
 	if (myfile.is_open()) {
 		while (getline(myfile, line)) {
 			tipo = line;
-			cout << "\n\nTipo = " << tipo << endl;
-			pressEnterToContinue();
 			getline(myfile, morada);
 			getline(myfile, codigoPostal);
 			getline(myfile, nifProprietario);
-			cout << "\n\nNIF = " << nifProprietario << endl;
-			pressEnterToContinue();
 			getline(myfile, line);
 			for (size_t i = 0; i < 12; i++) {
 				substr = line.substr(i, 1);
@@ -577,11 +573,13 @@ bool Main::importHabitacoes() {
 					piscina = true;
 
 				Condomino* c1 = new Condomino("nome", nifProprietario);
-				cout << "\n\nNr moradores = " << this->condominio.getMoradores().size() << endl;
-				pressEnterToContinue();
-				int pos = sequentialSearch(this->condominio.getMoradores(), c1);
-				cout << "\nVivenda pos = " << pos << endl;
-				pressEnterToContinue();
+				int pos = -1;
+				for (size_t i = 0; i < this->condominio.getMoradores().size();
+						i++) {
+					if (this->condominio.getMoradores()[i]->getNIF()
+							== c1->getNIF())
+						pos = i;
+				}
 				if (pos != -1) {
 					Vivenda* v1 = new Vivenda(morada, codigoPostal,
 							this->condominio.getMoradores()[pos], pago,
@@ -598,9 +596,13 @@ bool Main::importHabitacoes() {
 				piso = atoi(line.c_str());
 
 				Condomino* c1 = new Condomino("nome", nifProprietario);
-				int pos = sequentialSearch(this->condominio.getMoradores(), c1);
-				cout << "\nApartamento pos = " << pos << endl;
-				pressEnterToContinue;
+				int pos = -1;
+				for (size_t i = 0; i < this->condominio.getMoradores().size();
+						i++) {
+					if (this->condominio.getMoradores()[i]->getNIF()
+							== c1->getNIF())
+						pos = i;
+				}
 				if (pos != -1) {
 					Apartamento* a1 = new Apartamento(morada, codigoPostal,
 							this->condominio.getMoradores()[pos], pago,
@@ -652,13 +654,11 @@ bool Main::exportHabitacoes() {
 					else
 						myfile << "1" << endl;
 					myfile << endl;
-					pressEnterToContinue();
 				} else if (habitacao->getTipo() == "Apartamento") {
 					myfile << habitacao->getTipologia() << endl;
 					myfile << habitacao->getAreaInterior() << endl;
 					myfile << habitacao->getPiso() << endl;
 					myfile << endl;
-					pressEnterToContinue();
 				}
 			}
 		}

@@ -1,4 +1,4 @@
-#include "Condomino.h"
+#include "../headers/Condomino.h"
 
 vector<Habitacao *> Condomino::getPropriedades() {
 	return propriedades;
@@ -29,10 +29,10 @@ bool Condomino::addPropriedade(Habitacao* h1) {
 		return false;
 }
 
-bool Condomino::operator==(const Condomino* c1) const {
+bool Condomino::operator==(const Condomino c1) const {
 	cout << "\nThis NIF = " << this->NIF << endl;
-	cout << "That NIF = " << c1->NIF << endl;
-	if (this->NIF == c1->NIF)
+	cout << "That NIF = " << c1.NIF << endl;
+	if (this->NIF == c1.NIF)
 		return true;
 	else
 		return false;
