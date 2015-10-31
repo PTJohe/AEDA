@@ -12,9 +12,7 @@ protected:
 	Condomino* proprietario;
 	bool pago[12];
 public:
-	virtual ~Habitacao() {
-	}
-	;
+	virtual ~Habitacao() {};
 	Habitacao(string morada, string codigoPostal, Condomino* proprietario);
 	Habitacao(string morada, string codigoPostal, Condomino* proprietario,
 			bool pago[12]);
@@ -31,6 +29,7 @@ public:
 	virtual int getTipologia() const = 0;
 	virtual int getPiso() const = 0;
 	virtual void info() const = 0;
+
 	bool operator ==(const Habitacao* h1) const;
 	bool operator <(const Habitacao* h1) const;
 };

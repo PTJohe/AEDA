@@ -20,6 +20,7 @@ private:
 
 public:
 	Condominio();
+	int getMes() const;
 	vector <Condomino*> getMoradores();
 	vector <Habitacao*> getPropriedades();
 	void setMoradores(vector<Condomino*> moradores);
@@ -27,6 +28,9 @@ public:
 
 	void fimDoMes();
 	bool contratarFuncionarios(); //TODO contratarFuncionarios();
+
+	void infoMoradores() const;
+	void infoPropriedades() const;
 };
 
 #endif

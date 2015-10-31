@@ -75,11 +75,11 @@ float Vivenda::getAreaInterior() const {
 float Vivenda::getAreaExterior() const {
 	return areaExterior;
 }
-string Vivenda::getTipo() const{
+string Vivenda::getTipo() const {
 	string tipo = "Vivenda";
 	return tipo;
 }
-bool Vivenda::getPiscina() const{
+bool Vivenda::getPiscina() const {
 	return piscina;
 }
 float Vivenda::calcRenda() const {
@@ -87,10 +87,16 @@ float Vivenda::calcRenda() const {
 }
 
 void Vivenda::info() const {
-	cout << "Info Vivenda:" << "\n";
-	cout << "Morada - " << morada + ", " + codigoPostal << "\n"; //Estava a dar "invalid overload" se usasse o endl, cenas do eclipse
-	cout << "Area Habitacional = " << areaInterior << "\n";
-	cout << "Area Exterior = " << areaExterior << "\n" << endl;
+	cout << "Vivenda:" << endl;
+	cout << "Morada - " << morada + ", " + codigoPostal << endl;
+	cout << "Area Habitacional = " << areaInterior << endl;
+	cout << "Area Exterior = " << areaExterior << endl;
+	cout << "Piscina - ";
+	if (this->piscina)
+		cout << "Sim" << endl;
+	else
+		cout << "Nao" << endl;
+	cout << "Renda = " << this->calcRenda() << "$\n" << endl;
 }
 
 /*
@@ -122,7 +128,7 @@ float Apartamento::getAreaInterior() const {
 int Apartamento::getPiso() const {
 	return piso;
 }
-string Apartamento::getTipo() const{
+string Apartamento::getTipo() const {
 	string tipo = "Apartamento";
 	return tipo;
 }
@@ -131,8 +137,9 @@ float Apartamento::calcRenda() const {
 }
 
 void Apartamento::info() const {
-	cout << "Info Apartamento:" << "\n";
-	cout << "Morada - " << morada + ", " + codigoPostal << "\n"; //Aqui igual
-	cout << "Tipologia: T" << tipologia << "\n";
-	cout << "Piso " << piso << "\n" << endl;
+	cout << "Apartamento:" << endl;
+	cout << "Morada - " << morada + ", " + codigoPostal << endl;
+	cout << "Tipologia: T" << tipologia << endl;
+	cout << "Piso " << piso << endl;
+	cout << "Renda = " << this->calcRenda() << "$\n" << endl;
 }

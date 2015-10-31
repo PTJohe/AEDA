@@ -8,17 +8,25 @@
 #define pathHabitacoes "../savedata/habitacoes.txt"
 #define pathUtilizadores "../savedata/utilizadores.txt"
 
-const string currentDateTime();
-void displayTime();
-void displayLogo();
+const string currentTime();
 void pressEnterToContinue();
 bool hasWhitespace(string s);
 bool isNumber(string s);
 bool isName(string s);
 
+vector<string> mesesAno;
+vector<vector<string> > menu;
+
 /*
  * Class functions
  */
+
+// Displays time using currentDateTime()
+void Main::displayTime() {
+	string time = currentTime();
+	gotoxy(50, 20);
+	cout << mesesAno[this->condominio.getMes()] << "\t" << time;
+}
 
 void Main::setMenus(vector<vector<string> > menu) {
 	this->menu = menu;
@@ -51,10 +59,10 @@ void Main::resetOption() {
 	this->option = 0;
 }
 // Prints a Menu Select screen
-int Main::displayMenuOptions(int position) {
-	if (option >= menu.size())
-		return -1;
-
+bool Main::displayMenuOptions(int position) {
+	if (option > menu.size()) {
+		return EXIT_FAILURE;
+	}
 	for (size_t i = 0; i < menu[position].size(); i++) {
 		gotoxy(25, 10 + i);
 		if (i == option) {
@@ -65,7 +73,7 @@ int Main::displayMenuOptions(int position) {
 		} else
 			cout << menu[position][i] << endl;
 	}
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 // Checks if the user exists and, if so, updates currentUser.
@@ -108,10 +116,11 @@ bool Main::validRegister(string utilizador, string password) {
 	}
 }
 
-void Main::displayUsers() const {
+void Main::displayAllUsers() const {
 	displayLogo();
 	gotoxy(0, 8);
-	cout << "Lista de utilizadores:\n" << endl;
+	cout << "LISTA DE UTILIZADORES:"<< endl;
+	cout << "Numero de utilizadores = " << this->utilizadores.size() << "\n" << endl;
 
 	for (size_t i = 0; i < this->utilizadores.size(); i++) {
 		cout << utilizadores[i].getNomeUtilizador();
@@ -123,6 +132,22 @@ void Main::displayUsers() const {
 	cout << endl;
 	pressEnterToContinue();
 }
+
+void Main::displayAllCondominos() const {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "LISTA DE CONDOMINOS:" << endl;
+	this->condominio.infoMoradores();
+	pressEnterToContinue();
+}
+void Main::displayAllProperties() const {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "LISTA DE PROPRIEDADES:" << endl;
+	this->condominio.infoPropriedades();
+	pressEnterToContinue();
+}
+
 bool Main::editDadosConta(int option) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -222,10 +247,21 @@ bool Main::editDadosCondomino(int option) {
 			pressEnterToContinue();
 			return false;
 		}
+		int pos = -1;
+		for (size_t i = 0; i < this->condominio.getMoradores().size(); i++) {
+			if (this->condominio.getMoradores()[i]->getNIF() == nifNovo)
+				pos = i;
+		}
+		if (pos != -1) {
+			cout << "\nERRO: O NIF ja pertence a outro condomino." << endl;
+			pressEnterToContinue();
+			return false;
+		}
 		this->currentUser->getDados()->setNIF(nifNovo);
 		cout << "\nNIF alterado." << endl;
 		pressEnterToContinue();
 		return true;
+
 	}
 	return false;
 }
@@ -233,7 +269,23 @@ bool Main::editDadosCondomino(int option) {
 void Main::displayCurrentUser() const {
 	displayLogo();
 	gotoxy(0, 8);
+	cout << "DADOS:\n" << endl;
 	this->currentUser->getDados()->info();
+	pressEnterToContinue();
+}
+
+void Main::displayCurrentUserProperties() const {
+	displayLogo();
+	gotoxy(0, 8);
+	this->currentUser->getDados()->infoPropriedades();
+	pressEnterToContinue();
+}
+
+void Main::displayCurrentUserRent() const {
+	displayLogo();
+	gotoxy(0, 8);
+	this->currentUser->getDados()->infoRenda();
+	cout << endl;
 	pressEnterToContinue();
 }
 /*
@@ -333,18 +385,20 @@ int Main::menuUtilizador() {
 	displayLogo();
 
 	gotoxy(10, 6);
-	cout << "Bem-vindo, " << this->currentUser->getNomeUtilizador() << "\n"
-			<< endl;
-	gotoxy(30, 8);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
 
-	int menuOption { };
+	int menuOption = -1;
 	if (this->currentUser->isAdmin()) {
-		menuOption = 1; //Admin mode
-		cout << "MENU ADMIN";
+		menuOption = 1; //Admin menu
 	} else {
-		menuOption = 2; //Normal mode
-		cout << "MENU UTILIZADOR";
+		menuOption = 2; //Normal menu
 	}
+
+	gotoxy(30, 8);
+	cout << "MENU UTILIZADOR" << endl;
 	displayMenuOptions(menuOption);
 
 	displayTime();
@@ -363,14 +417,18 @@ int Main::menuUtilizador() {
 		if (menuOption == 1)
 			if (option == 0) {
 				resetOption();
-				return menuEditDadosConta();
+				return menuAdministrador();
 			} else if (option == 1) {
-				displayCurrentUser();
+				resetOption();
+				return menuEditDadosConta();
 			} else if (option == 2) {
+				displayCurrentUser();
+			} else if (option == 3) {
 				resetOption();
 				return menuEditDadosCondomino();
-			} else if (option == 3) {
-				displayUsers();
+			} else if (option == 4) {
+				resetOption();
+				return menuPropriedadesAdquiridas();
 			} else {
 				resetOption();
 				return menuInicial();
@@ -384,6 +442,8 @@ int Main::menuUtilizador() {
 			} else if (option == 2) {
 				resetOption();
 				return menuEditDadosCondomino();
+			} else if (option == 3) {
+				displayCurrentUserProperties();
 			} else {
 				resetOption();
 				return menuInicial();
@@ -396,8 +456,60 @@ int Main::menuUtilizador() {
 
 	return menuUtilizador();
 }
-int Main::menuEditDadosCondomino() {
+
+int Main::menuAdministrador() {
 	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "MENU ADMINISTRADOR" << endl;
+	displayMenuOptions(3);
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[3].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0)
+			displayAllUsers();
+		else if (option == 1)
+			displayAllCondominos();
+		else if (option == 2)
+			displayAllProperties();
+		else {
+			resetOption();
+			return menuUtilizador();
+		}
+		break;
+	default:
+		break;
+	}
+
+	return menuAdministrador();
+}
+
+int Main::menuEditDadosConta() {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
 	gotoxy(30, 8);
 	cout << "ALTERAR DADOS\n" << endl;
 	displayMenuOptions(4);
@@ -411,43 +523,7 @@ int Main::menuEditDadosCondomino() {
 			option--;
 		break;
 	case KEY_DOWN:
-		if (option + 1 < menu[0].size())
-			option++;
-		break;
-	case KEY_ENTER:
-		if (option == 0) {
-			editDadosCondomino(0);
-			resetOption();
-			return menuUtilizador();
-		} else if (option == 1) {
-			editDadosCondomino(1);
-			resetOption();
-			return menuUtilizador();
-		} else if (option == 2)
-			resetOption();
-		return menuUtilizador();
-		break;
-	default:
-		break;
-	}
-	return menuEditDadosCondomino();
-}
-int Main::menuEditDadosConta() {
-	displayLogo();
-	gotoxy(30, 8);
-	cout << "ALTERAR DADOS\n" << endl;
-	displayMenuOptions(3);
-
-	displayTime();
-
-	int c = getch();
-	switch (c) {
-	case KEY_UP:
-		if (option - 1 >= 0)
-			option--;
-		break;
-	case KEY_DOWN:
-		if (option + 1 < menu[0].size())
+		if (option + 1 < menu[5].size())
 			option++;
 		break;
 	case KEY_ENTER:
@@ -468,6 +544,92 @@ int Main::menuEditDadosConta() {
 	}
 	return menuEditDadosConta();
 }
+
+int Main::menuEditDadosCondomino() {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "ALTERAR DADOS\n" << endl;
+	displayMenuOptions(5);
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[5].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) {
+			editDadosCondomino(0);
+			resetOption();
+			return menuUtilizador();
+		} else if (option == 1) {
+			editDadosCondomino(1);
+			resetOption();
+			return menuUtilizador();
+		} else if (option == 2)
+			resetOption();
+		return menuUtilizador();
+		break;
+	default:
+		break;
+	}
+	return menuEditDadosCondomino();
+}
+
+int Main::menuPropriedadesAdquiridas() {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "ALTERAR DADOS\n" << endl;
+	displayMenuOptions(6);
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[6].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) {
+			displayCurrentUserProperties();
+		} else if (option == 1) {
+			displayCurrentUserRent();
+		} else {
+			resetOption();
+			return menuUtilizador();
+		}
+		break;
+	default:
+		break;
+	}
+	return menuPropriedadesAdquiridas();
+}
+
 // Extracts data from condominos.txt to create a vector of owners.
 bool Main::importCondominos() {
 	ifstream myfile(pathCondominos);
@@ -743,21 +905,14 @@ int Main::exitFunction() {
  * Non-class functions
  */
 
-// Get current date/time, format is YYYY/MM/DD HH:mm:ss
-const string currentDateTime() {
+// Get current date/time, format is HH:mm:ss
+const string currentTime() {
 	time_t now = time(0);
 	struct tm tstruct;
 	char buf[80];
 	tstruct = *localtime(&now);
-	strftime(buf, sizeof(buf), "%Y/%m/%d %H:%M:%S", &tstruct);
+	strftime(buf, sizeof(buf), "%H:%M:%S", &tstruct);
 	return buf;
-}
-
-// Displays time using currentDateTime()
-void displayTime() {
-	string time = currentDateTime();
-	gotoxy(50, 20);
-	cout << time;
 }
 
 // Displays the program logo
@@ -767,9 +922,11 @@ void displayLogo() {
 	clrscr();
 	if (myfile.is_open()) {
 		while (getline(myfile, line)) {
+			setcolor(YELLOW, BLACK);
 			cout << line << endl;
 		}
 		myfile.close();
+		setcolor(WHITE, BLACK);
 	} else {
 		cout << "ERRO: Ocorreu um problema ao aceder ao ficheiro do logo."
 				<< endl;
@@ -827,8 +984,24 @@ bool isName(string s) {
 	return true;
 }
 
+// Initializes vector<string> of months
+void createMesesAno() {
+	mesesAno.push_back("Janeiro");
+	mesesAno.push_back("Fevereiro");
+	mesesAno.push_back("Marco");
+	mesesAno.push_back("Abril");
+	mesesAno.push_back("Maio");
+	mesesAno.push_back("Junho");
+	mesesAno.push_back("Julho");
+	mesesAno.push_back("Agosto");
+	mesesAno.push_back("Setembro");
+	mesesAno.push_back("Outubro");
+	mesesAno.push_back("Novembro");
+	mesesAno.push_back("Dezembro");
+}
+
 // Returns a vector with vectors of strings, containing the options for each menu.
-vector<vector<string> > createMenuOptions() {
+void createMenuOptions() {
 	vector<vector<string> > menuOptions;
 
 	vector<string> menuInicial;
@@ -838,48 +1011,68 @@ vector<vector<string> > createMenuOptions() {
 	menuOptions[0].push_back("Registo");								//1
 	menuOptions[0].push_back("Sair");									//2
 
-	vector<string> menuAdmin;
-	menuOptions.push_back(menuAdmin);
+	vector<string> menuUtilizadorAdmin;
+	menuOptions.push_back(menuUtilizadorAdmin);
 
-	menuOptions[1].push_back("Alterar dados da conta"); 				//0
-	menuOptions[1].push_back("Ver dados de condomino"); 				//1
-	menuOptions[1].push_back("Alterar dados de condomino");				//2
-	menuOptions[1].push_back("Ver lista de todos os utilizadores");		//3
-	menuOptions[1].push_back("Sair");									//4
+	menuOptions[1].push_back("Menu Administrador");						//0
+	menuOptions[1].push_back("Alterar dados da conta"); 				//1
+	menuOptions[1].push_back("Ver dados de condomino"); 				//2
+	menuOptions[1].push_back("Alterar dados de condomino");				//3
+	menuOptions[1].push_back("Ver propriedades adquiridas");			//4
+	menuOptions[1].push_back("Adicionar ou remover propriedade");		//5
+	menuOptions[1].push_back("Sair");									//6
 
-	vector<string> menuCondomino;
-	menuOptions.push_back(menuCondomino);
+	vector<string> menuUtilizadorNormal;
+	menuOptions.push_back(menuUtilizadorNormal);
 
 	menuOptions[2].push_back("Alterar dados da conta");					//0
 	menuOptions[2].push_back("Ver dados de condomino");					//1
 	menuOptions[2].push_back("Alterar dados de condomino");				//2
-	menuOptions[2].push_back("Sair");									//3
+	menuOptions[2].push_back("Ver propriedades adquiridas");			//3
+	menuOptions[2].push_back("Adicionar ou remover propriedade");		//4
+	menuOptions[2].push_back("Sair");									//5
+
+	vector<string> menuAdmin;
+	menuOptions.push_back(menuAdmin);
+
+	menuOptions[3].push_back("Ver lista de todos os utilizadores");		//0
+	menuOptions[3].push_back("Ver lista de todos os condominos");		//1
+	menuOptions[3].push_back("Ver lista de todas as propriedades");		//2
+	menuOptions[3].push_back("Sair");									//3
 
 	vector<string> menuDadosConta;
 	menuOptions.push_back(menuDadosConta);
 
-	menuOptions[3].push_back("Alterar nome de utilizador");			//0
-	menuOptions[3].push_back("Alterar password");						//1
-	menuOptions[3].push_back("Voltar atras");							//2
+	menuOptions[4].push_back("Alterar nome de utilizador");				//0
+	menuOptions[4].push_back("Alterar password");						//1
+	menuOptions[4].push_back("Voltar atras");							//2
 
 	vector<string> menuDadosCondomino;
 	menuOptions.push_back(menuDadosCondomino);
 
-	menuOptions[4].push_back("Alterar nome");							//0
-	menuOptions[4].push_back("Alterar NIF");							//1
-	menuOptions[4].push_back("Voltar atras");							//2
+	menuOptions[5].push_back("Alterar nome");							//0
+	menuOptions[5].push_back("Alterar NIF");							//1
+	menuOptions[5].push_back("Voltar atras");							//2
+
+	vector<string> menuPropriedadesAdquiridas;
+	menuOptions.push_back(menuPropriedadesAdquiridas);
+
+	menuOptions[6].push_back("Ver informacao das propriedades");		//0
+	menuOptions[6].push_back("Ver estado da renda");					//1
+	menuOptions[6].push_back("Voltar atras");							//2
 
 //
 //
 
-	return menuOptions;
+	menu = menuOptions;
 }
 
 // Main function
 int main() {
 	Main main = Main();
 
-	vector<vector<string> > menu = createMenuOptions();
+	createMesesAno();
+	createMenuOptions();
 	main.setMenus(menu);
 
 	main.importUtilizadores();

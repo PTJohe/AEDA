@@ -8,13 +8,18 @@
 class Main {
 private:
 	vector<vector<string> > menu;
-	int option = 0;
+	int option;
 	vector<Utilizador> utilizadores;
 	Condominio condominio;
-	Utilizador* currentUser = NULL;
+	Utilizador* currentUser;
 
 public:
-	Main(){} //default constructor
+	Main(){
+		this->option = 0;
+		this->currentUser = NULL;
+	} //default constructor
+
+	void displayTime();
 
 	bool importCondominos();
 	bool exportCondominos();
@@ -32,27 +37,39 @@ public:
 	int menuLogin();
 	int menuRegisto();
 	int menuUtilizador();
+	int menuAdministrador();
 	int menuEditDadosConta();
 	int menuEditDadosCondomino();
+	int menuPropriedadesAdquiridas();
 
 	void resetOption();
-	int displayMenuOptions(int position);
-	void displayUsers() const;
+
+	bool displayMenuOptions(int position);
+	void displayAllUsers() const;
+	void displayAllCondominos() const;
+	void displayAllProperties() const;
+
 	void displayCurrentUser() const;
+	void displayCurrentUserProperties() const;
+	void displayCurrentUserRent() const;
+
 	bool editDadosConta(int option);
 	bool editDadosCondomino(int option);
+
 	bool validLogin(string utilizador, string password);
 	bool validRegister(string utilizador, string password);
+
 	bool addUtilizador(Utilizador utilizador);
 	bool eraseUtilizador(string nomeUtilizador);
 };
 
-const string currentDateTime();
-void displayTime();
+void displayLogo();
+const string currentTime();
 void pressEnterToContinue();
-vector<vector<string> > createMenuOptions();
-vector<Utilizador> createUtilizadores();
+void createMesesAno();
+void createMenuOptions();
 bool hasWhitespace(string s);
+
 int main();
 
-#endif /* HEADERS_MAIN_H_ */
+#endif

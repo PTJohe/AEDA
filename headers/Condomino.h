@@ -42,7 +42,10 @@ public:
 	void requisitarLimpeza(); //TODO requisitarLimpeza()
 	void requisitarCanalizacao(); //TODO requisitarCanalizacao()
 	void requisitarPintura(); //TODO requisitarPintura()
+
 	void info() const;
+	void infoPropriedades() const;
+	void infoRenda() const;
 };
 
 #endif
