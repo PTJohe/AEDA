@@ -4,8 +4,9 @@
 #include "../headers/Utils.h"
 
 #define pathLogo "../savedata/logo.txt"
-#define pathUtilizadores "../savedata/utilizadores.txt"
 #define pathCondominos "../savedata/condominos.txt"
+#define pathHabitacoes "../savedata/habitacoes.txt"
+#define pathUtilizadores "../savedata/utilizadores.txt"
 
 const string currentDateTime();
 void displayTime();
@@ -525,6 +526,152 @@ bool Main::exportCondominos() {
 		return false;
 	}
 }
+
+//TODO importHabitacoes()
+bool Main::importHabitacoes() {
+	ifstream myfile(pathHabitacoes);
+	string line = "";
+	string tipo = "";
+	string morada = "";
+	string codigoPostal = "";
+	string nifProprietario = "";
+	string substr = "";
+	bool pago[12] = { 0 };
+
+	float areaInterior = 0;
+	float areaExterior = 0;
+	bool piscina = false;
+
+	int tipologia = 0;
+	int piso = 0;
+
+	vector<Habitacao*> habitacoes;
+
+	if (myfile.is_open()) {
+		while (getline(myfile, line)) {
+			tipo = line;
+			cout << "\n\nTipo = " << tipo << endl;
+			pressEnterToContinue();
+			getline(myfile, morada);
+			getline(myfile, codigoPostal);
+			getline(myfile, nifProprietario);
+			cout << "\n\nNIF = " << nifProprietario << endl;
+			pressEnterToContinue();
+			getline(myfile, line);
+			for (size_t i = 0; i < 12; i++) {
+				substr = line.substr(i, 1);
+				if (substr == "0")
+					pago[i] = false;
+				else
+					pago[i] = true;
+			}
+			if (tipo == "Vivenda") {
+				getline(myfile, line);
+				areaInterior = atof(line.c_str());
+				getline(myfile, line);
+				areaExterior = atof(line.c_str());
+				getline(myfile, line);
+				if (line == "0")
+					piscina = false;
+				else
+					piscina = true;
+
+				Condomino* c1 = new Condomino("nome", nifProprietario);
+				cout << "\n\nNr moradores = " << this->condominio.getMoradores().size() << endl;
+				pressEnterToContinue();
+				int pos = sequentialSearch(this->condominio.getMoradores(), c1);
+				cout << "\nVivenda pos = " << pos << endl;
+				pressEnterToContinue();
+				if (pos != -1) {
+					Vivenda* v1 = new Vivenda(morada, codigoPostal,
+							this->condominio.getMoradores()[pos], pago,
+							areaInterior, areaExterior, piscina);
+					habitacoes.push_back(v1);
+					this->condominio.getMoradores()[pos]->addPropriedade(v1);
+				}
+			} else if (tipo == "Apartamento") {
+				getline(myfile, line);
+				tipologia = atoi(line.c_str());
+				getline(myfile, line);
+				areaInterior = atof(line.c_str());
+				getline(myfile, line);
+				piso = atoi(line.c_str());
+
+				Condomino* c1 = new Condomino("nome", nifProprietario);
+				int pos = sequentialSearch(this->condominio.getMoradores(), c1);
+				cout << "\nApartamento pos = " << pos << endl;
+				pressEnterToContinue;
+				if (pos != -1) {
+					Apartamento* a1 = new Apartamento(morada, codigoPostal,
+							this->condominio.getMoradores()[pos], pago,
+							tipologia, areaInterior, piso);
+					habitacoes.push_back(a1);
+					this->condominio.getMoradores()[pos]->addPropriedade(a1);
+				}
+			}
+			getline(myfile, line);
+		}
+		myfile.close();
+		this->condominio.setPropriedades(habitacoes);
+		return true;
+	} else {
+		displayLogo();
+		cout
+				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro de habitacoes.\n";
+		pressEnterToContinue();
+		return false;
+	}
+}
+
+bool Main::exportHabitacoes() {
+	ofstream myfile(pathHabitacoes, ios::trunc);
+
+	if (myfile.is_open()) {
+		for (size_t i = 0; i < this->condominio.getMoradores().size(); i++) {
+			vector<Habitacao*> propriedades =
+					this->condominio.getMoradores()[i]->getPropriedades();
+			for (size_t j = 0; j < propriedades.size(); j++) {
+				Habitacao* habitacao =
+						this->condominio.getMoradores()[i]->getPropriedades()[j];
+				myfile << habitacao->getTipo() << endl;
+				myfile << habitacao->getMorada() << endl;
+				myfile << habitacao->getCodigoPostal() << endl;
+				myfile << habitacao->getProprietario()->getNIF() << endl;
+				for (size_t k = 0; k < 12; k++) {
+					if (habitacao->getPago(k) == false)
+						myfile << "0";
+					else
+						myfile << "1";
+				}
+				myfile << endl;
+				if (habitacao->getTipo() == "Vivenda") {
+					myfile << habitacao->getAreaInterior() << endl;
+					myfile << habitacao->getAreaExterior() << endl;
+					if (habitacao->getPiscina() == false)
+						myfile << "0" << endl;
+					else
+						myfile << "1" << endl;
+					myfile << endl;
+					pressEnterToContinue();
+				} else if (habitacao->getTipo() == "Apartamento") {
+					myfile << habitacao->getTipologia() << endl;
+					myfile << habitacao->getAreaInterior() << endl;
+					myfile << habitacao->getPiso() << endl;
+					myfile << endl;
+					pressEnterToContinue();
+				}
+			}
+		}
+		myfile.close();
+		return true;
+	} else {
+		displayLogo();
+		cout
+				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro de habitacoes.\n";
+		pressEnterToContinue();
+		return false;
+	}
+}
 // Extracts data from utilizadores.txt to create a vector of users.
 bool Main::importUtilizadores() {
 	ifstream myfile(pathUtilizadores);
@@ -585,7 +732,8 @@ bool Main::exportUtilizadores() {
 }
 
 int Main::exitFunction() {
-	if (!this->exportUtilizadores() || !this->exportCondominos())
+	if (!this->exportUtilizadores() || !this->exportCondominos()
+			|| !this->exportHabitacoes())
 		return EXIT_FAILURE;
 	else
 		return EXIT_SUCCESS;
@@ -602,7 +750,6 @@ const string currentDateTime() {
 	char buf[80];
 	tstruct = *localtime(&now);
 	strftime(buf, sizeof(buf), "%Y/%m/%d %H:%M:%S", &tstruct);
-
 	return buf;
 }
 
@@ -737,6 +884,7 @@ int main() {
 
 	main.importUtilizadores();
 	main.importCondominos();
+	main.importHabitacoes();
 
 	main.menuInicial();
 

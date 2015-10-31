@@ -29,6 +29,15 @@ bool Condomino::addPropriedade(Habitacao* h1) {
 		return false;
 }
 
+bool Condomino::operator==(const Condomino* c1) const {
+	cout << "\nThis NIF = " << this->NIF << endl;
+	cout << "That NIF = " << c1->NIF << endl;
+	if (this->NIF == c1->NIF)
+		return true;
+	else
+		return false;
+}
+
 void Condomino::info() const {
 	cout << "DADOS:\n" << endl;
 	cout << "Nome: " << this->nome << endl;

@@ -5,6 +5,7 @@
 #include "../headers/Header.h"
 
 class Condomino;
+class Servico;
 
 class Condominio{
 private:
@@ -12,6 +13,11 @@ private:
 	float fundos;
 	vector <Condomino *> moradores;
 	vector <Habitacao *> propriedades;
+	vector <Servico *> servicosTerminados;
+	vector <Servico *> servicosEmCurso;
+	vector <Servico *> servicosEmEspera;
+	int currentMes;
+
 public:
 	Condominio();
 	vector <Condomino*> getMoradores();
@@ -20,7 +26,7 @@ public:
 	void setPropriedades(vector<Habitacao*> propriedades);
 
 	void fimDoMes();
-	bool contratarFuncionarios(); //TODO
+	bool contratarFuncionarios(); //TODO contratarFuncionarios();
 };
 
 #endif

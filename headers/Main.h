@@ -16,10 +16,12 @@ private:
 public:
 	Main(){} //default constructor
 
-	bool importUtilizadores();
-	bool exportUtilizadores();
 	bool importCondominos();
 	bool exportCondominos();
+	bool importHabitacoes();
+	bool exportHabitacoes();
+	bool importUtilizadores();
+	bool exportUtilizadores();
 	int exitFunction();
 
 	void setMenus(vector<vector<string> > menu);

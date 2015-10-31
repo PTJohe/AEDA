@@ -10,12 +10,26 @@ protected:
 	string morada;
 	string codigoPostal;
 	Condomino* proprietario;
+	bool pago[12];
 public:
 	virtual ~Habitacao() {
 	}
 	;
-	Habitacao(string morada, string codigoPostal);
+	Habitacao(string morada, string codigoPostal, Condomino* proprietario);
+	Habitacao(string morada, string codigoPostal, Condomino* proprietario,
+			bool pago[12]);
+	string getMorada() const;
+	string getCodigoPostal() const;
+	Condomino* getProprietario() const;
+	bool getPago(int mes) const;
+
 	virtual float calcRenda() const = 0;
+	virtual string getTipo() const = 0;
+	virtual float getAreaInterior() const = 0;
+	virtual float getAreaExterior() const = 0;
+	virtual bool getPiscina() const = 0;
+	virtual int getTipologia() const = 0;
+	virtual int getPiso() const = 0;
 	virtual void info() const = 0;
 	bool operator ==(const Habitacao* h1) const;
 	bool operator <(const Habitacao* h1) const;
@@ -27,9 +41,20 @@ private:
 	float areaExterior;
 	bool piscina;
 public:
-	Vivenda(string morada, string codigoPostal, float areaInterior,
-			float areaExterior, bool piscina);
+	Vivenda(string morada, string codigoPostal, Condomino* proprietario,
+			float areaInterior, float areaExterior, bool piscina);
+	Vivenda(string morada, string codigoPostal, Condomino* proprietario,
+			bool pago[12], float areaInterior, float areaExterior,
+			bool piscina);
+	float getAreaInterior() const;
+	float getAreaExterior() const;
+	bool getPiscina() const;
+
+	int getTipologia() const {return 0;}
+	int getPiso() const {return 0;}
+
 	float calcRenda() const;
+	string getTipo() const;
 	void info() const;
 };
 
@@ -39,9 +64,19 @@ private:
 	float areaInterior;
 	int piso;
 public:
-	Apartamento(string morada, string codigoPostal, int tipologia,
-			float areaInterior, int piso);
+	Apartamento(string morada, string codigoPostal, Condomino* proprietario,
+			int tipologia, float areaInterior, int piso);
+	Apartamento(string morada, string codigoPostal, Condomino* proprietario,
+			bool pago[12], int tipologia, float areaInterior, int piso);
+	int getTipologia() const;
+	float getAreaInterior() const;
+	int getPiso() const;
+
+	float getAreaExterior() const {return 0;}
+	bool getPiscina() const {return false;}
+
 	float calcRenda() const;
+	string getTipo() const;
 	void info() const;
 };
 

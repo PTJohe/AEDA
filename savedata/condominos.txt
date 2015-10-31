@@ -1,6 +1,6 @@
 admin
 NAO DEFINIDO
-123456789
+nif
 
 cliente
 Cliente
