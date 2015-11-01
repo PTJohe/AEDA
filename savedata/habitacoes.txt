@@ -1,7 +1,7 @@
 Apartamento
 Rua Dr Azeredo Perdigao Bloco 6C 3o Esquerdo
 3500-092 Viseu
-nif
+123456789
 001010001111
 5
 100
@@ -10,7 +10,7 @@ nif
 Vivenda
 morada
 codigoPostal
-nif
+123456789
 000000010000
 100
 50

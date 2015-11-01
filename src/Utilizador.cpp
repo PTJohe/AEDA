@@ -50,8 +50,8 @@ void Utilizador::setPassword(string novaPassword) {
 void Utilizador::setDados(Condomino* dados) {
 	this->dados = dados;
 }
-void Utilizador::setAdmin() {
-	this->admin = true;
+void Utilizador::setAdmin(bool admin) {
+	this->admin = admin;
 }
 
 //Funcoes
@@ -79,3 +79,13 @@ bool Utilizador::operator ==(const Utilizador u1) const {
 	return false;
 }
 
+void Utilizador::info() const{
+	cout << "Nome de utilizador - " << nomeUtilizador << endl;
+	cout << "Password - " << password << endl;
+	cout << "Admin - ";
+	if(this->admin)
+		cout << "SIM" << endl;
+	else
+		cout << "NAO" << endl;
+	cout << endl;
+}

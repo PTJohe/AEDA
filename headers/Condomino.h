@@ -10,41 +10,30 @@ private:
 	string NIF;
 	int fundosMensais;
 	int divida;
-	vector<Habitacao *> propriedades;
+	vector<Habitacao *> habitacoes;
 public:
-	Condomino(){
-		this->nome = "NAO DEFINIDO";
-		this->NIF = "NAO DEFINIDO";
-		this->fundosMensais = 0;
-		this->divida = 0;
-	}
-	Condomino(string nome, string NIF){
-		this->nome = nome;
-		this->NIF = NIF;
-		this->fundosMensais = 0;
-		this->divida = 0;
-	}
-	Condomino(string nome, string NIF, int fundosMensais, int divida){
-			this->nome = nome;
-			this->NIF = NIF;
-			this->fundosMensais = fundosMensais;
-			this->divida = divida;
-		}
-	vector<Habitacao *> getPropriedades();
+	Condomino();
+	Condomino(string nome, string NIF);
+	Condomino(string nome, string NIF, int fundosMensais, int divida);
+
 	string getNome() const;
 	string getNIF() const;
+	int getFundosMensais() const;
+	int getDivida() const;
+	vector<Habitacao *> getHabitacoes();
+
 	void setNome(string nome);
 	void setNIF(string NIF);
-	void setPropriedades(vector<Habitacao*> propriedades);
+	void setHabitacoes(vector<Habitacao*> propriedades);
 	bool addPropriedade(Habitacao* h1);
-	bool operator== (const Condomino c1) const;
+	bool operator==(const Condomino c1) const;
 
 	void requisitarLimpeza(); //TODO requisitarLimpeza()
 	void requisitarCanalizacao(); //TODO requisitarCanalizacao()
 	void requisitarPintura(); //TODO requisitarPintura()
 
 	void info() const;
-	void infoPropriedades() const;
+	void infoHabitacoes() const;
 	void infoRenda() const;
 };
 

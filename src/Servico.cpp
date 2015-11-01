@@ -2,6 +2,7 @@
 
 int Servico::id = 1;
 
-Servico::Servico(string nome,float duracao,int numFuncionarios,float duracao,float preco, vector<Funcionario> totalFuncs){
+Servico::Servico(string nome,float duracao,int numFuncionarios,vector<Funcionario> totalFuncs, float preco)
+{
 	//cenas aqui
 }

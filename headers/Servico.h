@@ -3,6 +3,7 @@
 
 #include "../headers/Header.h"
 #include "../headers/Funcionario.h"
+
 class Servico {
 private:
 	string nome;
@@ -13,7 +14,8 @@ private:
 	float preco; //em euros
 
 public:
-	Servico(string nome,float duracao,int numFuncionarios,float duracao,float preco, vector<Funcionario> totalFuncs);
+	Servico(string nome,float duracao,int numFuncionarios,vector<Funcionario> totalFuncs, float preco);
+
 	string getNome(){return nome;}
 	float getDuracao(){return duracao;}
 	vector<Funcionario> getFuncionarios(){return funcionarios;}

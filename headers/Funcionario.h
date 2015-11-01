@@ -1,10 +1,3 @@
-/*
- * Funcionario.h
- *
- *  Created on: 31 Oct 2015
- *      Author: simao
- */
-
 #ifndef HEADERS_FUNCIONARIO_H_
 #define HEADERS_FUNCIONARIO_H_
 
@@ -29,4 +22,4 @@ public:
 };
 
 
-#endif /* HEADERS_FUNCIONARIO_H_ */
+#endif

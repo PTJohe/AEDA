@@ -4,18 +4,18 @@
  * Habitacao
  */
 Habitacao::Habitacao(string morada, string codigoPostal,
-		Condomino* proprietario) {
+		string NIFProprietario) {
 	this->morada = morada;
 	this->codigoPostal = codigoPostal;
-	this->proprietario = proprietario;
+	this->NIFProprietario = NIFProprietario;
 	fill(this->pago, pago + sizeof(pago), 0);
 }
 
-Habitacao::Habitacao(string morada, string codigoPostal,
-		Condomino* proprietario, bool pago[12]) {
+Habitacao::Habitacao(string morada, string codigoPostal, string NIFProprietario,
+		bool pago[12]) {
 	this->morada = morada;
 	this->codigoPostal = codigoPostal;
-	this->proprietario = proprietario;
+	this->NIFProprietario = NIFProprietario;
 	for (size_t i = 0; i < 12; i++) {
 		this->pago[i] = pago[i];
 	}
@@ -27,11 +27,24 @@ string Habitacao::getMorada() const {
 string Habitacao::getCodigoPostal() const {
 	return codigoPostal;
 }
-Condomino* Habitacao::getProprietario() const {
-	return proprietario;
+string Habitacao::getNIFProprietario() const {
+	return NIFProprietario;
 }
 bool Habitacao::getPago(int mes) const {
 	return pago[mes];
+}
+
+void Habitacao::setMorada(string morada){
+	this->morada = morada;
+}
+void Habitacao::setCodigoPostal(string codigoPostal){
+	this->codigoPostal = codigoPostal;
+}
+void Habitacao::setProprietario(string nif){
+	this->NIFProprietario = nif;
+}
+void Habitacao::setPago(int mes){
+	this->pago[mes] = true;
 }
 
 bool Habitacao::operator ==(const Habitacao* h1) const {
@@ -53,7 +66,7 @@ bool Habitacao::operator <(const Habitacao* h1) const {
 /*
  * Vivenda
  */
-Vivenda::Vivenda(string morada, string codigoPostal, Condomino* proprietario,
+Vivenda::Vivenda(string morada, string codigoPostal, string proprietario,
 		float areaInterior, float areaExterior, bool piscina) :
 		Habitacao(morada, codigoPostal, proprietario) {
 	this->areaInterior = areaInterior;
@@ -61,7 +74,7 @@ Vivenda::Vivenda(string morada, string codigoPostal, Condomino* proprietario,
 	this->piscina = piscina;
 }
 
-Vivenda::Vivenda(string morada, string codigoPostal, Condomino* proprietario,
+Vivenda::Vivenda(string morada, string codigoPostal, string proprietario,
 		bool pago[12], float areaInterior, float areaExterior, bool piscina) :
 		Habitacao(morada, codigoPostal, proprietario, pago) {
 	this->areaInterior = areaInterior;
@@ -103,7 +116,7 @@ void Vivenda::info() const {
  * Apartamento
  */
 Apartamento::Apartamento(string morada, string codigoPostal,
-		Condomino* proprietario, int tipologia, float areaInterior, int piso) :
+		string proprietario, int tipologia, float areaInterior, int piso) :
 		Habitacao(morada, codigoPostal, proprietario) {
 	this->tipologia = tipologia;
 	this->areaInterior = areaInterior;
@@ -111,8 +124,8 @@ Apartamento::Apartamento(string morada, string codigoPostal,
 }
 
 Apartamento::Apartamento(string morada, string codigoPostal,
-		Condomino* proprietario, bool pago[12], int tipologia,
-		float areaInterior, int piso) :
+		string proprietario, bool pago[12], int tipologia, float areaInterior,
+		int piso) :
 		Habitacao(morada, codigoPostal, proprietario, pago) {
 	this->tipologia = tipologia;
 	this->areaInterior = areaInterior;

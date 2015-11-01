@@ -13,20 +13,20 @@ int Condominio::getMes() const {
 vector<Condomino*> Condominio::getMoradores() {
 	return moradores;
 }
-vector<Habitacao*> Condominio::getPropriedades() {
-	return propriedades;
+vector<Habitacao*> Condominio::getHabitacoes() {
+	return habitacoes;
 }
 void Condominio::setMoradores(vector<Condomino*> moradores) {
 	this->moradores = moradores;
 }
-void Condominio::setPropriedades(vector<Habitacao*> propriedades) {
-	this->propriedades = propriedades;
+void Condominio::setHabitacoes(vector<Habitacao*> habitacoes) {
+	this->habitacoes = habitacoes;
 }
 
 void Condominio::fimDoMes() {
 	for (size_t i = 0; i < moradores.size(); i++)
-		for (size_t j = 0; j < moradores[i]->getPropriedades().size(); j++)
-			fundos += moradores[i]->getPropriedades()[j]->calcRenda();
+		for (size_t j = 0; j < moradores[i]->getHabitacoes().size(); j++)
+			fundos += moradores[i]->getHabitacoes()[j]->calcRenda();
 	fundos -= numFuncionarios * 500;
 
 	if (this->currentMes < 12)
@@ -42,10 +42,10 @@ void Condominio::infoMoradores() const {
 		this->moradores[i]->info();
 	}
 }
-void Condominio::infoPropriedades() const {
-	cout << "Numero de habitacoes = " << this->propriedades.size() << "\n" << endl;
-	for (size_t i = 0; i < this->propriedades.size(); i++) {
+void Condominio::infoHabitacoes() const {
+	cout << "Numero de habitacoes = " << this->habitacoes.size() << "\n" << endl;
+	for (size_t i = 0; i < this->habitacoes.size(); i++) {
 		cout << i + 1 << " - ";
-		this->propriedades[i]->info();
+		this->habitacoes[i]->info();
 	}
 }

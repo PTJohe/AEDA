@@ -1,12 +1,18 @@
 admin
-NAO DEFINIDO
-nif
+Administrador
+123456789
+500
+0
 
 cliente
 Cliente
 987654321
+200
+-100
 
 joao
 Joao Araujo
 263788210
+300
+-500
 

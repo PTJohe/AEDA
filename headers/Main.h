@@ -14,61 +14,97 @@ private:
 	Utilizador* currentUser;
 
 public:
-	Main(){
+	Main() {
 		this->option = 0;
 		this->currentUser = NULL;
 	} //default constructor
 
 	void displayTime();
 
-	bool importCondominos();
-	bool exportCondominos();
-	bool importHabitacoes();
-	bool exportHabitacoes();
-	bool importUtilizadores();
-	bool exportUtilizadores();
-	int exitFunction();
-
 	void setMenus(vector<vector<string> > menu);
 	void setUtilizadores(vector<Utilizador> utilizadores);
 
-	//Menu functions
-	int menuInicial();
-	int menuLogin();
-	int menuRegisto();
-	int menuUtilizador();
-	int menuAdministrador();
-	int menuEditDadosConta();
-	int menuEditDadosCondomino();
-	int menuPropriedadesAdquiridas();
+	bool addUtilizador(Utilizador utilizador);
+	bool eraseUtilizador(string nomeUtilizador);
 
 	void resetOption();
-
+	bool displayYesNo();
 	bool displayMenuOptions(int position);
-	void displayAllUsers() const;
-	void displayAllCondominos() const;
-	void displayAllProperties() const;
-
-	void displayCurrentUser() const;
-	void displayCurrentUserProperties() const;
-	void displayCurrentUserRent() const;
-
-	bool editDadosConta(int option);
-	bool editDadosCondomino(int option);
+	bool displaySelectUtilizador();
+	bool displaySelectCondomino(); //TODO displaySelectCondomino()
+	bool displaySelectHabitacao(); //TODO displaySelectHabitacao()
+	bool displaySelectFuncionario(); //TODO displaySelectFuncionario()
+	bool displaySelectServico(); //TODO displaySelectServico()
 
 	bool validLogin(string utilizador, string password);
 	bool validRegister(string utilizador, string password);
 
-	bool addUtilizador(Utilizador utilizador);
-	bool eraseUtilizador(string nomeUtilizador);
+
+	bool editDadosConta(int option);
+	bool editDadosContaAdmin(int option, Utilizador* utilizador);
+	bool editDadosCondomino(int option, Condomino* condomino);
+
+	void displayCurrentUserInfo() const;
+	void displayCurrentUserHabitacoes() const;
+	void displayCurrentUserRenda() const;
+
+	void displayAllUtilizadores() const;
+	void displayAllCondominos() const;
+	void displayAllHabitacoes() const;
+	void displayAllFuncionarios() const; //TODO displayAllFuncionarios()
+	void displayAllServicos() const; //TODO displayAllServicos()
+
+	//Menu Functions
+	int menuInicial();
+
+	int menuLogin();
+	int menuRegisto();
+
+	//Menu Utilizador
+	int menuUtilizador();
+
+	int menuEditDadosConta(Utilizador* utilizador);
+	int menuEditDadosCondomino(Condomino* condomino);
+	int menuHabitacoesPossuidas();
+	int menuRequisitarServico();
+
+	//Menu Administrador
+	int menuAdministrador();
+
+	int menuGerirUtilizadores();
+	int menuSelectUtilizador(bool editar);
+	int menuEditUtilizador(Utilizador* utilizador);
+	int menuDeleteUtilizador(Utilizador * utilizador);
+
+	int menuGerirCondominos(); //TODO menuGerirCondominos()
+	int menuGerirHabitacoes(); //TODO menuGerirHabitacoes()
+	int menuGerirFuncionarios(); //TODO menuGerirFuncionarios()
+	int menuGerirServicos(); //TODO menuGerirServicos()
+
+	//Import & extract functions
+	bool importCondominos();
+	bool exportCondominos();
+
+	bool importHabitacoes();
+	bool exportHabitacoes();
+
+	bool importUtilizadores();
+	bool exportUtilizadores();
+
+	int exitFunction();
+
 };
+
+bool hasWhitespace(string s);
+bool isNumber(string s);
+bool isName(string s);
 
 void displayLogo();
 const string currentTime();
 void pressEnterToContinue();
+
 void createMesesAno();
 void createMenuOptions();
-bool hasWhitespace(string s);
 
 int main();
 

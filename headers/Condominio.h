@@ -2,35 +2,35 @@
 #define HEADERS_CONDOMINIO_H_
 
 #include "../headers/Condomino.h"
+#include "../headers/Servico.h"
 #include "../headers/Header.h"
 
 class Condomino;
-class Servico;
 
 class Condominio{
 private:
 	int numFuncionarios;
 	float fundos;
-	vector <Condomino *> moradores;
-	vector <Habitacao *> propriedades;
-	vector <Servico *> servicosTerminados;
-	vector <Servico *> servicosEmCurso;
-	vector <Servico *> servicosEmEspera;
+	vector <Condomino*> moradores;
+	vector <Habitacao* > habitacoes;
+	vector <Servico> servicosTerminados;
+	vector <Servico> servicosEmCurso;
+	vector <Servico> servicosEmEspera;
 	int currentMes;
 
 public:
 	Condominio();
 	int getMes() const;
 	vector <Condomino*> getMoradores();
-	vector <Habitacao*> getPropriedades();
+	vector <Habitacao*> getHabitacoes();
 	void setMoradores(vector<Condomino*> moradores);
-	void setPropriedades(vector<Habitacao*> propriedades);
+	void setHabitacoes(vector<Habitacao*> habitacoes);
 
 	void fimDoMes();
 	bool contratarFuncionarios(); //TODO contratarFuncionarios();
 
 	void infoMoradores() const;
-	void infoPropriedades() const;
+	void infoHabitacoes() const;
 };
 
 #endif

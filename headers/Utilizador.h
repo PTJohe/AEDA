@@ -23,12 +23,14 @@ public:
 	void setNomeUtilizador(string novoNome);
 	void setPassword(string novaPassword);
 	void setDados(Condomino* dados);
-	void setAdmin();
+	void setAdmin(bool admin);
 
 	bool validPassword(string password);
 	bool hasDados() const;
 	bool operator < (const Utilizador u1) const;
 	bool operator == (const Utilizador u1) const;
+
+	void info() const;
 };
 
 #endif
