@@ -26,11 +26,11 @@ string Condomino::getNIF() const {
 	return NIF;
 }
 
-int Condomino::getFundosMensais() const{
+int Condomino::getFundosMensais() const {
 	return fundosMensais;
 }
 
-int Condomino::getDivida() const{
+int Condomino::getDivida() const {
 	return divida;
 }
 
@@ -38,21 +38,24 @@ vector<Habitacao *> Condomino::getHabitacoes() {
 	return habitacoes;
 }
 
-
 void Condomino::setNome(string nome) {
 	this->nome = nome;
 }
 void Condomino::setNIF(string NIF) {
 	this->NIF = NIF;
-	for(size_t i = 0; i < this->habitacoes.size(); i++){
+	for (size_t i = 0; i < this->habitacoes.size(); i++) {
 		this->habitacoes[i]->setProprietario(NIF);
 	}
 }
 void Condomino::setHabitacoes(vector<Habitacao*> habitacoes) {
 	this->habitacoes = habitacoes;
 }
-bool Condomino::addPropriedade(Habitacao* h1) {
-	int pos = sequentialSearch(this->habitacoes, h1);
+bool Condomino::addHabitacao(Habitacao* h1) {
+	int pos = -1;
+	for (size_t i = 0; i < this->habitacoes.size(); i++) {
+		if (habitacoes[i]->getMorada() == h1->getMorada())
+			pos = i;
+	}
 	if (pos == -1) {
 		h1->setProprietario(this->NIF);
 		this->habitacoes.push_back(h1);
@@ -62,13 +65,34 @@ bool Condomino::addPropriedade(Habitacao* h1) {
 		return false;
 }
 
+bool Condomino::eraseHabitacao(Habitacao* h1) {
+	int pos = -1;
+	for (size_t i = 0; i < this->habitacoes.size(); i++) {
+		if (habitacoes[i]->getMorada() == h1->getMorada())
+			pos = i;
+	}
+	if (pos != -1) {
+		delete h1;
+		habitacoes.erase(habitacoes.begin() + pos);
+		insertionSort(this->habitacoes);
+		return true;
+	} else
+		return false;
+}
+
 bool Condomino::operator==(const Condomino c1) const {
-	cout << "\nThis NIF = " << this->NIF << endl;
-	cout << "That NIF = " << c1.NIF << endl;
 	if (this->NIF == c1.NIF)
 		return true;
 	else
 		return false;
+}
+
+bool Condomino::operator<(const Condomino c1) const{
+	if(this->nome < c1.nome)
+		return true;
+	else if(this->nome > c1.nome)
+		return false;
+	else return (this->NIF < c1.NIF);
 }
 
 void Condomino::info() const {
@@ -80,7 +104,6 @@ void Condomino::info() const {
 }
 
 void Condomino::infoHabitacoes() const {
-	cout << "HABITACOES:" << endl;
 	cout << "Numero de habitacoes = " << this->habitacoes.size() << "\n"
 			<< endl;
 

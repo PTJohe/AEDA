@@ -5,26 +5,26 @@ Utilizador::Utilizador(string nomeUtilizador) {
 	this->nomeUtilizador = nomeUtilizador;
 	this->password = "";
 	this->admin = false;
-	this->dados = new Condomino();
+	this->nifCondomino = "NAO DEFINIDO";
 }
 Utilizador::Utilizador(string nomeUtilizador, string password) {
 	this->nomeUtilizador = nomeUtilizador;
 	this->password = password;
 	this->admin = false;
-	this->dados = new Condomino();
+	this->nifCondomino = "NAO DEFINIDO";
 }
 Utilizador::Utilizador(string nomeUtilizador, string password, bool admin) {
 	this->nomeUtilizador = nomeUtilizador;
 	this->password = password;
 	this->admin = admin;
-	this->dados = new Condomino();
+	this->nifCondomino = "NAO DEFINIDO";
 }
 Utilizador::Utilizador(string nomeUtilizador, string password, bool admin,
-		Condomino* dados) {
+		string nifCondomino) {
 	this->nomeUtilizador = nomeUtilizador;
 	this->password = password;
 	this->admin = admin;
-	this->dados = dados;
+	this->nifCondomino = nifCondomino;
 }
 
 //Gets e Sets
@@ -34,8 +34,8 @@ string Utilizador::getNomeUtilizador() const {
 string Utilizador::getPassword() const {
 	return password;
 }
-Condomino* Utilizador::getDados()  {
-	return dados;
+string Utilizador::getNIFCondomino()  {
+	return nifCondomino;
 }
 bool Utilizador::isAdmin() const {
 	return admin;
@@ -47,8 +47,8 @@ void Utilizador::setNomeUtilizador(string novoNome) {
 void Utilizador::setPassword(string novaPassword) {
 	this->password = novaPassword;
 }
-void Utilizador::setDados(Condomino* dados) {
-	this->dados = dados;
+void Utilizador::setNIFCondomino(string nif) {
+	this->nifCondomino = nif;
 }
 void Utilizador::setAdmin(bool admin) {
 	this->admin = admin;
@@ -56,7 +56,7 @@ void Utilizador::setAdmin(bool admin) {
 
 //Funcoes
 bool Utilizador::hasDados() const {
-	if (this->dados->getNome() == "NAO DEFINIDO" && this->dados->getNIF() == "NAO DEFINIDO")
+	if (this->nifCondomino == "NAO DEFINIDO")
 		return false;
 	else
 		return true;

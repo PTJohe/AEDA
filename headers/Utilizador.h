@@ -8,21 +8,21 @@ private:
 	string nomeUtilizador;
 	string password;
 	bool admin;
-	Condomino* dados;
+	string nifCondomino;
 public:
 	Utilizador(string nomeUtilizador);
 	Utilizador(string nomeUtilizador, string password);
 	Utilizador(string nomeUtilizador, string password, bool admin);
-	Utilizador(string nomeUtilizador, string password, bool admin, Condomino* dados);
+	Utilizador(string nomeUtilizador, string password, bool admin, string nifCondomino);
 
 	string getNomeUtilizador() const;
 	string getPassword() const;
-	Condomino* getDados() ;
+	string getNIFCondomino() ;
 	bool isAdmin() const;
 
 	void setNomeUtilizador(string novoNome);
 	void setPassword(string novaPassword);
-	void setDados(Condomino* dados);
+	void setNIFCondomino(string nif);
 	void setAdmin(bool admin);
 
 	bool validPassword(string password);

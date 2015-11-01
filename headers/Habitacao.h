@@ -13,6 +13,7 @@ protected:
 	bool pago[12];
 public:
 	virtual ~Habitacao() {};
+	Habitacao(string morada, string codigoPostal);
 	Habitacao(string morada, string codigoPostal, string NIFProprietario);
 	Habitacao(string morada, string codigoPostal, string NIFProprietario,
 			bool pago[12]);
@@ -34,9 +35,6 @@ public:
 	virtual int getTipologia() const = 0;
 	virtual int getPiso() const = 0;
 	virtual void info() const = 0;
-
-	bool operator ==(const Habitacao* h1) const;
-	bool operator <(const Habitacao* h1) const;
 };
 
 class Vivenda: public Habitacao {
@@ -45,6 +43,7 @@ private:
 	float areaExterior;
 	bool piscina;
 public:
+	Vivenda(string morada, string codigoPostal, float areaInterior, float areaExterior, bool piscina);
 	Vivenda(string morada, string codigoPostal, string proprietario,
 			float areaInterior, float areaExterior, bool piscina);
 	Vivenda(string morada, string codigoPostal, string NIFProprietario,
@@ -60,6 +59,7 @@ public:
 	float calcRenda() const;
 	string getTipo() const;
 	void info() const;
+
 };
 
 class Apartamento: public Habitacao {
@@ -68,6 +68,7 @@ private:
 	float areaInterior;
 	int piso;
 public:
+	Apartamento(string morada, string codigoPostal, int tipologia, float areaInterior, int piso);
 	Apartamento(string morada, string codigoPostal, string NIFProprietario,
 			int tipologia, float areaInterior, int piso);
 	Apartamento(string morada, string codigoPostal, string NIFProprietario,
@@ -82,6 +83,7 @@ public:
 	float calcRenda() const;
 	string getTipo() const;
 	void info() const;
+
 };
 
 #endif

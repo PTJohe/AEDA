@@ -8,6 +8,7 @@
 #include <iterator>
 #include <iomanip>
 #include <stdlib.h>
+#include <algorithm>
 
 
 #include "../sort&search/insertionSort.h"

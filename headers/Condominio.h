@@ -7,24 +7,31 @@
 
 class Condomino;
 
-class Condominio{
+class Condominio {
 private:
-	int numFuncionarios;
 	float fundos;
-	vector <Condomino*> moradores;
-	vector <Habitacao* > habitacoes;
-	vector <Servico> servicosTerminados;
-	vector <Servico> servicosEmCurso;
-	vector <Servico> servicosEmEspera;
+	vector<Condomino> moradores;
+	vector<Habitacao*> habitacoes;
+	vector<Funcionario> funcionarios;
+	vector<Servico> servicosTerminados;
+	vector<Servico> servicosEmCurso;
+	vector<Servico> servicosEmEspera;
 	int currentMes;
 
 public:
 	Condominio();
 	int getMes() const;
-	vector <Condomino*> getMoradores();
-	vector <Habitacao*> getHabitacoes();
-	void setMoradores(vector<Condomino*> moradores);
+	vector<Condomino> getMoradores();
+	vector<Habitacao*> getHabitacoes();
+	void setMoradores(vector<Condomino> moradores);
 	void setHabitacoes(vector<Habitacao*> habitacoes);
+
+	int addMorador(Condomino condomino);
+	bool eraseMorador(string nifMorador);
+
+	int addHabitacao(Habitacao* h1);
+
+	bool updateHabitacoesCondominos();
 
 	void fimDoMes();
 	bool contratarFuncionarios(); //TODO contratarFuncionarios();

@@ -27,6 +27,8 @@ public:
 	bool addUtilizador(Utilizador utilizador);
 	bool eraseUtilizador(string nomeUtilizador);
 
+	Condomino* getDadosCondomino(Utilizador* utilizador);
+
 	void resetOption();
 	bool displayYesNo();
 	bool displayMenuOptions(int position);
@@ -44,13 +46,13 @@ public:
 	bool editDadosContaAdmin(int option, Utilizador* utilizador);
 	bool editDadosCondomino(int option, Condomino* condomino);
 
-	void displayCurrentUserInfo() const;
-	void displayCurrentUserHabitacoes() const;
-	void displayCurrentUserRenda() const;
+	void displayCurrentUserInfo();
+	void displayCurrentUserHabitacoes();
+	void displayCurrentUserRenda();
 
 	void displayAllUtilizadores() const;
 	void displayAllCondominos() const;
-	void displayAllHabitacoes() const;
+	void displayAllHabitacoes();
 	void displayAllFuncionarios() const; //TODO displayAllFuncionarios()
 	void displayAllServicos() const; //TODO displayAllServicos()
 

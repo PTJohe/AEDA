@@ -22,11 +22,14 @@ public:
 	int getDivida() const;
 	vector<Habitacao *> getHabitacoes();
 
+	bool addHabitacao(Habitacao* h1);
+	bool eraseHabitacao(Habitacao* h1);
+
 	void setNome(string nome);
 	void setNIF(string NIF);
 	void setHabitacoes(vector<Habitacao*> propriedades);
-	bool addPropriedade(Habitacao* h1);
 	bool operator==(const Condomino c1) const;
+	bool operator<(const Condomino c1) const;
 
 	void requisitarLimpeza(); //TODO requisitarLimpeza()
 	void requisitarCanalizacao(); //TODO requisitarCanalizacao()

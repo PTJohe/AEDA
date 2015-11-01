@@ -3,6 +3,13 @@
 /*
  * Habitacao
  */
+
+Habitacao::Habitacao(string morada, string codigoPostal) {
+	this->morada = morada;
+	this->codigoPostal = codigoPostal;
+	this->NIFProprietario = "";
+	fill(this->pago, pago + sizeof(pago), 0);
+}
 Habitacao::Habitacao(string morada, string codigoPostal,
 		string NIFProprietario) {
 	this->morada = morada;
@@ -34,38 +41,30 @@ bool Habitacao::getPago(int mes) const {
 	return pago[mes];
 }
 
-void Habitacao::setMorada(string morada){
+void Habitacao::setMorada(string morada) {
 	this->morada = morada;
 }
-void Habitacao::setCodigoPostal(string codigoPostal){
+void Habitacao::setCodigoPostal(string codigoPostal) {
 	this->codigoPostal = codigoPostal;
 }
-void Habitacao::setProprietario(string nif){
+void Habitacao::setProprietario(string nif) {
 	this->NIFProprietario = nif;
 }
-void Habitacao::setPago(int mes){
+void Habitacao::setPago(int mes) {
 	this->pago[mes] = true;
-}
-
-bool Habitacao::operator ==(const Habitacao* h1) const {
-	if (this->morada == h1->morada)
-		return true;
-	else
-		return false;
-}
-
-bool Habitacao::operator <(const Habitacao* h1) const {
-	if (this->calcRenda() < h1->calcRenda())
-		return true;
-	else if (this->calcRenda() > h1->calcRenda())
-		return false;
-	else
-		return (this->morada < h1->morada);
 }
 
 /*
  * Vivenda
  */
+
+Vivenda::Vivenda(string morada, string codigoPostal, float areaInterior,
+		float areaExterior, bool piscina) :
+		Habitacao(morada, codigoPostal) {
+	this->areaInterior = areaInterior;
+	this->areaExterior = areaExterior;
+	this->piscina = piscina;
+}
 Vivenda::Vivenda(string morada, string codigoPostal, string proprietario,
 		float areaInterior, float areaExterior, bool piscina) :
 		Habitacao(morada, codigoPostal, proprietario) {
@@ -101,6 +100,7 @@ float Vivenda::calcRenda() const {
 
 void Vivenda::info() const {
 	cout << "Vivenda:" << endl;
+	cout << "NIF Proprietario = " << NIFProprietario << endl;
 	cout << "Morada - " << morada + ", " + codigoPostal << endl;
 	cout << "Area Habitacional = " << areaInterior << endl;
 	cout << "Area Exterior = " << areaExterior << endl;
@@ -115,6 +115,15 @@ void Vivenda::info() const {
 /*
  * Apartamento
  */
+
+Apartamento::Apartamento(string morada, string codigoPostal, int tipologia,
+		float areaInterior, int piso) :
+		Habitacao(morada, codigoPostal) {
+	this->tipologia = tipologia;
+	this->areaInterior = areaInterior;
+	this->piso = piso;
+}
+
 Apartamento::Apartamento(string morada, string codigoPostal,
 		string proprietario, int tipologia, float areaInterior, int piso) :
 		Habitacao(morada, codigoPostal, proprietario) {
@@ -151,8 +160,10 @@ float Apartamento::calcRenda() const {
 
 void Apartamento::info() const {
 	cout << "Apartamento:" << endl;
+	cout << "NIF Proprietario = " << NIFProprietario << endl;
 	cout << "Morada - " << morada + ", " + codigoPostal << endl;
 	cout << "Tipologia: T" << tipologia << endl;
 	cout << "Piso " << piso << endl;
 	cout << "Renda = " << this->calcRenda() << "$\n" << endl;
 }
+
