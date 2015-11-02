@@ -5,7 +5,7 @@ Condominio::Condominio() {
 	this->currentMes = 0;
 }
 
-long int Condominio::getFundos() const{
+long int Condominio::getFundos() const {
 	return fundos;
 }
 int Condominio::getMes() const {
@@ -29,6 +29,10 @@ void Condominio::setMoradores(vector<Condomino> moradores) {
 }
 void Condominio::setHabitacoes(vector<Habitacao*> habitacoes) {
 	this->habitacoes = habitacoes;
+}
+Condomino* Condominio::getCondomino(int pos) {
+	Condomino* p = &moradores[pos];
+	return p;
 }
 
 void Condominio::sortMoradores() {
@@ -55,6 +59,54 @@ int Condominio::eraseMorador(Condomino condomino) {
 		return -1;
 }
 
+bool Condominio::setNomeUtilizador(Condomino condomino, string nomeUtilizador) {
+	int pos = sequentialSearch(this->moradores, condomino);
+	if (pos == -1) {
+		return false;
+	}
+	this->moradores[pos].setNomeUtilizador(nomeUtilizador);
+	return true;
+}
+bool Condominio::setPassword(Condomino condomino, string password) {
+	int pos = sequentialSearch(this->moradores, condomino);
+	if (pos == -1) {
+		return false;
+	}
+	this->moradores[pos].setPassword(password);
+	return true;
+}
+bool Condominio::setAdmin(Condomino condomino, bool admin) {
+	int pos = sequentialSearch(this->moradores, condomino);
+	if (pos == -1) {
+		return false;
+	}
+	this->moradores[pos].setAdmin(admin);
+	return true;
+}
+bool Condominio::setNomeCivil(Condomino condomino, string nomeCivil) {
+	int pos = sequentialSearch(this->moradores, condomino);
+	if (pos == -1) {
+		return false;
+	}
+	this->moradores[pos].setNomeCivil(nomeCivil);
+	return true;
+}
+bool Condominio::setNIF(Condomino condomino, string NIF) {
+	int pos = sequentialSearch(this->moradores, condomino);
+	if (pos == -1) {
+		return false;
+	}
+	this->moradores[pos].setNIF(NIF);
+	return true;
+}
+bool Condominio::setFundosMensais(Condomino condomino, long int fundos) {
+	int pos = sequentialSearch(this->moradores, condomino);
+	if (pos == -1) {
+		return false;
+	}
+	this->moradores[pos].setFundosMensais(fundos);
+	return true;
+}
 bool Condominio::saldarDivida(Condomino condomino) {
 	int pos = sequentialSearch(this->moradores, condomino);
 	if (pos == -1) {
@@ -70,6 +122,7 @@ bool Condominio::saldarDivida(Condomino condomino) {
 		return true;
 	}
 }
+
 int Condominio::addHabitacao(Habitacao* habitacao) {
 	int pos = sequentialSearch(this->habitacoes, habitacao);
 	if (pos == -1) {

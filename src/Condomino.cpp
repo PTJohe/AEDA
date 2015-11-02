@@ -65,7 +65,7 @@ void Condomino::setAdmin(bool admin){
 	this->admin = admin;
 }
 void Condomino::setNomeCivil(string novoNomeCivil) {
-	this->nomeCivil = nomeCivil;
+	this->nomeCivil = novoNomeCivil;
 }
 void Condomino::setNIF(string novoNIF) {
 	this->NIF = novoNIF;

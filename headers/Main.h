@@ -20,6 +20,7 @@ public:
 	void displayTime();
 
 	void setMenus(vector<vector<string> > menu);
+	void setCurrentUser(Condomino condomino);
 
 	void resetOption();
 	bool displayYesNo();
@@ -33,9 +34,6 @@ public:
 	bool validLogin(string utilizador, string password);
 	bool validRegister(string utilizador, string password);
 
-	bool addCondomino(Condomino condomino);
-	bool eraseCondomino(Condomino condomino);
-
 	bool editDadosConta(int editOption);
 	bool editDadosContaAdmin(int editOption, Condomino &condomino);
 	bool editDadosCondomino(int editOption);
@@ -46,8 +44,7 @@ public:
 	void displayCurrentUserHabitacoes();
 	void displayCurrentUserRenda();
 
-	void displayAllUtilizadores() const;
-	void displayAllCondominos() const;
+	void displayCondominoInfo(int pos);
 	void displayAllHabitacoes();
 	void displayAllFuncionarios() const; //TODO displayAllFuncionarios()
 	void displayAllServicos() const; //TODO displayAllServicos()
@@ -70,6 +67,7 @@ public:
 	int menuAdministrador();
 
 	int menuGerirCondominos(); //TODO menuGerirCondominos()
+	int menuDisplayAllCondominos();
 	int menuSelectCondomino(bool editar);
 	int menuEditCondomino(Condomino &condomino);
 	int menuDeleteCondomino(Condomino &condomino);

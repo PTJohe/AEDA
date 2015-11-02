@@ -20,10 +20,13 @@ private:
 
 public:
 	Condominio();
+
 	long int getFundos() const;
 	int getMes() const;
 	vector<Condomino> getMoradores();
 	vector<Habitacao*> getHabitacoes();
+	Condomino* getCondomino(int pos);
+
 	void setFundos(long int fundos);
 	void setCurrentMes(int currentMes);
 	void setMoradores(vector<Condomino> moradores);
@@ -33,6 +36,12 @@ public:
 	int addMorador(Condomino condomino);
 	int eraseMorador(Condomino condomino);
 
+	bool setNomeUtilizador(Condomino condomino, string nomeUtilizador);
+	bool setPassword(Condomino condomino, string password);
+	bool setAdmin(Condomino condomino, bool admin);
+	bool setNomeCivil(Condomino condomino, string nomeCivil);
+	bool setNIF(Condomino condomino, string NIF);
+	bool setFundosMensais(Condomino condomino, long int fundos);
 	bool saldarDivida(Condomino condomino);
 
 	int addHabitacao(Habitacao* h1);

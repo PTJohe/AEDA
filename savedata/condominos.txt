@@ -12,7 +12,7 @@ cliente
 Cliente
 987654321
 200
--100
+0
 
 1
 joao
@@ -23,6 +23,14 @@ Joao Araujo
 -200
 
 0
+manel
+manel
+NAO DEFINIDO
+NAO DEFINIDO
+0
+0
+
+0
 maria
 maria
 NAO DEFINIDO
@@ -30,10 +38,3 @@ NAO DEFINIDO
 0
 0
 
-0
-manel
-manel
-NAO DEFINIDO
-NAO DEFINIDO
-0
-0
