@@ -2,16 +2,14 @@
 #define HEADERS_MAIN_H_
 
 #include "../headers/Header.h"
-#include "../headers/Utilizador.h"
 #include "../headers/Condominio.h"
 
 class Main {
 private:
 	vector<vector<string> > menu;
 	int option;
-	vector<Utilizador> utilizadores;
 	Condominio condominio;
-	Utilizador* currentUser;
+	Condomino* currentUser;
 
 public:
 	Main() {
@@ -22,12 +20,6 @@ public:
 	void displayTime();
 
 	void setMenus(vector<vector<string> > menu);
-	void setUtilizadores(vector<Utilizador> utilizadores);
-
-	bool addUtilizador(Utilizador utilizador);
-	bool eraseUtilizador(string nomeUtilizador);
-
-	Condomino* getDadosCondomino(Utilizador* utilizador);
 
 	void resetOption();
 	bool displayYesNo();
@@ -41,12 +33,16 @@ public:
 	bool validLogin(string utilizador, string password);
 	bool validRegister(string utilizador, string password);
 
+	bool addCondomino(Condomino condomino);
+	bool eraseCondomino(Condomino condomino);
 
-	bool editDadosConta(int option);
-	bool editDadosContaAdmin(int option, Utilizador* utilizador);
-	bool editDadosCondomino(int option, Condomino* condomino);
+	bool editDadosConta(int editOption);
+	bool editDadosContaAdmin(int editOption, Condomino &condomino);
+	bool editDadosCondomino(int editOption);
+	bool editDadosCondominoAdmin(int editOption, Condomino &condomino);
 
-	void displayCurrentUserInfo();
+	void displayCurrentUserInfoConta();
+	void displayCurrentUserInfoCondomino();
 	void displayCurrentUserHabitacoes();
 	void displayCurrentUserRenda();
 
@@ -65,33 +61,32 @@ public:
 	//Menu Utilizador
 	int menuUtilizador();
 
-	int menuEditDadosConta(Utilizador* utilizador);
-	int menuEditDadosCondomino(Condomino* condomino);
+	int menuEditDadosConta(Condomino &condomino);
+	int menuEditDadosCondomino(Condomino &condomino);
 	int menuHabitacoesPossuidas();
 	int menuRequisitarServico();
 
 	//Menu Administrador
 	int menuAdministrador();
 
-	int menuGerirUtilizadores();
-	int menuSelectUtilizador(bool editar);
-	int menuEditUtilizador(Utilizador* utilizador);
-	int menuDeleteUtilizador(Utilizador * utilizador);
-
 	int menuGerirCondominos(); //TODO menuGerirCondominos()
+	int menuSelectCondomino(bool editar);
+	int menuEditCondomino(Condomino &condomino);
+	int menuDeleteCondomino(Condomino &condomino);
+
 	int menuGerirHabitacoes(); //TODO menuGerirHabitacoes()
 	int menuGerirFuncionarios(); //TODO menuGerirFuncionarios()
 	int menuGerirServicos(); //TODO menuGerirServicos()
 
 	//Import & extract functions
+	bool importCondominio();
+	bool exportCondominio();
+
 	bool importCondominos();
 	bool exportCondominos();
 
 	bool importHabitacoes();
 	bool exportHabitacoes();
-
-	bool importUtilizadores();
-	bool exportUtilizadores();
 
 	int exitFunction();
 

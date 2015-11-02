@@ -99,7 +99,7 @@ float Vivenda::calcRenda() const {
 }
 
 void Vivenda::info() const {
-	cout << "Vivenda:" << endl;
+	cout << "Vivenda" << endl;
 	cout << "NIF Proprietario = " << NIFProprietario << endl;
 	cout << "Morada - " << morada + ", " + codigoPostal << endl;
 	cout << "Area Habitacional = " << areaInterior << endl;
@@ -159,7 +159,7 @@ float Apartamento::calcRenda() const {
 }
 
 void Apartamento::info() const {
-	cout << "Apartamento:" << endl;
+	cout << "Apartamento" << endl;
 	cout << "NIF Proprietario = " << NIFProprietario << endl;
 	cout << "Morada - " << morada + ", " + codigoPostal << endl;
 	cout << "Tipologia: T" << tipologia << endl;

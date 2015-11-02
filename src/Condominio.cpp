@@ -5,6 +5,9 @@ Condominio::Condominio() {
 	this->currentMes = 0;
 }
 
+long int Condominio::getFundos() const{
+	return fundos;
+}
 int Condominio::getMes() const {
 	return currentMes;
 }
@@ -15,6 +18,12 @@ vector<Condomino> Condominio::getMoradores() {
 vector<Habitacao*> Condominio::getHabitacoes() {
 	return habitacoes;
 }
+void Condominio::setFundos(long int fundos) {
+	this->fundos = fundos;
+}
+void Condominio::setCurrentMes(int currentMes) {
+	this->currentMes = currentMes;
+}
 void Condominio::setMoradores(vector<Condomino> moradores) {
 	this->moradores = moradores;
 }
@@ -22,27 +31,44 @@ void Condominio::setHabitacoes(vector<Habitacao*> habitacoes) {
 	this->habitacoes = habitacoes;
 }
 
+void Condominio::sortMoradores() {
+	insertionSort(moradores);
+}
 int Condominio::addMorador(Condomino condomino) {
 	int pos = sequentialSearch(this->moradores, condomino);
-
 	if (pos == -1) {
 		this->moradores.push_back(condomino);
 		insertionSort(moradores);
 		pos = sequentialSearch(this->moradores, condomino);
 		return pos;
 	} else
-		return false;
+		return -1;
 }
-bool Condominio::eraseMorador(string nifMorador) {
-	Condomino c1 = Condomino("nome", nifMorador);
-	int pos = sequentialSearch(this->moradores, c1);
+int Condominio::eraseMorador(Condomino condomino) {
+	int pos = sequentialSearch(this->moradores, condomino);
 
 	if (pos != -1) {
 		this->moradores.erase(moradores.begin() + pos);
 		insertionSort(moradores);
-		return true;
+		return pos;
 	} else
+		return -1;
+}
+
+bool Condominio::saldarDivida(Condomino condomino) {
+	int pos = sequentialSearch(this->moradores, condomino);
+	if (pos == -1) {
 		return false;
+	} else {
+		this->moradores[pos].setDivida(0);
+		for (size_t i = 0; i < this->moradores[pos].getHabitacoes().size();
+				i++) {
+			for (size_t j = 0; j < this->currentMes; j++) {
+				this->moradores[pos].getHabitacoes()[i]->setPago(j);
+			}
+		}
+		return true;
+	}
 }
 int Condominio::addHabitacao(Habitacao* habitacao) {
 	int pos = sequentialSearch(this->habitacoes, habitacao);
@@ -58,8 +84,9 @@ int Condominio::addHabitacao(Habitacao* habitacao) {
 bool Condominio::updateHabitacoesCondominos() {
 	for (size_t i = 0; i < this->moradores.size(); i++) {
 		vector<Habitacao*> habitacoes;
-		for(size_t j = 0; j < this->habitacoes.size(); j++){
-			if(this->moradores[i].getNIF() == this->habitacoes[j]->getNIFProprietario())
+		for (size_t j = 0; j < this->habitacoes.size(); j++) {
+			if (this->moradores[i].getNIF()
+					== this->habitacoes[j]->getNIFProprietario())
 				habitacoes.push_back(this->habitacoes[j]);
 		}
 		this->moradores[i].setHabitacoes(habitacoes);
@@ -83,7 +110,7 @@ void Condominio::infoMoradores() const {
 	cout << "Numero de moradores = " << this->moradores.size() << "\n" << endl;
 	for (size_t i = 0; i < this->moradores.size(); i++) {
 		cout << i + 1 << " - ";
-		this->moradores[i].info();
+		this->moradores[i].infoCondomino();
 	}
 }
 void Condominio::infoHabitacoes() const {

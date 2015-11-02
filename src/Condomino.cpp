@@ -1,55 +1,88 @@
 #include "../headers/Condomino.h"
 
-Condomino::Condomino() {
-	this->nome = "NAO DEFINIDO";
+Condomino::Condomino(string nomeUtilizador, string password) {
+	this->nomeUtilizador = nomeUtilizador;
+	this->password = password;
+	this->admin = false;
+	this->nomeCivil = "NAO DEFINIDO";
 	this->NIF = "NAO DEFINIDO";
 	this->fundosMensais = 0;
 	this->divida = 0;
 }
-Condomino::Condomino(string nome, string NIF) {
-	this->nome = nome;
+Condomino::Condomino(string nomeUtilizador, string password, string nomeCivil,
+		string NIF) {
+	this->nomeUtilizador = nomeUtilizador;
+	this->password = password;
+	this->admin = false;
+	this->nomeCivil = nomeCivil;
 	this->NIF = NIF;
 	this->fundosMensais = 0;
 	this->divida = 0;
 }
-Condomino::Condomino(string nome, string NIF, int fundosMensais, int divida) {
-	this->nome = nome;
+Condomino::Condomino(string nomeUtilizador, string password, bool admin,
+		string nomeCivil, string NIF, long int fundosMensais, long int divida) {
+	this->nomeUtilizador = nomeUtilizador;
+	this->password = password;
+	this->admin = admin;
+	this->nomeCivil = nomeCivil;
 	this->NIF = NIF;
 	this->fundosMensais = fundosMensais;
 	this->divida = divida;
 }
 
-string Condomino::getNome() const {
-	return nome;
+string Condomino::getNomeUtilizador() const {
+	return nomeUtilizador;
+}
+string Condomino::getPassword() const {
+	return password;
+}
+bool Condomino::isAdmin() const {
+	return admin;
+}
+string Condomino::getNomeCivil() const {
+	return nomeCivil;
 }
 string Condomino::getNIF() const {
 	return NIF;
 }
-
 int Condomino::getFundosMensais() const {
 	return fundosMensais;
 }
-
 int Condomino::getDivida() const {
 	return divida;
 }
-
 vector<Habitacao *> Condomino::getHabitacoes() {
 	return habitacoes;
 }
 
-void Condomino::setNome(string nome) {
-	this->nome = nome;
+void Condomino::setNomeUtilizador(string novoNomeUtilizador) {
+	this->nomeUtilizador = novoNomeUtilizador;
 }
-void Condomino::setNIF(string NIF) {
-	this->NIF = NIF;
+void Condomino::setPassword(string novaPassword) {
+	this->password = novaPassword;
+}
+void Condomino::setAdmin(bool admin){
+	this->admin = admin;
+}
+void Condomino::setNomeCivil(string novoNomeCivil) {
+	this->nomeCivil = nomeCivil;
+}
+void Condomino::setNIF(string novoNIF) {
+	this->NIF = novoNIF;
 	for (size_t i = 0; i < this->habitacoes.size(); i++) {
-		this->habitacoes[i]->setProprietario(NIF);
+		this->habitacoes[i]->setProprietario(novoNIF);
 	}
+}
+void Condomino::setFundosMensais(long int novosFundos){
+	this->fundosMensais = novosFundos;
+}
+void Condomino::setDivida(long int novaDivida){
+	this->divida = novaDivida;
 }
 void Condomino::setHabitacoes(vector<Habitacao*> habitacoes) {
 	this->habitacoes = habitacoes;
 }
+
 bool Condomino::addHabitacao(Habitacao* h1) {
 	int pos = -1;
 	for (size_t i = 0; i < this->habitacoes.size(); i++) {
@@ -64,7 +97,6 @@ bool Condomino::addHabitacao(Habitacao* h1) {
 	} else
 		return false;
 }
-
 bool Condomino::eraseHabitacao(Habitacao* h1) {
 	int pos = -1;
 	for (size_t i = 0; i < this->habitacoes.size(); i++) {
@@ -80,29 +112,56 @@ bool Condomino::eraseHabitacao(Habitacao* h1) {
 		return false;
 }
 
-bool Condomino::operator==(const Condomino c1) const {
-	if (this->NIF == c1.NIF)
+bool Condomino::validPassword(string password) {
+	if (this->password == password)
 		return true;
 	else
 		return false;
 }
-
-bool Condomino::operator<(const Condomino c1) const{
-	if(this->nome < c1.nome)
-		return true;
-	else if(this->nome > c1.nome)
+bool Condomino::hasDados() const {
+	if (this->nomeCivil == "NAO DEFINIDO" || this->NIF == "NAO DEFINIDO")
 		return false;
-	else return (this->NIF < c1.NIF);
+	else
+		return true;
+}
+bool Condomino::operator==(const Condomino c1) const {
+	if (this->nomeUtilizador == c1.nomeUtilizador) {
+		return true;
+	} else if (this->NIF == "NAO DEFINIDO")
+		return false;
+	else
+		return (this->NIF == c1.NIF);
+}
+bool Condomino::operator<(const Condomino c1) const {
+	if (this->nomeUtilizador < c1.nomeUtilizador)
+		return true;
+	else
+		return false;
+	/*if (this->nomeCivil < c1.nomeCivil)
+	 return true;
+	 else if (this->nomeCivil > c1.nomeCivil)
+	 return false;
+	 else
+	 return (this->NIF < c1.NIF);*/
 }
 
-void Condomino::info() const {
-	cout << "Nome: " << this->nome << endl;
+void Condomino::infoConta() const {
+	cout << "Nome de utilizador - " << nomeUtilizador << endl;
+	cout << "Password - " << password << endl;
+	cout << "Admin - ";
+	if (this->admin)
+		cout << "SIM" << endl;
+	else
+		cout << "NAO" << endl;
+	cout << endl;
+}
+void Condomino::infoCondomino() const {
+	cout << this->nomeCivil << endl;
 	cout << "NIF: " << this->NIF << endl;
 	cout << "Numero de habitacoes: " << this->habitacoes.size() << endl;
 	cout << "Fundos Mensais = " << this->fundosMensais << "$" << endl;
 	cout << "Divida = " << this->divida << "$" << "\n" << endl;
 }
-
 void Condomino::infoHabitacoes() const {
 	cout << "Numero de habitacoes = " << this->habitacoes.size() << "\n"
 			<< endl;
@@ -112,7 +171,6 @@ void Condomino::infoHabitacoes() const {
 		habitacoes[i]->info();
 	}
 }
-
 void Condomino::infoRenda() const {
 	cout << "ESTADO DA RENDA:" << endl;
 	cout << "Numero de habitacoes = " << this->habitacoes.size() << "\n"

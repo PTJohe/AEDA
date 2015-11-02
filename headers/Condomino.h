@@ -6,17 +6,26 @@
 
 class Condomino {
 private:
-	string nome;
+	string nomeUtilizador;
+	string password;
+	bool admin;
+	string nomeCivil;
 	string NIF;
-	int fundosMensais;
-	int divida;
+	long int fundosMensais;
+	long int divida;
 	vector<Habitacao *> habitacoes;
 public:
-	Condomino();
-	Condomino(string nome, string NIF);
-	Condomino(string nome, string NIF, int fundosMensais, int divida);
+	Condomino(string nomeUtilizador, string password);
+	Condomino(string nomeUtilizador, string password, string nomeCivil,
+			string NIF);
+	Condomino(string nomeUtilizador, string password, bool admin,
+			string nomeCivil, string NIF, long int fundosMensais, long int divida);
 
-	string getNome() const;
+	string getNomeUtilizador() const;
+	string getPassword() const;
+	bool isAdmin() const;
+
+	string getNomeCivil() const;
 	string getNIF() const;
 	int getFundosMensais() const;
 	int getDivida() const;
@@ -25,9 +34,18 @@ public:
 	bool addHabitacao(Habitacao* h1);
 	bool eraseHabitacao(Habitacao* h1);
 
-	void setNome(string nome);
-	void setNIF(string NIF);
+	void setNomeUtilizador(string novoNomeUtilizador);
+	void setPassword(string novaPassword);
+	void setAdmin(bool admin);
+	void setNomeCivil(string novoNomeCivil);
+	void setNIF(string novoNIF);
+	void setFundosMensais(long int novosFundos);
+	void setDivida(long int novaDivida);
 	void setHabitacoes(vector<Habitacao*> propriedades);
+
+
+	bool validPassword(string password);
+	bool hasDados() const;
 	bool operator==(const Condomino c1) const;
 	bool operator<(const Condomino c1) const;
 
@@ -35,7 +53,8 @@ public:
 	void requisitarCanalizacao(); //TODO requisitarCanalizacao()
 	void requisitarPintura(); //TODO requisitarPintura()
 
-	void info() const;
+	void infoConta() const;
+	void infoCondomino() const;
 	void infoHabitacoes() const;
 	void infoRenda() const;
 };

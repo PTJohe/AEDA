@@ -4,9 +4,9 @@
 #include "../headers/Utils.h"
 
 #define pathLogo "../savedata/logo.txt"
+#define pathCondominio "../savedata/condominio.txt"
 #define pathCondominos "../savedata/condominos.txt"
 #define pathHabitacoes "../savedata/habitacoes.txt"
-#define pathUtilizadores "../savedata/utilizadores.txt"
 
 const string currentTime();
 void pressEnterToContinue();
@@ -32,53 +32,33 @@ void Main::displayTime() {
 void Main::setMenus(vector<vector<string> > menu) {
 	this->menu = menu;
 }
-void Main::setUtilizadores(vector<Utilizador> utilizadores) {
-	insertionSort(utilizadores);
-	this->utilizadores = utilizadores;
-}
 
-bool Main::addUtilizador(Utilizador utilizador) {
-	int pos1 = sequentialSearch(this->utilizadores, utilizador);
+bool Main::addCondomino(Condomino condomino) {
+	int pos1 = sequentialSearch(this->condominio.getMoradores(), *currentUser);
 	if (pos1 != -1)
 		return false;
 
-	//Verifica se a adicao do novo utilizador vai obrigar a uma mudanca no apontador do currentUser
-	if (utilizador < *(currentUser)) {
-		int pos2 = sequentialSearch(this->utilizadores, *(currentUser));
-		insertionSort(utilizadores);
-		this->utilizadores.push_back(utilizador);
-		this->currentUser = &utilizadores[pos2 + 1];
-	} else {
-		insertionSort(utilizadores);
-		this->utilizadores.push_back(utilizador);
-	}
-	return true;
-}
-bool Main::eraseUtilizador(string nomeUtilizador) {
-	Utilizador u1 = Utilizador(nomeUtilizador);
-	int pos1 = sequentialSearch(this->utilizadores, u1);
-	if (pos1 == -1)
+	//Verifica se a adicao do novo condomino vai obrigar a uma mudanca no apontador do currentUser
+	int pos2 = this->condominio.addMorador(condomino);
+	if (pos2 == -1)
 		return false;
-	int pos2 = sequentialSearch(this->utilizadores, *(currentUser));
-	if (pos1 < pos2)
-		this->currentUser = &this->utilizadores[pos2 - 1];
-
-	this->utilizadores.erase(utilizadores.begin() + pos1);
+	else if (pos1 >= pos2)
+		this->currentUser = &this->condominio.getMoradores()[pos1 + 1];
 	return true;
 }
 
-Condomino* Main::getDadosCondomino(Utilizador* utilizador) {
-	int pos = -1;
-	for (size_t i = 0; i < this->condominio.getMoradores().size(); i++) {
-		if (utilizador->getNIFCondomino()
-				== this->condominio.getMoradores()[i].getNIF())
-			pos = i;
-	}
-	//if (pos != -1)
-	vector<Condomino>::iterator it = this->condominio.getMoradores().begin()
-			+ pos;
-	Condomino* pointer = &(*it);
-	return pointer;
+bool Main::eraseCondomino(Condomino condomino) {
+	int pos1 = sequentialSearch(this->condominio.getMoradores(), *currentUser);
+	if (pos1 != -1)
+		return false;
+
+	//Verifica se a adicao do novo condomino vai obrigar a uma mudanca no apontador do currentUser
+	int pos2 = this->condominio.eraseMorador(condomino);
+	if (pos2 == -1)
+		return false;
+	else if (pos1 >= pos2)
+		this->currentUser = &this->condominio.getMoradores()[pos1 - 1];
+	return true;
 }
 
 // Resets menu option. Called every time we switch to a new menu.
@@ -125,47 +105,29 @@ bool Main::displayMenuOptions(int position) {
 	}
 	return EXIT_SUCCESS;
 }
-bool Main::displaySelectUtilizador() {
-	if (option >= utilizadores.size()) {
-		return EXIT_FAILURE;
-	}
-	for (size_t i = 0; i < utilizadores.size(); i++) {
-		gotoxy(0, 10 + i);
-		if (i == option) {
-			setcolor(BLACK, LIGHTGREY);
-			cout << "=>" << utilizadores[i].getNomeUtilizador();
-			setcolor(WHITE, BLACK);
-			if (utilizadores[i].isAdmin()) {
-				cout << "\t\t\t ADMIN" << endl;
-			} else
-				cout << endl;
-		} else {
-			cout << utilizadores[i].getNomeUtilizador();
-			if (utilizadores[i].isAdmin()) {
-				cout << "\t\t\t ADMIN" << endl;
-			} else
-				cout << endl;
-		}
-	}
-	return EXIT_SUCCESS;
-}
+
 bool Main::displaySelectCondomino() {
 	if (option >= this->condominio.getMoradores().size()) {
 		return EXIT_FAILURE;
 	}
 	for (size_t i = 0; i < this->condominio.getMoradores().size(); i++) {
-		gotoxy(0, 10 + i);
+		gotoxy(0, 11 + i);
 		if (i == option) {
 			setcolor(BLACK, LIGHTGREY);
-			cout << "=> " << left << setw(15) << setfill(' ')
-					<< this->condominio.getMoradores()[i].getNome();
-			cout << "\t " << this->condominio.getMoradores()[i].getNIF()
-					<< endl;
+			cout << left << setw(10) << setfill(' ')
+					<< this->condominio.getMoradores()[i].getNomeUtilizador()
+					<< " - " << left << setw(20) << setfill(' ')
+					<< this->condominio.getMoradores()[i].getNomeCivil() << left
+					<< setw(10) << setfill(' ') << " - "
+					<< this->condominio.getMoradores()[i].getNIF() << endl;
 			setcolor(WHITE, BLACK);
 		} else {
-			cout << this->condominio.getMoradores()[i].getNome();
-			cout << "\t " << this->condominio.getMoradores()[i].getNIF()
-					<< endl;
+			cout << left << setw(10) << setfill(' ')
+					<< this->condominio.getMoradores()[i].getNomeUtilizador()
+					<< " - " << left << setw(20) << setfill(' ')
+					<< this->condominio.getMoradores()[i].getNomeCivil() << left
+					<< setw(10) << setfill(' ') << " - "
+					<< this->condominio.getMoradores()[i].getNIF() << endl;
 		}
 	}
 	return EXIT_SUCCESS;
@@ -194,13 +156,18 @@ bool Main::displaySelectHabitacao() {
 }
 // Checks if the user exists and, if so, updates currentUser.
 bool Main::validLogin(string utilizador, string password) {
-	Utilizador u1 = Utilizador(utilizador, password);
-	int pos = sequentialSearch(this->utilizadores, u1);
+	Condomino c1 = Condomino(utilizador, password);
+	int pos = sequentialSearch(this->condominio.getMoradores(), c1);
 	if (pos == -1)
 		return false;
-	if (utilizadores[pos].getPassword() != password)
+	if (this->condominio.getMoradores()[pos].getPassword() != password)
 		return false;
-	this->currentUser = &utilizadores[pos];
+	this->currentUser = &(this->condominio.getMoradores()[pos]);
+	cout << "POS = " << pos << endl;
+	this->condominio.getMoradores()[pos].infoConta();
+	cout << "AQUI" << endl;
+	cout << "Nome- >" << (*currentUser).getNomeUtilizador() << endl;
+	pressEnterToContinue();
 	return true;
 }
 // Checks if username and password are within the rules
@@ -221,8 +188,8 @@ bool Main::validRegister(string utilizador, string password) {
 				<< endl;
 		return false;
 	}
-	Utilizador u1 = Utilizador(utilizador, password);
-	int pos = sequentialSearch(this->utilizadores, u1);
+	Condomino c1 = Condomino(utilizador, password);
+	int pos = sequentialSearch(this->condominio.getMoradores(), c1);
 	if (pos == -1)
 		return true;
 	else {
@@ -231,10 +198,10 @@ bool Main::validRegister(string utilizador, string password) {
 	}
 }
 
-bool Main::editDadosConta(int option) {
+bool Main::editDadosConta(int editOption) {
 	displayLogo();
 	gotoxy(0, 8);
-	if (option == 0) {
+	if (editOption == 0) {
 		cout << "Alterar nome de utilizador:\n" << endl;
 		string utilizadorActual = this->currentUser->getNomeUtilizador();
 		cout << "Nome actual: " << utilizadorActual << endl;
@@ -259,10 +226,11 @@ bool Main::editDadosConta(int option) {
 		if (validRegister(utilizadorNovo, this->currentUser->getPassword())) {
 			this->currentUser->setNomeUtilizador(utilizadorNovo);
 
-			insertionSort(this->utilizadores);
-			Utilizador u1 = Utilizador(utilizadorNovo);
-			int pos = sequentialSearch(this->utilizadores, u1);
-			this->currentUser = &utilizadores[pos];
+			Condomino c1 = Condomino(this->currentUser->getNomeUtilizador(),
+					this->currentUser->getPassword());
+			this->condominio.sortMoradores();
+			int pos = sequentialSearch(this->condominio.getMoradores(), c1);
+			this->currentUser = &this->condominio.getMoradores()[pos];
 
 			cout << "\nNome de utilizador alterado." << endl;
 			pressEnterToContinue();
@@ -270,7 +238,7 @@ bool Main::editDadosConta(int option) {
 		} else
 			pressEnterToContinue();
 		return false;
-	} else if (option == 1) {
+	} else if (editOption == 1) {
 		cout << "Alterar password:\n" << endl;
 		string passwordActual = this->currentUser->getPassword();
 		string password = "";
@@ -301,12 +269,12 @@ bool Main::editDadosConta(int option) {
 	return false;
 }
 
-bool Main::editDadosContaAdmin(int option, Utilizador* utilizador) {
+bool Main::editDadosContaAdmin(int editOption, Condomino &condomino) {
 	displayLogo();
 	gotoxy(0, 8);
-	if (option == 0) {
+	if (editOption == 0) {
 		cout << "Alterar nome de utilizador:\n" << endl;
-		string utilizadorActual = utilizador->getNomeUtilizador();
+		string utilizadorActual = condomino.getNomeUtilizador();
 		cout << "Nome actual: " << utilizadorActual << endl;
 		string utilizadorNovo = "";
 		cout << "Introduza o novo nome de utilizador: ";
@@ -317,13 +285,16 @@ bool Main::editDadosContaAdmin(int option, Utilizador* utilizador) {
 			pressEnterToContinue();
 			return false;
 		}
-		if (validRegister(utilizadorNovo, utilizador->getPassword())) {
-			utilizador->setNomeUtilizador(utilizadorNovo);
+		if (validRegister(utilizadorNovo, condomino.getPassword())) {
+			condomino.setNomeUtilizador(utilizadorNovo);
 
-			Utilizador u1 = Utilizador(this->currentUser->getNomeUtilizador());
-			insertionSort(this->utilizadores);
-			int pos = sequentialSearch(this->utilizadores, u1);
-			this->currentUser = &utilizadores[pos];
+			Condomino c1 = Condomino(this->currentUser->getNomeUtilizador(),
+					this->currentUser->getPassword());
+
+			this->condominio.sortMoradores();
+
+			int pos = sequentialSearch(this->condominio.getMoradores(), c1);
+			this->currentUser = &this->condominio.getMoradores()[pos];
 
 			cout << "\nNome de utilizador alterado." << endl;
 			pressEnterToContinue();
@@ -332,9 +303,9 @@ bool Main::editDadosContaAdmin(int option, Utilizador* utilizador) {
 		} else
 			pressEnterToContinue();
 		return false;
-	} else if (option == 1) {
+	} else if (editOption == 1) {
 		cout << "Alterar password:\n" << endl;
-		string passwordActual = utilizador->getPassword();
+		string passwordActual = condomino.getPassword();
 		string passwordNova = "";
 		cout << "Introduza a nova password: ";
 		getline(cin, passwordNova);
@@ -344,64 +315,101 @@ bool Main::editDadosContaAdmin(int option, Utilizador* utilizador) {
 			pressEnterToContinue();
 			return false;
 		}
-		if (validRegister(utilizador->getNomeUtilizador(), passwordNova)) {
-			utilizador->setPassword(passwordNova);
+		if (validRegister(condomino.getNomeUtilizador(), passwordNova)) {
+			condomino.setPassword(passwordNova);
 			cout << "\nPassword alterada." << endl;
 			pressEnterToContinue();
 			return true;
 		}
-	} else if (option == 2) {
+	} else if (editOption == 2) {
 		cout << "Alterar estado de administrador:\n" << endl;
 		string admin = "";
-		if (utilizador->isAdmin())
+		if (condomino.isAdmin())
 			admin = "ADMIN";
 		else
 			admin = "Conta normal";
 		cout << "Estado anterior = " << admin << endl;
-		if (utilizador == this->currentUser) {
+		if (condomino == *(this->currentUser)) {
 			cout << "\nNao foi possivel alterar o estado da conta." << endl;
 			cout
 					<< "Nao e possivel revogar direitos administrativos do proprio utilizador."
 					<< endl;
 			pressEnterToContinue();
 			return false;
-		} else if (utilizador->isAdmin()) {
-			utilizador->setAdmin(false);
-			cout << "\nO utilizador deixou de ser administrador." << endl;
-			pressEnterToContinue();
-			return true;
+		} else if (condomino.isAdmin()) {
+			cout
+					<< "Tem a certeza que pretende revogar os direitos administrativos do condomino?"
+					<< endl;
 		} else {
-			utilizador->setAdmin(true);
-			cout << "\nO utilizador passou a ser administrador." << endl;
-			pressEnterToContinue();
-			return true;
+			cout
+					<< "Tem a certeza que pretente tornar este condomino administrador?"
+					<< endl;
 		}
+		displayYesNo();
+
+		int c = getch();
+		switch (c) {
+		case KEY_LEFT:
+			if (option - 1 >= 0)
+				option--;
+			break;
+		case KEY_RIGHT:
+			if (option + 1 < 2)
+				option++;
+			break;
+		case KEY_ENTER:
+			if (option == 0) {
+				if (condomino.isAdmin()) {
+					condomino.setAdmin(false);
+					cout << "\nO condomino deixou de ser administrador."
+							<< endl;
+				} else {
+					condomino.setAdmin(true);
+					cout << "\nO condomino passou a ser administrador." << endl;
+				}
+				pressEnterToContinue();
+				resetOption();
+				return true;
+			} else if (option == 1) {
+				resetOption();
+				return false;
+			}
+			break;
+		case KEY_ESC:
+			resetOption();
+			return menuGerirCondominos();
+			break;
+		default:
+			break;
+		}
+		return editDadosContaAdmin(editOption, condomino);
 	}
 	return false;
 }
-bool Main::editDadosCondomino(int option, Condomino* condomino) {
+
+bool Main::editDadosCondomino(int editOption) {
 	displayLogo();
 	gotoxy(0, 8);
-	if (option == 0) {
-		cout << "Alterar nome:\n" << endl;
-		string nomeActual = getDadosCondomino(this->currentUser)->getNome();
-		cout << "Nome actual: " << nomeActual << endl;
+	if (editOption == 0) {
+		cout << "Alterar nome civil:\n" << endl;
+		string nomeActual = this->currentUser->getNomeCivil();
+		cout << "Nome civil actual: " << nomeActual << endl;
 		string nomeNovo = "";
-		cout << "Introduza o novo nome: ";
+		cout << "Introduza o novo nome civil: ";
 		getline(cin, nomeNovo);
 		if (!isName(nomeNovo)) {
-			cout << "\nNao foi possivel alterar o nome." << endl;
-			cout << "O nome que introduziu nao e valido." << endl;
+			cout << "\nNao foi possivel alterar o nome civil." << endl;
+			cout << "O nome civil que introduziu nao e valido." << endl;
 			pressEnterToContinue();
 			return false;
 		}
-		getDadosCondomino(currentUser)->setNome(nomeNovo);
-		cout << "\nNome alterado." << endl;
+		this->currentUser->setNomeCivil(nomeNovo);
+		cout << "\nNome civil alterado." << endl;
 		pressEnterToContinue();
 		return true;
-	} else if (option == 1) {
+	} else if (editOption == 1) {
 		cout << "Alterar NIF:\n" << endl;
-		string nifActual = getDadosCondomino(this->currentUser)->getNIF();
+		string nifActual = this->currentUser->getNIF();
 		cout << "NIF actual: " << nifActual << endl;
 
 		string nifNovo = "";
@@ -422,54 +430,187 @@ bool Main::editDadosCondomino(int option, Condomino* condomino) {
 			pressEnterToContinue();
 			return false;
 		}
-		getDadosCondomino(currentUser)->setNIF(nifNovo);
+		this->currentUser->setNIF(nifNovo);
 		cout << "\nNIF alterado." << endl;
 		pressEnterToContinue();
 		return true;
 
+	} else if (editOption == 2) {
+		cout << "Alterar fundos mensais:\n" << endl;
+		long int fundosActuais = this->currentUser->getFundosMensais();
+		cout << "Fundos mensais actuais: " << fundosActuais << endl;
+		string novosFundos = "";
+		cout << "Introduza os novos fundos mensais: ";
+		getline(cin, novosFundos);
+		if (novosFundos.size() > 9 || !isNumber(novosFundos)) {
+			cout << "\nNao foi possivel alterar os fundos mensais." << endl;
+			cout << "Os fundos mensais tem que ser um inteiro positivo."
+					<< endl;
+			pressEnterToContinue();
+			return false;
+		}
+		long int fundosMensais = atoi(novosFundos.c_str());
+		this->currentUser->setFundosMensais(fundosMensais);
+		cout << "\nFundos Mensais alterados." << endl;
+		pressEnterToContinue();
+		return true;
+	} else if (editOption == 3) {
+		if (this->currentUser->getDivida() == 0) {
+			cout << "\nNao foi possivel saldar a divida" << endl;
+			cout << "O condomino nao tem divida." << endl;
+			pressEnterToContinue();
+			return false;
+		}
+		cout << "Pretende saldar a divida?";
+		long int dividaActual = this->currentUser->getDivida();
+		cout << "Divida actual = " << dividaActual << endl;
+	}
+	return false;
+}
+bool Main::editDadosCondominoAdmin(int editOption, Condomino &condomino) {
+	displayLogo();
+	gotoxy(0, 8);
+	if (editOption == 0) {
+		cout << "Alterar nome civil:\n" << endl;
+		string nomeActual = condomino.getNomeCivil();
+		cout << "Nome civil actual: " << nomeActual << endl;
+		string nomeNovo = "";
+		cout << "Introduza o novo nome civil: ";
+		getline(cin, nomeNovo);
+		if (!isName(nomeNovo)) {
+			cout << "\nNao foi possivel alterar o nome civil." << endl;
+			cout << "O nome civil que introduziu nao e valido." << endl;
+			pressEnterToContinue();
+			return false;
+		}
+		condomino.setNomeCivil(nomeNovo);
+		cout << "\nNome civil alterado." << endl;
+		pressEnterToContinue();
+		return true;
+	} else if (editOption == 1) {
+		cout << "Alterar NIF:\n" << endl;
+		string nifActual = condomino.getNIF();
+		cout << "NIF actual: " << nifActual << endl;
+
+		string nifNovo = "";
+		cout << "Introduza o novo NIF: ";
+		getline(cin, nifNovo);
+		if (nifNovo.size() != 9 || !isNumber(nifNovo)) {
+			cout << "\nNao foi possivel alterar o NIF." << endl;
+			cout << "O NIF tem que ser um inteiro positivo de 9 digitos."
+					<< endl;
+			pressEnterToContinue();
+			return false;
+		}
+		Condomino c1 = Condomino("nome", nifNovo);
+		int pos1 = sequentialSearch(this->condominio.getMoradores(), c1);
+		if (pos1 != -1) {
+			cout << "\nNao foi possivel alterar o NIF." << endl;
+			cout << "O NIF ja pertence a outro condomino." << endl;
+			pressEnterToContinue();
+			return false;
+		}
+		condomino.setNIF(nifNovo);
+		cout << "\nNIF alterado." << endl;
+		pressEnterToContinue();
+		return true;
+
+	} else if (editOption == 2) {
+		cout << "Alterar fundos mensais:\n" << endl;
+		long int fundosActuais = condomino.getFundosMensais();
+		cout << "Fundos mensais actuais: " << fundosActuais << endl;
+		string novosFundos = "";
+		cout << "Introduza os novos fundos mensais: ";
+		getline(cin, novosFundos);
+		if (novosFundos.size() > 9 || !isNumber(novosFundos)) {
+			cout << "\nNao foi possivel alterar os fundos mensais." << endl;
+			cout << "Os fundos mensais tem que ser um inteiro positivo."
+					<< endl;
+			pressEnterToContinue();
+			return false;
+		}
+		long int fundosMensais = atoi(novosFundos.c_str());
+		condomino.setFundosMensais(fundosMensais);
+		cout << "\nFundos Mensais alterados." << endl;
+		pressEnterToContinue();
+		return true;
+	} else if (editOption == 3) {
+		if (condomino.getDivida() == 0) {
+			cout << "\nNao foi possivel saldar a divida" << endl;
+			cout << "O condomino nao tem divida." << endl;
+			pressEnterToContinue();
+			return false;
+		}
+		cout << "Pretende saldar a divida?";
+		long int dividaActual = condomino.getDivida();
+		cout << "Divida actual = " << dividaActual << endl;
+
+		displayYesNo();
+
+		int c = getch();
+		switch (c) {
+		case KEY_LEFT:
+			if (option - 1 >= 0)
+				option--;
+			break;
+		case KEY_RIGHT:
+			if (option + 1 < 2)
+				option++;
+			break;
+		case KEY_ENTER:
+			if (option == 0) {
+				this->condominio.saldarDivida(condomino);
+				cout << "\nDivida saldada." << endl;
+				resetOption();
+				pressEnterToContinue();
+				return true;
+			} else if (option == 1) {
+				resetOption();
+				return false;
+			}
+			break;
+		case KEY_ESC:
+			resetOption();
+			return false;
+			break;
+		default:
+			break;
+		}
+		return editDadosCondominoAdmin(editOption, condomino);
 	}
 	return false;
 }
 
-void Main::displayCurrentUserInfo() {
+void Main::displayCurrentUserInfoConta() {
 	displayLogo();
 	gotoxy(0, 8);
 	cout << "DADOS:\n" << endl;
-	getDadosCondomino(this->currentUser)->info();
+	this->currentUser->infoConta();
+	pressEnterToContinue();
+}
+void Main::displayCurrentUserInfoCondomino() {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "DADOS:\n" << endl;
+	(*this->currentUser).infoCondomino();
 	pressEnterToContinue();
 }
 void Main::displayCurrentUserHabitacoes() {
 	displayLogo();
 	gotoxy(0, 8);
 	cout << "HABITACOES:" << endl;
-	getDadosCondomino(this->currentUser)->infoHabitacoes();
+	this->currentUser->infoHabitacoes();
 	pressEnterToContinue();
 }
 void Main::displayCurrentUserRenda() {
 	displayLogo();
 	gotoxy(0, 8);
-	getDadosCondomino(this->currentUser)->infoRenda();
+	cout << "Mes actual -> " << mesesAno[this->condominio.getMes()] << endl;
+	this->currentUser->infoRenda();
 	cout << endl;
 	pressEnterToContinue();
 }
 
-void Main::displayAllUtilizadores() const {
-	displayLogo();
-	gotoxy(0, 8);
-	cout << "LISTA DE UTILIZADORES:" << endl;
-	cout << "Numero de utilizadores = " << this->utilizadores.size() << "\n"
-			<< endl;
-
-	for (size_t i = 0; i < this->utilizadores.size(); i++) {
-		cout << utilizadores[i].getNomeUtilizador();
-		if (utilizadores[i].isAdmin())
-			cout << "\t ADMIN" << endl;
-		else
-			cout << endl;
-	}
-	cout << endl;
-	pressEnterToContinue();
-}
 void Main::displayAllCondominos() const {
 	displayLogo();
 	gotoxy(0, 8);
@@ -480,7 +621,7 @@ void Main::displayAllCondominos() const {
 void Main::displayAllHabitacoes() {
 	displayLogo();
 	gotoxy(0, 8);
-	cout << "LISTA DE Habitacoes:" << endl;
+	cout << "LISTA DE HABITACOES:" << endl;
 	this->condominio.infoHabitacoes();
 	pressEnterToContinue();
 }
@@ -565,13 +706,12 @@ int Main::menuRegisto() {
 	getline(cin, password);
 
 	if (validRegister(utilizador, password)) {
-		Utilizador u1 = Utilizador(utilizador, password);
-		this->addUtilizador(u1);
+		Condomino c1 = Condomino(utilizador, password);
+		this->condominio.addMorador(c1);
 		cout << "\nConta criada com sucesso!" << endl;
 	} else {
 		cout << "Nao foi possivel criar uma conta." << endl;
 	}
-	insertionSort(utilizadores);
 	pressEnterToContinue();
 	resetOption();
 	return EXIT_SUCCESS;
@@ -616,12 +756,12 @@ int Main::menuUtilizador() {
 				return menuAdministrador();
 			} else if (option == 1) {
 				resetOption();
-				return menuEditDadosConta(this->currentUser);
+				return menuEditDadosConta(*(this->currentUser));
 			} else if (option == 2) {
-				displayCurrentUserInfo();
+				displayCurrentUserInfoCondomino();
 			} else if (option == 3) {
 				resetOption();
-				return menuEditDadosCondomino(getDadosCondomino(currentUser));
+				return menuEditDadosCondomino(*(this->currentUser));
 			} else if (option == 4) {
 				resetOption();
 				return menuHabitacoesPossuidas();
@@ -632,12 +772,12 @@ int Main::menuUtilizador() {
 		else if (menuOption == 2) {
 			if (option == 0) {
 				resetOption();
-				return menuEditDadosConta(this->currentUser);
+				return menuEditDadosConta(*(this->currentUser));
 			} else if (option == 1) {
-				displayCurrentUserInfo();
+				displayCurrentUserInfoCondomino();
 			} else if (option == 2) {
 				resetOption();
-				return menuEditDadosCondomino(getDadosCondomino(currentUser));
+				return menuEditDadosCondomino(*(this->currentUser));
 			} else if (option == 3) {
 				resetOption();
 				return menuHabitacoesPossuidas();
@@ -653,7 +793,7 @@ int Main::menuUtilizador() {
 
 	return menuUtilizador();
 }
-int Main::menuEditDadosConta(Utilizador* utilizador) {
+int Main::menuEditDadosConta(Condomino &condomino) {
 	displayLogo();
 
 	gotoxy(10, 6);
@@ -687,9 +827,10 @@ int Main::menuEditDadosConta(Utilizador* utilizador) {
 			editDadosConta(1);
 			resetOption();
 			return menuUtilizador();
-		} else if (option == 2)
+		} else if (option == 2) {
 			resetOption();
-		return menuUtilizador();
+			return menuUtilizador();
+		}
 		break;
 	case KEY_ESC:
 		resetOption();
@@ -698,9 +839,9 @@ int Main::menuEditDadosConta(Utilizador* utilizador) {
 	default:
 		break;
 	}
-	return menuEditDadosConta(utilizador);
+	return menuEditDadosConta(condomino);
 }
-int Main::menuEditDadosCondomino(Condomino* condomino) {
+int Main::menuEditDadosCondomino(Condomino &condomino) {
 	displayLogo();
 
 	gotoxy(10, 6);
@@ -727,16 +868,25 @@ int Main::menuEditDadosCondomino(Condomino* condomino) {
 		break;
 	case KEY_ENTER:
 		if (option == 0) {
-			editDadosCondomino(0, condomino);
 			resetOption();
+			editDadosCondomino(0);
 			return menuUtilizador();
 		} else if (option == 1) {
-			editDadosCondomino(1, condomino);
+			resetOption();
+			editDadosCondomino(1);
+			return menuUtilizador();
+		} else if (option == 2) {
+			resetOption();
+			editDadosCondomino(2);
+			return menuUtilizador();
+		} else if (option == 3) {
+			resetOption();
+			editDadosCondomino(3);
+			return menuUtilizador();
+		} else {
 			resetOption();
 			return menuUtilizador();
-		} else if (option == 2)
-			resetOption();
-		return menuUtilizador();
+		}
 		break;
 	case KEY_ESC:
 		resetOption();
@@ -822,11 +972,8 @@ int Main::menuAdministrador() {
 	case KEY_ENTER:
 		if (option == 0) {
 			resetOption();
-			return menuGerirUtilizadores();
-		} else if (option == 1) {
-			resetOption();
 			return menuGerirCondominos();
-		} else if (option == 2) {
+		} else if (option == 1) {
 			resetOption();
 			return menuGerirHabitacoes();
 		} else {
@@ -845,7 +992,7 @@ int Main::menuAdministrador() {
 	return menuAdministrador();
 }
 
-int Main::menuGerirUtilizadores() {
+int Main::menuSelectCondomino(bool editar) {
 	displayLogo();
 
 	gotoxy(10, 6);
@@ -855,7 +1002,170 @@ int Main::menuGerirUtilizadores() {
 	setcolor(WHITE, BLACK);
 
 	gotoxy(30, 8);
-	cout << "GERIR UTILIZADORES" << endl;
+	cout << "SELECIONE O UTILIZADOR:" << endl;
+	cout << "[ESC] Voltar atras" << endl;
+	cout << "Utilizador - Nome Civil - NIF" << endl;
+	displaySelectCondomino();
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < this->condominio.getMoradores().size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (editar) {
+			int pos = option;
+			resetOption();
+			return menuEditCondomino(this->condominio.getMoradores()[pos]);
+		} else {
+			int pos = option;
+			resetOption();
+			return menuDeleteCondomino(this->condominio.getMoradores()[pos]);
+		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuGerirCondominos();
+		break;
+	default:
+		break;
+	}
+
+	return menuSelectCondomino(editar);
+
+}
+int Main::menuEditCondomino(Condomino &condomino) {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Condomino a alterar -> ";
+	setcolor(YELLOW, BLACK);
+	cout << condomino.getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "ALTERAR DADOS\n" << endl;
+	displayMenuOptions(12);
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[12].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) {
+			resetOption();
+			editDadosContaAdmin(0, condomino);
+		} else if (option == 1) {
+			resetOption();
+			editDadosContaAdmin(1, condomino);
+		} else if (option == 2) {
+			resetOption();
+			editDadosContaAdmin(2, condomino);
+		} else if (option == 3) {
+			resetOption();
+			editDadosCondominoAdmin(0, condomino);
+		} else if (option == 4) {
+			resetOption();
+			editDadosCondominoAdmin(1, condomino);
+		} else if (option == 5) {
+			resetOption();
+			editDadosCondominoAdmin(2, condomino);
+		} else if (option == 6) {
+			resetOption();
+			editDadosCondominoAdmin(3, condomino);
+		} else {
+			resetOption();
+			return menuGerirCondominos();
+		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuGerirCondominos();
+		break;
+	default:
+		break;
+	}
+	return menuEditCondomino(condomino);
+}
+
+int Main::menuDeleteCondomino(Condomino &condomino) {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "DADOS DO CONDOMINO A REMOVER:\n" << endl;
+	cout << "Nome de utilizador - " << condomino.getNomeUtilizador() << endl;
+	cout << "\nDados do condomino:" << endl;
+	this->currentUser->infoCondomino();
+
+	bool sameUser = false;
+	if (*(this->currentUser) == condomino)
+		sameUser = true;
+	if (sameUser)
+		cout << "Tem a certeza que pretende remover a sua conta?" << endl;
+	else
+		cout << "Tem a certeza que pretende remover este condomino?" << endl;
+	displayYesNo();
+
+	int c = getch();
+	switch (c) {
+	case KEY_LEFT:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_RIGHT:
+		if (option + 1 < 2)
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) {
+			if (this->condominio.eraseMorador(condomino))
+				cout << "\nUtilizador removido." << endl;
+			pressEnterToContinue();
+			resetOption();
+			if (sameUser)
+				return menuInicial();
+			else
+				return menuGerirCondominos();
+		} else if (option == 1) {
+			resetOption();
+			return menuGerirCondominos();
+		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuGerirCondominos();
+		break;
+	default:
+		break;
+	}
+	return menuDeleteCondomino(condomino);
+}
+
+int Main::menuGerirCondominos() {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "GERIR CONDOMINOS" << endl;
 	displayMenuOptions(8);
 
 	displayTime();
@@ -871,236 +1181,21 @@ int Main::menuGerirUtilizadores() {
 			option++;
 		break;
 	case KEY_ENTER:
-		if (option == 0) //Ver lista de utilizadores
-			displayAllUtilizadores();
-		else if (option == 1) { //Alterar dados de um utilizador
-			resetOption();
-			return menuSelectUtilizador(true);
-		} else if (option == 2) { //Adicionar utilizador
-			resetOption();
-			Utilizador u1 = *currentUser;
-			menuRegisto();
-			int pos = sequentialSearch(this->utilizadores, u1);
-			this->currentUser = &utilizadores[pos];
-			return menuGerirUtilizadores();
-		} else if (option == 3) { //Remover utilizador
-			resetOption();
-			return menuSelectUtilizador(false);
-		} else {
-			resetOption();
-			return menuAdministrador();
-		}
-		break;
-	case KEY_ESC:
-		resetOption();
-		return menuAdministrador();
-		break;
-	default:
-		break;
-	}
-
-	return menuGerirUtilizadores();
-}
-int Main::menuSelectUtilizador(bool editar) {
-	displayLogo();
-
-	gotoxy(10, 6);
-	cout << "Bem-vindo, ";
-	setcolor(YELLOW, BLACK);
-	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
-	setcolor(WHITE, BLACK);
-
-	gotoxy(30, 8);
-	cout << "SELECIONE O UTILIZADOR:" << endl;
-	cout << "[ESC] Voltar atras" << endl;
-	displaySelectUtilizador();
-
-	displayTime();
-
-	int c = getch();
-	switch (c) {
-	case KEY_UP:
-		if (option - 1 >= 0)
-			option--;
-		break;
-	case KEY_DOWN:
-		if (option + 1 < utilizadores.size())
-			option++;
-		break;
-	case KEY_ENTER:
-		if (editar) {
-			int pos = option;
-			resetOption();
-			return menuEditUtilizador(&utilizadores[pos]);
-		} else {
-			int pos = option;
-			resetOption();
-			return menuDeleteUtilizador(&utilizadores[pos]);
-		}
-		break;
-	case KEY_ESC:
-		resetOption();
-		return menuGerirUtilizadores();
-		break;
-	default:
-		break;
-	}
-
-	return menuSelectUtilizador(editar);
-
-}
-int Main::menuEditUtilizador(Utilizador* utilizador) {
-	displayLogo();
-
-	gotoxy(10, 6);
-	cout << "Bem-vindo, ";
-	setcolor(YELLOW, BLACK);
-	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
-	setcolor(WHITE, BLACK);
-
-	gotoxy(30, 8);
-	cout << "ALTERAR DADOS\n" << endl;
-	displayMenuOptions(13);
-
-	displayTime();
-
-	int c = getch();
-	switch (c) {
-	case KEY_UP:
-		if (option - 1 >= 0)
-			option--;
-		break;
-	case KEY_DOWN:
-		if (option + 1 < menu[13].size())
-			option++;
-		break;
-	case KEY_ENTER:
-		if (option == 0) {
-			editDadosContaAdmin(0, utilizador);
-			resetOption();
-			return menuGerirUtilizadores();
-		} else if (option == 1) {
-			editDadosContaAdmin(1, utilizador);
-			resetOption();
-			return menuGerirUtilizadores();
-		} else if (option == 2) {
-			editDadosContaAdmin(2, utilizador);
-			resetOption();
-			return menuGerirUtilizadores();
-		} else {
-			resetOption();
-			return menuGerirUtilizadores();
-		}
-		break;
-	case KEY_ESC:
-		resetOption();
-		return menuGerirUtilizadores();
-		break;
-	default:
-		break;
-	}
-
-	return menuEditUtilizador(utilizador);
-}
-
-int Main::menuDeleteUtilizador(Utilizador* utilizador) {
-	displayLogo();
-	gotoxy(0, 8);
-	cout << "DADOS DO UTILIZADOR A REMOVER:\n" << endl;
-	cout << "Nome de utilizador - " << utilizador->getNomeUtilizador() << endl;
-	if (utilizador->hasDados()) {
-		cout << "\nDados do condomino:" << endl;
-		getDadosCondomino(this->currentUser)->info();
-	}
-	bool sameUser = false;
-	if (this->currentUser == utilizador)
-		sameUser = true;
-	if (sameUser)
-		cout << "Tem a certeza que pretende remover a sua conta?" << endl;
-	else if (utilizador->hasDados())
-		cout
-				<< "Tem a certeza que pretende remover este utilizador e o condomino associado?"
-				<< endl;
-	else
-		cout << "Tem a certeza que pretende remover este utilizador?" << endl;
-	displayYesNo();
-
-	int c = getch();
-	switch (c) {
-	case KEY_LEFT:
-		if (option - 1 >= 0)
-			option--;
-		break;
-	case KEY_RIGHT:
-		if (option + 1 < 2)
-			option++;
-		break;
-	case KEY_ENTER:
-		if (option == 0) {
-			if (eraseUtilizador(utilizador->getNomeUtilizador()))
-				cout << "\nUtilizador removido." << endl;
-			pressEnterToContinue();
-			resetOption();
-			if (sameUser)
-				return menuInicial();
-			else
-				return menuGerirUtilizadores();
-		} else if (option == 1) {
-			resetOption();
-			return menuGerirUtilizadores();
-		}
-		break;
-	case KEY_ESC:
-		resetOption();
-		return menuGerirUtilizadores();
-		break;
-	default:
-		break;
-	}
-	return menuDeleteUtilizador(utilizador);
-}
-
-int Main::menuGerirCondominos() {
-	displayLogo();
-
-	gotoxy(10, 6);
-	cout << "Bem-vindo, ";
-	setcolor(YELLOW, BLACK);
-	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
-	setcolor(WHITE, BLACK);
-
-	gotoxy(30, 8);
-	cout << "GERIR CONDOMINOS" << endl;
-	displayMenuOptions(9);
-
-	displayTime();
-
-	int c = getch();
-	switch (c) {
-	case KEY_UP:
-		if (option - 1 >= 0)
-			option--;
-		break;
-	case KEY_DOWN:
-		if (option + 1 < menu[9].size())
-			option++;
-		break;
-	case KEY_ENTER:
 		if (option == 0) //Ver lista de condominos
-			displayAllUtilizadores();
+			displayAllCondominos();
 		else if (option == 1) { //Alterar dados de um condomino
 			resetOption();
-			return menuSelectUtilizador(true);
-		} else if (option == 2) { //Adicionar cond
+			return menuSelectCondomino(true);
+		} else if (option == 2) { //Adicionar condomino
 			resetOption();
-			Utilizador u1 = *currentUser;
+			Condomino c1 = *currentUser;
 			menuRegisto();
-			int pos = sequentialSearch(this->utilizadores, u1);
-			this->currentUser = &utilizadores[pos];
-			return menuGerirUtilizadores();
+			int pos = sequentialSearch(this->condominio.getMoradores(), c1);
+			this->currentUser = &this->condominio.getMoradores()[pos];
+			return menuGerirCondominos();
 		} else if (option == 3) { //Remover condomino
 			resetOption();
-			return menuSelectUtilizador(false);
+			return menuSelectCondomino(false);
 		} else {
 			resetOption();
 			return menuAdministrador();
@@ -1113,8 +1208,7 @@ int Main::menuGerirCondominos() {
 	default:
 		break;
 	}
-
-	return menuGerirUtilizadores();
+	return menuGerirCondominos();
 }
 int Main::menuGerirHabitacoes() {
 	return EXIT_FAILURE;
@@ -1126,32 +1220,78 @@ int Main::menuGerirServicos() {
 	return EXIT_FAILURE;
 } //TODO menuGerirServicos()
 
-// Extracts data from condominos.txt to create a vector of owners.
-bool Main::importCondominos() {
-	ifstream myfile(pathCondominos);
+// Extracts data from condominio.txt to create condominio
+bool Main::importCondominio() {
+	ifstream myfile(pathCondominio);
 	string line = "";
-	string nomeUtilizador = "";
-	string nome = "";
-	string NIF = "";
-	int fundosMensais = 0;
-	int divida = 0;
+	long int fundos = 0;
+	int currentMes = 0;
 
 	if (myfile.is_open()) {
 		while (getline(myfile, line)) {
-			nomeUtilizador = line;
-			getline(myfile, nome);
+			fundos = atol(line.c_str());
+			getline(myfile, line);
+			currentMes = atoi(line.c_str());
+			this->condominio.setFundos(fundos);
+			this->condominio.setCurrentMes(currentMes);
+		}
+		myfile.close();
+		return true;
+	} else {
+		displayLogo();
+		cout
+				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro do condominio.\n";
+		pressEnterToContinue();
+		return false;
+	}
+}
+bool Main::exportCondominio() {
+	ofstream myfile(pathCondominio);
+
+	if (myfile.is_open()) {
+		myfile << this->condominio.getFundos() << endl;
+		myfile << this->condominio.getMes() << endl;
+		myfile.close();
+		return true;
+	} else {
+		displayLogo();
+		cout
+				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro do condominio.\n";
+		pressEnterToContinue();
+		return false;
+	}
+}
+
+// Extracts data from condominos.txt to create a vector of condominos
+bool Main::importCondominos() {
+	ifstream myfile(pathCondominos);
+	string line = "";
+	bool admin = false;
+	string nomeUtilizador = "";
+	string password = "";
+	string nomeCivil = "";
+	string NIF = "";
+	long int fundosMensais = 0;
+	long int divida = 0;
+
+	if (myfile.is_open()) {
+		while (getline(myfile, line)) {
+			if (line == "1") {
+				admin = true;
+			} else if (line == "0") {
+				admin = false;
+			}
+			getline(myfile, nomeUtilizador);
+			getline(myfile, password);
+			getline(myfile, nomeCivil);
 			getline(myfile, NIF);
 			getline(myfile, line);
-			fundosMensais = atoi(line.c_str());
+			fundosMensais = atol(line.c_str());
 			getline(myfile, line);
-			divida = atoi(line.c_str());
-			Utilizador u1 = Utilizador(nomeUtilizador);
-			int pos = sequentialSearch(this->utilizadores, u1);
-			if (pos != -1) {
-				Condomino c1 = Condomino(nome, NIF, fundosMensais, divida);
-				this->condominio.addMorador(c1);
-				utilizadores[pos].setNIFCondomino(NIF);
-			}
+			divida = atol(line.c_str());
+			Condomino c1 = Condomino(nomeUtilizador, password, admin, nomeCivil,
+					NIF, fundosMensais, divida);
+			this->condominio.addMorador(c1);
 			getline(myfile, line);
 		}
 		myfile.close();
@@ -1169,21 +1309,20 @@ bool Main::exportCondominos() {
 	ofstream myfile(pathCondominos, ios::trunc);
 
 	if (myfile.is_open()) {
-		for (size_t i = 0; i < this->utilizadores.size(); i++) {
-			if (this->utilizadores[i].hasDados()) {
-
-				myfile << this->utilizadores[i].getNomeUtilizador() << endl;
-				myfile << getDadosCondomino(&this->utilizadores[i])->getNome()
-						<< endl;
-				myfile << getDadosCondomino(&this->utilizadores[i])->getNIF()
-						<< endl;
-				myfile
-						<< getDadosCondomino(&this->utilizadores[i])->getFundosMensais()
-						<< endl;
-				myfile << getDadosCondomino(&this->utilizadores[i])->getDivida()
-						<< endl;
-				myfile << endl;
-			}
+		for (size_t i = 0; i < this->condominio.getMoradores().size(); i++) {
+			if (this->condominio.getMoradores()[i].isAdmin())
+				myfile << "1" << endl;
+			else
+				myfile << "0" << endl;
+			myfile << this->condominio.getMoradores()[i].getNomeUtilizador()
+					<< endl;
+			myfile << this->condominio.getMoradores()[i].getPassword() << endl;
+			myfile << this->condominio.getMoradores()[i].getNomeCivil() << endl;
+			myfile << this->condominio.getMoradores()[i].getNIF() << endl;
+			myfile << this->condominio.getMoradores()[i].getFundosMensais()
+					<< endl;
+			myfile << this->condominio.getMoradores()[i].getDivida() << endl;
+			myfile << endl;
 		}
 		myfile.close();
 		return true;
@@ -1196,6 +1335,7 @@ bool Main::exportCondominos() {
 	}
 }
 
+// Extracts data from habitacoes.txt to create vector of habitacoes
 bool Main::importHabitacoes() {
 	ifstream myfile(pathHabitacoes);
 	string line = "";
@@ -1316,68 +1456,8 @@ bool Main::exportHabitacoes() {
 	}
 }
 
-// Extracts data from utilizadores.txt to create a vector of users.
-bool Main::importUtilizadores() {
-	ifstream myfile(pathUtilizadores);
-	string line = "";
-	string nomeUtilizador = "";
-	string password = "";
-	bool admin = false;
-
-	vector<Utilizador> utilizadores;
-
-	if (myfile.is_open()) {
-		while (getline(myfile, line)) {
-			if (line == "1") {
-				admin = true;
-			} else if (line == "0") {
-				admin = false;
-			}
-			getline(myfile, nomeUtilizador);
-			getline(myfile, password);
-			getline(myfile, line);
-			Utilizador u = Utilizador(nomeUtilizador, password, admin);
-			utilizadores.push_back(u);
-		}
-		myfile.close();
-		insertionSort(utilizadores);
-		this->setUtilizadores(utilizadores);
-		return true;
-	} else {
-		displayLogo();
-		cout
-				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro de utilizadores.\n";
-		pressEnterToContinue();
-		return false;
-	}
-}
-bool Main::exportUtilizadores() {
-	ofstream myfile(pathUtilizadores, ios::trunc);
-
-	insertionSort(this->utilizadores);
-	if (myfile.is_open()) {
-		for (size_t i = 0; i < this->utilizadores.size(); i++) {
-			if (this->utilizadores[i].isAdmin())
-				myfile << "1" << endl;
-			else
-				myfile << "0" << endl;
-			myfile << this->utilizadores[i].getNomeUtilizador() << endl;
-			myfile << this->utilizadores[i].getPassword() << endl;
-			myfile << endl;
-		}
-		myfile.close();
-		return true;
-	} else {
-		displayLogo();
-		cout
-				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro de utilizadores.\n";
-		pressEnterToContinue();
-		return false;
-	}
-}
-
 int Main::exitFunction() {
-	if (!this->exportUtilizadores() || !this->exportCondominos()
+	if (!this->exportCondominio() || !this->exportCondominos()
 			|| !this->exportHabitacoes())
 		return EXIT_FAILURE;
 	else
@@ -1499,9 +1579,9 @@ void createMenuOptions() {
 	vector<string> menuInicial;
 	menuOptions.push_back(menuInicial);
 
-	menuOptions[0].push_back("Login");										//0
+	menuOptions[0].push_back("Login");									//0
 	menuOptions[0].push_back("Registo");									//1
-	menuOptions[0].push_back("Sair");										//2
+	menuOptions[0].push_back("Sair");									//2
 
 	vector<string> menuUtilizadorAdmin;
 	menuOptions.push_back(menuUtilizadorAdmin);
@@ -1513,7 +1593,7 @@ void createMenuOptions() {
 	menuOptions[1].push_back("Ver habitacoes possuidas");					//4
 	menuOptions[1].push_back("Adicionar ou remover habitacao");				//5
 	menuOptions[1].push_back("Requisitar um servico");						//6
-	menuOptions[1].push_back("Sair");										//7
+	menuOptions[1].push_back("Sair");									//7
 
 	vector<string> menuUtilizadorNormal;
 	menuOptions.push_back(menuUtilizadorNormal);
@@ -1524,7 +1604,7 @@ void createMenuOptions() {
 	menuOptions[2].push_back("Ver habitacoes possuidas");					//3
 	menuOptions[2].push_back("Adicionar ou remover habitacao");				//4
 	menuOptions[2].push_back("Requisitar um servico");						//5
-	menuOptions[2].push_back("Sair");										//6
+	menuOptions[2].push_back("Sair");									//6
 
 	vector<string> menuDadosConta;
 	menuOptions.push_back(menuDadosConta);
@@ -1536,7 +1616,7 @@ void createMenuOptions() {
 	vector<string> menuDadosCondomino;
 	menuOptions.push_back(menuDadosCondomino);
 
-	menuOptions[4].push_back("Alterar nome");								//0
+	menuOptions[4].push_back("Alterar nome civil");							//0
 	menuOptions[4].push_back("Alterar NIF");								//1
 	menuOptions[4].push_back("Alterar fundos mensais");						//2
 	menuOptions[4].push_back("Saldar divida");								//3
@@ -1560,56 +1640,52 @@ void createMenuOptions() {
 	vector<string> menuAdmin;
 	menuOptions.push_back(menuAdmin);
 
-	menuOptions[7].push_back("Gerir utilizadores");							//0
-	menuOptions[7].push_back("Gerir condominos");							//1
-	menuOptions[7].push_back("Gerir habitacoes");							//2
-	menuOptions[7].push_back("Gerir funcionarios");							//3
-	menuOptions[7].push_back("Gerir servicos");								//4
-	menuOptions[7].push_back("Fim do Mes");									//5
-	menuOptions[7].push_back("Voltar atras");								//6
-
-	vector<string> menuGerirUtilizadores;
-	menuOptions.push_back(menuGerirUtilizadores);
-	menuOptions[8].push_back("Ver lista de todos os utilizadores");			//0
-	menuOptions[8].push_back("Alterar utilizador");							//1
-	menuOptions[8].push_back("Adicionar utilizador");						//2
-	menuOptions[8].push_back("Remover utilizador");							//3
-	menuOptions[8].push_back("Voltar atras");								//4
+	menuOptions[7].push_back("Gerir condominos");							//0
+	menuOptions[7].push_back("Gerir habitacoes");							//1
+	menuOptions[7].push_back("Gerir funcionarios");							//2
+	menuOptions[7].push_back("Gerir servicos");								//3
+	menuOptions[7].push_back("Fim do Mes");									//4
+	menuOptions[7].push_back("Voltar atras");								//5
 
 	vector<string> menuGerirCondominos;
 	menuOptions.push_back(menuGerirCondominos);
-	menuOptions[9].push_back("Ver lista de todos os condominos");			//0
-	menuOptions[9].push_back("Alterar condomino");							//1
-	menuOptions[9].push_back("Remover condomino");							//2
-	menuOptions[9].push_back("Voltar atras");								//3
+	menuOptions[8].push_back("Ver lista de todos os condominos");			//0
+	menuOptions[8].push_back("Alterar condomino");							//1
+	menuOptions[8].push_back("Adicionar condomino");						//2
+	menuOptions[8].push_back("Remover condomino");							//2
+	menuOptions[8].push_back("Voltar atras");								//3
 
 	vector<string> menuGerirHabitacoes;
 	menuOptions.push_back(menuGerirHabitacoes);
-	menuOptions[10].push_back("Ver lista de todas as habitacoes");			//0
-	menuOptions[10].push_back("Alterar habitacao");							//1
-	menuOptions[10].push_back("Adicionar habitacao");						//2
-	menuOptions[10].push_back("Remover habitacao");							//3
-	menuOptions[10].push_back("Voltar atras");								//4
+	menuOptions[9].push_back("Ver lista de todas as habitacoes");			//0
+	menuOptions[9].push_back("Alterar habitacao");							//1
+	menuOptions[9].push_back("Adicionar habitacao");						//2
+	menuOptions[9].push_back("Remover habitacao");							//3
+	menuOptions[9].push_back("Voltar atras");								//4
 
 	vector<string> menuGerirFuncionarios;	//TODO acabar menuGerirFuncionarios
 	menuOptions.push_back(menuGerirHabitacoes);
-	menuOptions[11].push_back("Ver lista de todos os funcionarios");		//0
-	menuOptions[11].push_back("Voltar atras");
+	menuOptions[10].push_back("Ver lista de todos os funcionarios");		//0
+	menuOptions[10].push_back("Voltar atras");
 
 	vector<string> menuGerirServicos;
 	menuOptions.push_back(menuGerirHabitacoes);	//TODO acabar menuGerirServicos
-	menuOptions[12].push_back("Ver lista de todos os servicos efectuados");	//0
-	menuOptions[12].push_back("Ver lista de todos os servicos em curso");	//1
-	menuOptions[12].push_back("Ver lista de todos os servicos em espera");	//2
-	menuOptions[12].push_back("Voltar atras");
+	menuOptions[11].push_back("Ver lista de todos os servicos efectuados");	//0
+	menuOptions[11].push_back("Ver lista de todos os servicos em curso");	//1
+	menuOptions[11].push_back("Ver lista de todos os servicos em espera");	//2
+	menuOptions[11].push_back("Voltar atras");
 
-	vector<string> menuDadosContaUtilizador;
-	menuOptions.push_back(menuDadosContaUtilizador);
+	vector<string> menuDadosContaCondomino;
+	menuOptions.push_back(menuDadosContaCondomino);
 
-	menuOptions[13].push_back("Alterar nome de utilizador");				//0
-	menuOptions[13].push_back("Alterar password");							//1
-	menuOptions[13].push_back("Alterar estado da conta");					//2
-	menuOptions[13].push_back("Voltar atras");								//3
+	menuOptions[12].push_back("Alterar nome de utilizador");				//0
+	menuOptions[12].push_back("Alterar password");							//1
+	menuOptions[12].push_back("Alterar estado da conta");					//2
+	menuOptions[12].push_back("Alterar nome civil");						//3
+	menuOptions[12].push_back("Alterar NIF");								//4
+	menuOptions[12].push_back("Alterar fundos mensais");					//5
+	menuOptions[12].push_back("Saldar divida");								//6
+	menuOptions[12].push_back("Voltar atras");								//7
 
 //
 //
@@ -1625,14 +1701,13 @@ int main() {
 	createMenuOptions();
 	main.setMenus(menu);
 
-	main.importUtilizadores();
+	main.importCondominio();
 	main.importCondominos();
 	main.importHabitacoes();
 
 	main.menuInicial();
-	//main.displayAllUtilizadores();
 	//main.displayAllCondominos();
 	//main.displayAllHabitacoes();
-	return 0;	//main.exitFunction();
+	return main.exitFunction();
 }
 

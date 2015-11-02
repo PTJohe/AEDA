@@ -1,17 +1,39 @@
+1
+admin
 admin
 Administrador
 123456789
 500
 0
 
+0
+cliente
 cliente
 Cliente
 987654321
 200
 -100
 
+1
+joao
 joao
 Joao Araujo
 263788210
 300
 -200
+
+0
+maria
+maria
+NAO DEFINIDO
+NAO DEFINIDO
+0
+0
+
+0
+manel
+manel
+NAO DEFINIDO
+NAO DEFINIDO
+0
+0

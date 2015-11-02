@@ -9,7 +9,7 @@ class Condomino;
 
 class Condominio {
 private:
-	float fundos;
+	long int fundos;
 	vector<Condomino> moradores;
 	vector<Habitacao*> habitacoes;
 	vector<Funcionario> funcionarios;
@@ -20,14 +20,20 @@ private:
 
 public:
 	Condominio();
+	long int getFundos() const;
 	int getMes() const;
 	vector<Condomino> getMoradores();
 	vector<Habitacao*> getHabitacoes();
+	void setFundos(long int fundos);
+	void setCurrentMes(int currentMes);
 	void setMoradores(vector<Condomino> moradores);
 	void setHabitacoes(vector<Habitacao*> habitacoes);
 
+	void sortMoradores();
 	int addMorador(Condomino condomino);
-	bool eraseMorador(string nifMorador);
+	int eraseMorador(Condomino condomino);
+
+	bool saldarDivida(Condomino condomino);
 
 	int addHabitacao(Habitacao* h1);
 
