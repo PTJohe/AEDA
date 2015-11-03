@@ -19,7 +19,8 @@ public:
 	Condomino(string nomeUtilizador, string password, string nomeCivil,
 			string NIF);
 	Condomino(string nomeUtilizador, string password, bool admin,
-			string nomeCivil, string NIF, long int fundosMensais, long int divida);
+			string nomeCivil, string NIF, long int fundosMensais,
+			long int divida);
 
 	string getNomeUtilizador() const;
 	string getPassword() const;
@@ -31,8 +32,9 @@ public:
 	int getDivida() const;
 	vector<Habitacao *> getHabitacoes();
 
+	void sortHabitacoes();
 	bool addHabitacao(Habitacao* h1);
-	bool eraseHabitacao(Habitacao* h1);
+	bool eraseHabitacao(int pos);
 
 	void setNomeUtilizador(string novoNomeUtilizador);
 	void setPassword(string novaPassword);
@@ -42,7 +44,6 @@ public:
 	void setFundosMensais(long int novosFundos);
 	void setDivida(long int novaDivida);
 	void setHabitacoes(vector<Habitacao*> propriedades);
-
 
 	bool validPassword(string password);
 	bool hasDados() const;
@@ -58,5 +59,7 @@ public:
 	void infoHabitacoes() const;
 	void infoRenda() const;
 };
+
+bool compHabitacao(Habitacao* h1, Habitacao* h2);
 
 #endif

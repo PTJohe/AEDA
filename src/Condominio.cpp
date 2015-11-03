@@ -59,6 +59,48 @@ int Condominio::eraseMorador(Condomino condomino) {
 		return -1;
 }
 
+int Condominio::findHabitacao(vector<Habitacao*> habitacoes,
+		Habitacao* habitacao) {
+	int pos = -1;
+	if (habitacao->getTipo() == "Vivenda") {
+		for (size_t i = 0; i < habitacoes.size(); i++) {
+			if (habitacao->getNIFProprietario()
+					== habitacoes[i]->getNIFProprietario())
+				if (habitacao->getMorada() == habitacoes[i]->getMorada()) {
+					pos = i;
+					return pos;
+				}
+		}
+	} else if (habitacao->getTipo() == "Apartamento") {
+		for (size_t i = 0; i < habitacoes.size(); i++) {
+			if (habitacao->getNIFProprietario()
+					== habitacoes[i]->getNIFProprietario())
+				if (habitacao->getMorada() == habitacoes[i]->getMorada())
+					if (habitacao->getPiso() == habitacoes[i]->getPiso()) {
+						pos = i;
+						return pos;
+					}
+		}
+	}
+	return pos;
+}
+bool Condominio::eraseHabitacao(Condomino condomino, int pos) {
+	int pos1 = sequentialSearch(this->moradores, condomino);
+	if (pos == -1)
+		return false;
+
+	Habitacao* h1 = moradores[pos1].getHabitacoes()[pos];
+	int pos2 = this->findHabitacao(this->habitacoes, h1);
+
+	cout << "POS2 = " << pos2 << endl;
+	this->habitacoes[pos2]->info();
+	cout << "POS1 = " << pos1 << endl;
+	h1->info();
+	this->habitacoes.erase(habitacoes.begin() + pos2);
+
+	return moradores[pos1].eraseHabitacao(pos);
+}
+
 bool Condominio::setNomeUtilizador(Condomino condomino, string nomeUtilizador) {
 	int pos = sequentialSearch(this->moradores, condomino);
 	if (pos == -1) {

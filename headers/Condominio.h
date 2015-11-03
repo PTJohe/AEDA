@@ -36,6 +36,10 @@ public:
 	int addMorador(Condomino condomino);
 	int eraseMorador(Condomino condomino);
 
+	int findHabitacao(vector<Habitacao*> habitacoes, Habitacao* habitacao);
+	bool eraseHabitacao(Condomino condomino, int pos);
+
+	//Funcoes Condomino
 	bool setNomeUtilizador(Condomino condomino, string nomeUtilizador);
 	bool setPassword(Condomino condomino, string password);
 	bool setAdmin(Condomino condomino, bool admin);
@@ -43,6 +47,8 @@ public:
 	bool setNIF(Condomino condomino, string NIF);
 	bool setFundosMensais(Condomino condomino, long int fundos);
 	bool saldarDivida(Condomino condomino);
+
+	//Funcoes Habitacao
 
 	int addHabitacao(Habitacao* h1);
 

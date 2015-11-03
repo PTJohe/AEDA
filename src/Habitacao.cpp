@@ -37,6 +37,12 @@ string Habitacao::getCodigoPostal() const {
 string Habitacao::getNIFProprietario() const {
 	return NIFProprietario;
 }
+bool Habitacao::hasProprietario() const {
+	if (NIFProprietario == "")
+		return false;
+	else
+		return true;
+}
 bool Habitacao::getPago(int mes) const {
 	return pago[mes];
 }
@@ -95,7 +101,7 @@ bool Vivenda::getPiscina() const {
 	return piscina;
 }
 float Vivenda::calcRenda() const {
-	return (150 + 0.5 * areaExterior + 50 * piscina);
+	return (200 + 0.5 * areaExterior + 100 * piscina);
 }
 
 void Vivenda::info() const {
@@ -155,7 +161,7 @@ string Apartamento::getTipo() const {
 	return tipo;
 }
 float Apartamento::calcRenda() const {
-	return (100 + 20 * tipologia + 10 * piso);
+	return (150 + 25 * tipologia + 10 * piso);
 }
 
 void Apartamento::info() const {

@@ -61,7 +61,7 @@ void Condomino::setNomeUtilizador(string novoNomeUtilizador) {
 void Condomino::setPassword(string novaPassword) {
 	this->password = novaPassword;
 }
-void Condomino::setAdmin(bool admin){
+void Condomino::setAdmin(bool admin) {
 	this->admin = admin;
 }
 void Condomino::setNomeCivil(string novoNomeCivil) {
@@ -73,16 +73,19 @@ void Condomino::setNIF(string novoNIF) {
 		this->habitacoes[i]->setProprietario(novoNIF);
 	}
 }
-void Condomino::setFundosMensais(long int novosFundos){
+void Condomino::setFundosMensais(long int novosFundos) {
 	this->fundosMensais = novosFundos;
 }
-void Condomino::setDivida(long int novaDivida){
+void Condomino::setDivida(long int novaDivida) {
 	this->divida = novaDivida;
 }
 void Condomino::setHabitacoes(vector<Habitacao*> habitacoes) {
 	this->habitacoes = habitacoes;
 }
 
+void Condomino::sortHabitacoes() {
+	sort(habitacoes.begin(), habitacoes.end(), compHabitacao);
+}
 bool Condomino::addHabitacao(Habitacao* h1) {
 	int pos = -1;
 	for (size_t i = 0; i < this->habitacoes.size(); i++) {
@@ -97,16 +100,10 @@ bool Condomino::addHabitacao(Habitacao* h1) {
 	} else
 		return false;
 }
-bool Condomino::eraseHabitacao(Habitacao* h1) {
-	int pos = -1;
-	for (size_t i = 0; i < this->habitacoes.size(); i++) {
-		if (habitacoes[i]->getMorada() == h1->getMorada())
-			pos = i;
-	}
+bool Condomino::eraseHabitacao(int pos) {
 	if (pos != -1) {
-		delete h1;
+		delete habitacoes[pos];
 		habitacoes.erase(habitacoes.begin() + pos);
-		insertionSort(this->habitacoes);
 		return true;
 	} else
 		return false;
@@ -177,14 +174,34 @@ void Condomino::infoRenda() const {
 			<< endl;
 
 	cout << "\t\t J F M A M J J A S O N D" << endl;
-	for (size_t i = 0; i < this->habitacoes.size(); i++) {
-		cout << i + 1 << " - " << habitacoes[i]->getTipo() << "\t|";
-		for (size_t j = 0; j < 12; j++) {
-			if (this->habitacoes[i]->getPago(j) == 1)
-				cout << "X|";
-			else
-				cout << " |";
+	if (habitacoes.empty())
+		cout << "Nao possui habitacoes." << endl;
+	else {
+		for (size_t i = 0; i < this->habitacoes.size(); i++) {
+			cout << i + 1 << " - " << habitacoes[i]->getTipo() << "\t|";
+			for (size_t j = 0; j < 12; j++) {
+				if (this->habitacoes[i]->getPago(j) == 1)
+					cout << "X|";
+				else
+					cout << " |";
+			}
+			cout << endl;
 		}
-		cout << endl;
 	}
+}
+
+/*
+ * Non-class functions
+ */
+bool compHabitacao(Habitacao* h1, Habitacao* h2) {
+	if (h1->getNIFProprietario() < h2->getNIFProprietario())
+		return true;
+	else if (h1->getNIFProprietario() > h2->getNIFProprietario())
+		return false;
+	else if (h1->calcRenda() < h2->calcRenda())
+		return true;
+	else if (h1->calcRenda() > h2->calcRenda())
+		return false;
+	else
+		return (h1->getMorada() < h2->getMorada());
 }

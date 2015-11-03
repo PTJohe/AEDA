@@ -23,11 +23,12 @@ public:
 	void setCurrentUser(Condomino condomino);
 
 	void resetOption();
-	bool displayYesNo();
+	bool displayYesNo(int option);
 	bool displayMenuOptions(int position);
 	bool displaySelectUtilizador();
-	bool displaySelectCondomino(); //TODO displaySelectCondomino()
-	bool displaySelectHabitacao(); //TODO displaySelectHabitacao()
+	bool displaySelectCondomino();
+	bool displaySelectHabitacao();
+	bool displaySelectHabitacaoPossuida();
 	bool displaySelectFuncionario(); //TODO displaySelectFuncionario()
 	bool displaySelectServico(); //TODO displaySelectServico()
 
@@ -41,10 +42,11 @@ public:
 
 	void displayCurrentUserInfoConta();
 	void displayCurrentUserInfoCondomino();
-	void displayCurrentUserHabitacoes();
+	void displayCurrentUserHabitacao(int pos);
 	void displayCurrentUserRenda();
 
 	void displayCondominoInfo(int pos);
+	void displayHabitacaoInfo(int pos);
 	void displayAllHabitacoes();
 	void displayAllFuncionarios() const; //TODO displayAllFuncionarios()
 	void displayAllServicos() const; //TODO displayAllServicos()
@@ -61,18 +63,27 @@ public:
 	int menuEditDadosConta(Condomino &condomino);
 	int menuEditDadosCondomino(Condomino &condomino);
 	int menuHabitacoesPossuidas();
+	int menuSelectHabitacoesPossuida(bool remover);
+	int menuEditDadosHabitacaoPossuida(Condomino condomino);
+	int menuDeleteHabitacaoPossuida(int pos, int menuOption);
+	int menuAdicionarHabitacao();
 	int menuRequisitarServico();
 
 	//Menu Administrador
 	int menuAdministrador();
 
-	int menuGerirCondominos(); //TODO menuGerirCondominos()
+	int menuGerirCondominos();
 	int menuDisplayAllCondominos();
 	int menuSelectCondomino(bool editar);
 	int menuEditCondomino(Condomino &condomino);
-	int menuDeleteCondomino(Condomino &condomino);
+	int menuDeleteCondomino(Condomino &condomino, int menuOption);
 
-	int menuGerirHabitacoes(); //TODO menuGerirHabitacoes()
+	int menuGerirHabitacoes();
+	int menuDisplayAllHabitacoes();
+	int menuSelectHabitacao(bool editar);
+	int menuEditHabitacao(Habitacao* habitacao);
+	int menuDeleteHabitacao(Habitacao* habitacao);
+
 	int menuGerirFuncionarios(); //TODO menuGerirFuncionarios()
 	int menuGerirServicos(); //TODO menuGerirServicos()
 
