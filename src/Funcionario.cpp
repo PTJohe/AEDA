@@ -44,6 +44,10 @@ Funcionario::Funcionario(string nome,string especialidade,Condominio &condo){
 }
 
 
+void Funcionario::giveEspecialidade(string especialidade){
+	this->especialidades.push_back(especialidade);
+}
+
 void Funcionario::giveStatus(bool status){
 
 	this->status = status;
