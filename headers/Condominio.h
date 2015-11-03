@@ -26,11 +26,13 @@ public:
 	vector<Condomino> getMoradores();
 	vector<Habitacao*> getHabitacoes();
 	Condomino* getCondomino(int pos);
+	vector<Funcionario> getFuncionarios();
 
 	void setFundos(long int fundos);
 	void setCurrentMes(int currentMes);
 	void setMoradores(vector<Condomino> moradores);
 	void setHabitacoes(vector<Habitacao*> habitacoes);
+	void setFuncionarios(vector<Funcionario> funcionarios);
 
 	void sortMoradores();
 	int addMorador(Condomino condomino);

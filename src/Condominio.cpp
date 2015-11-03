@@ -18,6 +18,11 @@ vector<Condomino> Condominio::getMoradores() {
 vector<Habitacao*> Condominio::getHabitacoes() {
 	return habitacoes;
 }
+
+vector<Funcionario> Condominio::getFuncionarios(){
+	return funcionarios;
+}
+
 void Condominio::setFundos(long int fundos) {
 	this->fundos = fundos;
 }
@@ -30,6 +35,11 @@ void Condominio::setMoradores(vector<Condomino> moradores) {
 void Condominio::setHabitacoes(vector<Habitacao*> habitacoes) {
 	this->habitacoes = habitacoes;
 }
+
+void Condominio::setFuncionarios(vector<Funcionario> funcionarios){
+	this->funcionarios = funcionarios;
+}
+
 Condomino* Condominio::getCondomino(int pos) {
 	Condomino* p = &moradores[pos];
 	return p;

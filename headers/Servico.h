@@ -11,15 +11,16 @@ private:
 	float duracao; //em horas
 	int numFuncionarios; //numero de funcionários necessários para a realização do serviço
 	vector<Funcionario> funcionarios;
-	float preco; //em euros
+	float preco; //em dolares
 
 public:
-	Servico(string nome,float duracao,int numFuncionarios,vector<Funcionario> totalFuncs, float preco);
+	Servico(string nome,float duracao,int numFuncionarios,Condominio &condo, float preco, string especialidade);
 
 	string getNome(){return nome;}
 	float getDuracao(){return duracao;}
 	vector<Funcionario> getFuncionarios(){return funcionarios;}
 
+	class faltaPessoal{ }; //excepção
 };
 
 #endif

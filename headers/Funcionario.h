@@ -13,11 +13,15 @@ private:
 	vector<string> especialidades;
 
 public:
-	Funcionario(string nome,string especialidade);
+	Funcionario();
+	Funcionario(string nome,string especialidade,Condominio &condo);
+
 	string getNome(){return nome;}
 	bool getStatus(){return status;}
 	vector<string> getEspecialidades(){return especialidades;}
+
 	void giveEspecialidade(string especialidade);
+	void giveStatus(bool status);
 
 };
 

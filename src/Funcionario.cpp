@@ -26,13 +26,26 @@ void verificaEspecialidades(string toCompare){
 
 }
 
+void atualizaCondominio(Condominio &condo){
+	vector<Funcionario> velho;
+	Funcionario tmp = this;
+	velho = condo.getFuncionarios();
+	velho.push_back(tmp);
+}
 
-Funcionario::Funcionario(string nome,string especialidade){
+Funcionario::Funcionario(string nome,string especialidade,Condominio &condo){
 	this->nome = nome;
 	this->especialidades.push_back(especialidade);
 	this->status = true;
+	this->Funcionario;
 	id++;
 	verificaEspecialidades(especialidade);
+	atualizaCondominio(condo);
 }
 
+
+void Funcionario::giveStatus(bool status){
+
+	this->status = status;
+}
 
