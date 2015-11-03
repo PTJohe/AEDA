@@ -36,6 +36,7 @@ public:
 	int addMorador(Condomino condomino);
 	int eraseMorador(Condomino condomino);
 
+	void sortHabitacoes();
 	int findHabitacao(vector<Habitacao*> habitacoes, Habitacao* habitacao);
 	bool eraseHabitacao(Condomino condomino, int pos);
 

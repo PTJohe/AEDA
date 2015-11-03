@@ -10,7 +10,7 @@
 
 const string currentTime();
 void pressEnterToContinue();
-bool compareHabitacao(Habitacao* h1, Habitacao* h2);
+bool compHabitacao(Habitacao* h1, Habitacao* h2);
 bool hasWhitespace(string s);
 bool isNumber(string s);
 bool isName(string s);
@@ -991,7 +991,7 @@ int Main::menuSelectHabitacoesPossuida(bool remover) {
 	cout << "[ESC] Voltar atras\n" << endl;
 	cout << "Habitacao      Renda         Morada" << endl;
 
-	if(this->currentUser->getHabitacoes().empty()){
+	if (this->currentUser->getHabitacoes().empty()) {
 		cout << "Nao possui habitacoes.\n" << endl;
 		pressEnterToContinue();
 		resetOption();
@@ -1659,7 +1659,7 @@ bool Main::importHabitacoes() {
 			getline(myfile, line);
 		}
 		myfile.close();
-		sort(habitacoes.begin(), habitacoes.end(), compareHabitacao);
+		sort(habitacoes.begin(), habitacoes.end(), compHabitacao);
 		this->condominio.setHabitacoes(habitacoes);
 		this->condominio.updateHabitacoesCondominos();
 		return true;
@@ -1729,18 +1729,6 @@ int Main::exitFunction() {
  * Non-class functions
  */
 
-bool compareHabitacao(Habitacao* h1, Habitacao* h2) {
-	if (h1->getNIFProprietario() < h2->getNIFProprietario())
-		return true;
-	else if (h1->getNIFProprietario() > h2->getNIFProprietario())
-		return false;
-	else if (h1->calcRenda() < h2->calcRenda())
-		return true;
-	else if (h1->calcRenda() > h2->calcRenda())
-		return false;
-	else
-		return (h1->getMorada() < h2->getMorada());
-}
 
 // Checks if string has at least one space
 bool hasWhitespace(string s) {

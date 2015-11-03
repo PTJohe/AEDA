@@ -193,6 +193,7 @@ void Condomino::infoRenda() const {
 /*
  * Non-class functions
  */
+
 bool compHabitacao(Habitacao* h1, Habitacao* h2) {
 	if (h1->getNIFProprietario() < h2->getNIFProprietario())
 		return true;

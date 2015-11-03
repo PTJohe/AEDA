@@ -54,11 +54,20 @@ int Condominio::eraseMorador(Condomino condomino) {
 	if (pos != -1) {
 		this->moradores.erase(moradores.begin() + pos);
 		insertionSort(moradores);
+		for(size_t i = 0; i < this->habitacoes.size(); i++){
+			if(habitacoes[i]->getNIFProprietario() == condomino.getNIF())
+				habitacoes[i]->setProprietario("");
+		}
+		sortHabitacoes();
 		return pos;
 	} else
 		return -1;
 }
 
+void Condominio::sortHabitacoes(){
+	sort(habitacoes.begin(),habitacoes.end(), compHabitacao);
+	updateHabitacoesCondominos();
+}
 int Condominio::findHabitacao(vector<Habitacao*> habitacoes,
 		Habitacao* habitacao) {
 	int pos = -1;
@@ -91,14 +100,12 @@ bool Condominio::eraseHabitacao(Condomino condomino, int pos) {
 
 	Habitacao* h1 = moradores[pos1].getHabitacoes()[pos];
 	int pos2 = this->findHabitacao(this->habitacoes, h1);
+	if (pos2 != -1)
+		this->habitacoes.erase(habitacoes.begin() + pos2);
 
-	cout << "POS2 = " << pos2 << endl;
-	this->habitacoes[pos2]->info();
-	cout << "POS1 = " << pos1 << endl;
-	h1->info();
-	this->habitacoes.erase(habitacoes.begin() + pos2);
-
-	return moradores[pos1].eraseHabitacao(pos);
+	bool success = moradores[pos1].eraseHabitacao(pos);
+	sortHabitacoes();
+	return success;
 }
 
 bool Condominio::setNomeUtilizador(Condomino condomino, string nomeUtilizador) {
