@@ -79,16 +79,19 @@ void Condomino::setFundosMensais(long int novosFundos) {
 void Condomino::setDivida(long int novaDivida) {
 	this->divida = novaDivida;
 }
+void Condomino::addDivida(long int novaDivida) {
+	this->divida += novaDivida;
+}
 void Condomino::setHabitacoes(vector<Habitacao*> habitacoes) {
 	this->habitacoes = habitacoes;
 }
 
 void Condomino::sortHabitacoes() {
-	sort(habitacoes.begin(), habitacoes.end(), compHabitacao);
+	sort(habitacoes.begin(), habitacoes.end(), compHabitacaoNIF);
 }
 void Condomino::addHabitacao(Habitacao* h1, int currentMes) {
 	h1->setProprietario(this->NIF);
-	for (size_t i = 0; i < currentMes; i++)
+	for (size_t i = 0; i <= currentMes; i++)
 		h1->setPago(i);
 	this->habitacoes.push_back(h1);
 	sortHabitacoes();
@@ -109,7 +112,7 @@ bool Condomino::validPassword(string password) {
 		return false;
 }
 bool Condomino::hasDados() const {
-	if (this->nomeCivil == "NAO DEFINIDO" || this->NIF == "NAO DEFINIDO")
+	if (this->nomeCivil == "NAO DEFINIDO" || this->NIF == "")
 		return false;
 	else
 		return true;
@@ -121,16 +124,7 @@ bool Condomino::operator==(const Condomino c1) const {
 		return (this->NIF == c1.NIF);
 }
 bool Condomino::operator<(const Condomino c1) const {
-	if (this->nomeUtilizador < c1.nomeUtilizador)
-		return true;
-	else
-		return false;
-	/*if (this->nomeCivil < c1.nomeCivil)
-	 return true;
-	 else if (this->nomeCivil > c1.nomeCivil)
-	 return false;
-	 else
-	 return (this->NIF < c1.NIF);*/
+	return this->nomeUtilizador < c1.nomeUtilizador;
 }
 
 void Condomino::infoConta() const {
@@ -185,8 +179,35 @@ void Condomino::infoRenda() const {
 /*
  * Non-class functions
  */
-
-bool compHabitacao(Habitacao* h1, Habitacao* h2) {
+bool compHabitacaoTipo(Habitacao* h1, Habitacao* h2) {
+	if (h1->getTipo() < h2->getTipo())
+		return true;
+	else if (h1->getTipo() > h2->getTipo())
+		return false;
+	else if (h1->getNIFProprietario() < h2->getNIFProprietario())
+		return true;
+	else if (h1->getNIFProprietario() > h2->getNIFProprietario())
+		return false;
+	else if (h1->calcRenda() < h2->calcRenda())
+		return true;
+	else if (h1->calcRenda() > h2->calcRenda())
+		return false;
+	else
+		return (h1->getMorada() < h2->getMorada());
+}
+bool compHabitacaoRenda(Habitacao* h1, Habitacao* h2) {
+	if (h1->calcRenda() < h2->calcRenda())
+		return true;
+	else if (h1->calcRenda() > h2->calcRenda())
+		return false;
+	else if (h1->getNIFProprietario() < h2->getNIFProprietario())
+		return true;
+	else if (h1->getNIFProprietario() > h2->getNIFProprietario())
+		return false;
+	else
+		return (h1->getMorada() < h2->getMorada());
+}
+bool compHabitacaoNIF(Habitacao* h1, Habitacao* h2) {
 	if (h1->getNIFProprietario() < h2->getNIFProprietario())
 		return true;
 	else if (h1->getNIFProprietario() > h2->getNIFProprietario())

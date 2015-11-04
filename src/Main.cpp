@@ -7,6 +7,9 @@
 #define pathCondominio "../savedata/condominio.txt"
 #define pathCondominos "../savedata/condominos.txt"
 #define pathHabitacoes "../savedata/habitacoes.txt"
+#define pathFuncionarios "../savedata/funcionarios.txt"
+#define pathEspecialidades "../savedata/especialidades.txt"
+#define pathServicos "../savedata/servicos.txt"
 
 const string currentTime();
 void pressEnterToContinue();
@@ -220,7 +223,7 @@ bool Main::editDadosConta(int editOption) {
 
 			Condomino c1 = Condomino(this->currentUser->getNomeUtilizador(),
 					this->currentUser->getPassword());
-			this->condominio.sortMoradores();
+			this->condominio.sortMoradores(0);
 			int pos = sequentialSearch(this->condominio.getMoradores(), c1);
 			this->currentUser = &this->condominio.getMoradores()[pos];
 
@@ -283,7 +286,7 @@ bool Main::editDadosContaAdmin(int editOption, Condomino &condomino) {
 
 			Condomino c1 = Condomino(this->currentUser->getNomeUtilizador(),
 					this->currentUser->getPassword());
-			this->condominio.sortMoradores();
+			this->condominio.sortMoradores(0);
 			this->setCurrentUser(c1);
 
 			cout << "\nNome de utilizador alterado." << endl;
@@ -456,6 +459,39 @@ bool Main::editDadosCondomino(int editOption) {
 		cout << "Pretende saldar a divida?";
 		long int dividaActual = this->currentUser->getDivida();
 		cout << "Divida actual = " << dividaActual << endl;
+
+		displayYesNo(option);
+
+		int c = getch();
+		switch (c) {
+		case KEY_LEFT:
+			if (option - 1 >= 0)
+				option--;
+			break;
+		case KEY_RIGHT:
+			if (option + 1 < 2)
+				option++;
+			break;
+		case KEY_ENTER:
+			if (option == 0) {
+				this->condominio.saldarDivida(*this->currentUser);
+				cout << "\nDivida saldada." << endl;
+				resetOption();
+				pressEnterToContinue();
+				return true;
+			} else if (option == 1) {
+				resetOption();
+				return false;
+			}
+			break;
+		case KEY_ESC:
+			resetOption();
+			return false;
+			break;
+		default:
+			break;
+		}
+		return editDadosCondomino(editOption);
 	}
 	return false;
 }
@@ -535,7 +571,7 @@ bool Main::editDadosCondominoAdmin(int editOption, Condomino &condomino) {
 		}
 		cout << "Pretende saldar a divida?";
 		long int dividaActual = condomino.getDivida();
-		cout << "Divida actual = " << dividaActual << endl;
+		cout << "Divida actual = " << dividaActual << "$" << endl;
 
 		displayYesNo(option);
 
@@ -782,6 +818,44 @@ void Main::displayHabitacaoInfo(int pos) {
 				<< endl;
 	}
 	pressEnterToContinue();
+}
+
+bool Main::fimDoMes() {
+	displayLogo();
+	gotoxy(30, 8);
+	cout << "FIM DO MES\n" << endl;
+	cout << "Mes actual -> ";
+	setcolor(YELLOW, BLACK);
+	cout << mesesAno[this->condominio.getMes()];
+	setcolor(WHITE, BLACK);
+	cout << "\nFundos actuais = " << this->condominio.getFundos() << "$\n"
+			<< endl;
+
+	vector<Condomino> caloteiros = this->condominio.fimDoMes();
+	cout << "Novo mes -> ";
+	setcolor(YELLOW, BLACK);
+	cout << mesesAno[this->condominio.getMes()];
+	setcolor(WHITE, BLACK);
+	cout << "\nNovos fundos = " << this->condominio.getFundos() << "$\n"
+			<< endl;
+
+	if (caloteiros.empty()) {
+		cout << "Todos os condominos pagaram a renda." << endl;
+		pressEnterToContinue();
+		return true;
+	} else {
+		cout << "Numero de caloteiros = " << caloteiros.size() << "\n" << endl;
+		cout << "Divida           Nome Civil  			NIF" << endl;
+		for (size_t i = 0; i < caloteiros.size(); i++) {
+			cout << caloteiros[i].getDivida() << "$" << left << setw(10)
+					<< setfill(' ') << "   " << left << setw(20) << setfill(' ')
+					<< caloteiros[i].getNomeCivil() << left << setw(10)
+					<< setfill(' ') << "   " << caloteiros[i].getNIF() << endl;
+		}
+		cout << endl;
+		pressEnterToContinue();
+		return false;
+	}
 }
 
 /*
@@ -1441,6 +1515,19 @@ int Main::menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1) {
 	cout << "Tipo: ";
 	h1->info();
 
+	if (condomino.hasDados()) {
+		int gastos = 0;
+		for (size_t i = 0; i < condomino.getHabitacoes().size(); i++)
+			gastos += condomino.getHabitacoes()[i]->calcRenda();
+		if (condomino.getFundosMensais() < gastos)
+			cout
+					<< "AVISO: Este condomino ja esta a exceder o orcamento mensal."
+					<< endl;
+		else if (condomino.getFundosMensais() < gastos + h1->calcRenda())
+			cout
+					<< "AVISO: Esta habitacao vai exceder o orcamento mensal do condomino."
+					<< endl;
+	}
 	cout << "Tem a certeza que pretende adicionar esta habitacao?" << endl;
 	displayYesNo(option);
 
@@ -1477,11 +1564,14 @@ int Main::menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1) {
 				cout << "\nHabitacao adicionada." << endl;
 				pressEnterToContinue();
 				resetOption();
-				return menuSelectOrNewHabitacao();
+				return menuUtilizador();
 			}
 		} else if (option == 1) {
 			resetOption();
-			return menuUtilizador();
+			if (h1->getNIFProprietario() == this->currentUser->getNIF())
+				return menuUtilizador();
+			else
+				return menuSelectOrVacantHabitacao();
 		}
 		break;
 	default:
@@ -1523,6 +1613,8 @@ int Main::menuAdministrador() {
 		} else if (option == 1) {
 			resetOption();
 			return menuGerirHabitacoes();
+		} else if (option == 4) {
+			fimDoMes();
 		} else {
 			resetOption();
 			return menuUtilizador();
@@ -1566,7 +1658,7 @@ int Main::menuGerirCondominos() {
 		break;
 	case KEY_ENTER:
 		if (option == 0) //Ver lista de condominos
-			return menuDisplayAllCondominos();
+			return menuDisplayCondominosBy();
 		else if (option == 1) { //Alterar dados de um condomino
 			resetOption();
 			return menuSelectCondomino(false);
@@ -1593,6 +1685,76 @@ int Main::menuGerirCondominos() {
 	}
 	return menuGerirCondominos();
 }
+int Main::menuDisplayCondominosBy() {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "ORDENAR POR:" << endl;
+	displayMenuOptions(17);
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[17].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) { //Ordenar por nome de utilizador
+			resetOption();
+			//Ordena os moradores e actualiza o currentUser
+			Condomino c1 = Condomino("nome", "password", "nomeCivil",
+					this->currentUser->getNIF());
+			this->condominio.sortMoradores(0);
+			int pos = sequentialSearch(this->condominio.getMoradores(), c1);
+			setCurrentUser(this->condominio.getMoradores()[pos]);
+
+			return menuDisplayAllCondominos();
+		} else if (option == 1) { //Ordenar por nome civil
+			resetOption();
+			//Ordena os moradores e actualiza o currentUser
+			Condomino c1 = Condomino("nome", "password", "nomeCivil",
+					this->currentUser->getNIF());
+			this->condominio.sortMoradores(1);
+			int pos = sequentialSearch(this->condominio.getMoradores(), c1);
+			setCurrentUser(this->condominio.getMoradores()[pos]);
+
+			return menuDisplayAllCondominos();
+		} else if (option == 2) { //Ordenar por NIF
+			resetOption();
+			//Ordena os moradores e actualiza o currentUser
+			Condomino c1 = Condomino("nome", "password", "nomeCivil",
+					this->currentUser->getNIF());
+			this->condominio.sortMoradores(2);
+			int pos = sequentialSearch(this->condominio.getMoradores(), c1);
+			setCurrentUser(this->condominio.getMoradores()[pos]);
+
+			return menuDisplayAllCondominos();
+		} else { //Voltar atras
+			resetOption();
+			return menuGerirCondominos();
+		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuGerirCondominos();
+		break;
+	default:
+		break;
+	}
+	return menuDisplayCondominosBy();
+}
 int Main::menuDisplayAllCondominos() {
 	displayLogo();
 	gotoxy(0, 8);
@@ -1610,6 +1772,7 @@ int Main::menuDisplayAllCondominos() {
 	cout << "[ENTER] Ver dados" << endl;
 	cout << "[ESC] Voltar atras\n" << endl;
 	cout << "Utilizador   Nome Civil                    NIF" << endl;
+
 	displaySelectCondomino();
 
 	int c = getch();
@@ -1627,7 +1790,7 @@ int Main::menuDisplayAllCondominos() {
 		break;
 	case KEY_ESC:
 		resetOption();
-		return menuGerirCondominos();
+		return menuDisplayCondominosBy();
 		break;
 	default:
 		break;
@@ -1829,7 +1992,7 @@ int Main::menuGerirHabitacoes() {
 		break;
 	case KEY_ENTER:
 		if (option == 0) //Ver lista de habitacoes
-			return menuDisplayAllHabitacoes();
+			return menuDisplayHabitacoesBy();
 		else if (option == 1) { //Alterar dados de uma habitacao
 			resetOption();
 			return menuSelectHabitacao(false);
@@ -1852,6 +2015,58 @@ int Main::menuGerirHabitacoes() {
 		break;
 	}
 	return menuGerirHabitacoes();
+}
+int Main::menuDisplayHabitacoesBy() {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "ORDENAR POR:" << endl;
+	displayMenuOptions(18);
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[18].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) { //Ordenar por tipo
+			resetOption();
+			this->condominio.sortHabitacoes(0);
+			return menuDisplayAllHabitacoes();
+		} else if (option == 1) { //Ordenar por renda
+			resetOption();
+			this->condominio.sortHabitacoes(1);
+			return menuDisplayAllHabitacoes();
+		} else if (option == 2) { //Ordenar por NIF proprietario
+			resetOption();
+			this->condominio.sortHabitacoes(2);
+			return menuDisplayAllHabitacoes();
+		} else { //Voltar atras
+			resetOption();
+			return menuGerirHabitacoes();
+		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuGerirHabitacoes();
+		break;
+	default:
+		break;
+	}
+	return menuDisplayHabitacoesBy();
 }
 int Main::menuDisplayAllHabitacoes() {
 	displayLogo();
@@ -1884,7 +2099,7 @@ int Main::menuDisplayAllHabitacoes() {
 		break;
 	case KEY_ESC:
 		resetOption();
-		return menuGerirHabitacoes();
+		return menuDisplayHabitacoesBy();
 		break;
 	default:
 		break;
@@ -1971,7 +2186,7 @@ int Main::menuEditHabitacao(Habitacao* habitacao) {
 			return menuGerirHabitacoes();
 		} else {
 			editHabitacao(option, habitacao);
-			this->condominio.sortHabitacoes();
+			this->condominio.sortHabitacoes(2);
 		}
 		break;
 	case KEY_ESC:
@@ -2295,7 +2510,7 @@ bool Main::importHabitacoes() {
 			getline(myfile, line);
 		}
 		myfile.close();
-		sort(habitacoes.begin(), habitacoes.end(), compHabitacao);
+		sort(habitacoes.begin(), habitacoes.end(), compHabitacaoNIF);
 		this->condominio.setHabitacoes(habitacoes);
 		this->condominio.updateHabitacoesCondominos();
 		return true;
@@ -2463,54 +2678,54 @@ void createMenuOptions() {
 
 	menuOptions[0].push_back("Login");										//0
 	menuOptions[0].push_back("Registo");									//1
-	menuOptions[0].push_back("Sair");	//2
+	menuOptions[0].push_back("Sair");										//2
 
 	vector<string> menuUtilizadorAdmin;
 	menuOptions.push_back(menuUtilizadorAdmin);
 
-	menuOptions[1].push_back("Menu Administrador");	//0
-	menuOptions[1].push_back("Alterar dados da conta");	//1
-	menuOptions[1].push_back("Ver dados de condomino");	//2
-	menuOptions[1].push_back("Alterar dados de condomino");	//3
-	menuOptions[1].push_back("Ver habitacoes possuidas");	//4
-	menuOptions[1].push_back("Adicionar habitacao");	//5
-	menuOptions[1].push_back("Requisitar um servico");	//6
-	menuOptions[1].push_back("Sair");	//7
+	menuOptions[1].push_back("Menu Administrador");							//0
+	menuOptions[1].push_back("Alterar dados da conta");						//1
+	menuOptions[1].push_back("Ver dados de condomino");						//2
+	menuOptions[1].push_back("Alterar dados de condomino");					//3
+	menuOptions[1].push_back("Ver habitacoes possuidas");					//4
+	menuOptions[1].push_back("Adicionar habitacao");						//5
+	menuOptions[1].push_back("Requisitar um servico");						//6
+	menuOptions[1].push_back("Sair");										//7
 
 	vector<string> menuUtilizadorNormal;
 	menuOptions.push_back(menuUtilizadorNormal);
 
-	menuOptions[2].push_back("Alterar dados da conta");	//0
-	menuOptions[2].push_back("Ver dados de condomino");	//1
-	menuOptions[2].push_back("Alterar dados de condomino");	//2
-	menuOptions[2].push_back("Ver habitacoes possuidas");	//3
-	menuOptions[2].push_back("Adicionar habitacao");	//4
-	menuOptions[2].push_back("Requisitar um servico");	//5
-	menuOptions[2].push_back("Sair");	//6
+	menuOptions[2].push_back("Alterar dados da conta");						//0
+	menuOptions[2].push_back("Ver dados de condomino");						//1
+	menuOptions[2].push_back("Alterar dados de condomino");					//2
+	menuOptions[2].push_back("Ver habitacoes possuidas");					//3
+	menuOptions[2].push_back("Adicionar habitacao");						//4
+	menuOptions[2].push_back("Requisitar um servico");						//5
+	menuOptions[2].push_back("Sair");										//6
 
 	vector<string> menuDadosConta;
 	menuOptions.push_back(menuDadosConta);
 
-	menuOptions[3].push_back("Alterar nome de utilizador");	//0
-	menuOptions[3].push_back("Alterar password");	//1
-	menuOptions[3].push_back("Voltar atras");	//2
+	menuOptions[3].push_back("Alterar nome de utilizador");					//0
+	menuOptions[3].push_back("Alterar password");							//1
+	menuOptions[3].push_back("Voltar atras");								//2
 
 	vector<string> menuDadosCondomino;
 	menuOptions.push_back(menuDadosCondomino);
 
-	menuOptions[4].push_back("Alterar nome civil");	//0
-	menuOptions[4].push_back("Alterar NIF");	//1
-	menuOptions[4].push_back("Alterar fundos mensais");	//2
-	menuOptions[4].push_back("Saldar divida");	//3
-	menuOptions[4].push_back("Voltar atras");	//4
+	menuOptions[4].push_back("Alterar nome civil");							//0
+	menuOptions[4].push_back("Alterar NIF");								//1
+	menuOptions[4].push_back("Alterar fundos mensais");						//2
+	menuOptions[4].push_back("Saldar divida");								//3
+	menuOptions[4].push_back("Voltar atras");								//4
 
 	vector<string> menuHabitacoesPossuidas;
 	menuOptions.push_back(menuHabitacoesPossuidas);
 
-	menuOptions[5].push_back("Ver informacao das habitacoes");	//0
-	menuOptions[5].push_back("Ver estado da renda");	//1
-	menuOptions[5].push_back("Remover habitacao");	//2
-	menuOptions[5].push_back("Voltar atras");	//3
+	menuOptions[5].push_back("Ver informacao das habitacoes");				//0
+	menuOptions[5].push_back("Ver estado da renda");						//1
+	menuOptions[5].push_back("Remover habitacao");							//2
+	menuOptions[5].push_back("Voltar atras");								//3
 
 	vector<string> menuRequisitarServico;
 	menuOptions.push_back(menuRequisitarServico);
@@ -2520,36 +2735,36 @@ void createMenuOptions() {
 	vector<string> menuAdmin;
 	menuOptions.push_back(menuAdmin);
 
-	menuOptions[7].push_back("Gerir condominos");	//0
-	menuOptions[7].push_back("Gerir habitacoes");	//1
-	menuOptions[7].push_back("Gerir funcionarios");	//2
-	menuOptions[7].push_back("Gerir servicos");	//3
-	menuOptions[7].push_back("Fim do Mes");	//4
-	menuOptions[7].push_back("Voltar atras");	//5
+	menuOptions[7].push_back("Gerir condominos");							//0
+	menuOptions[7].push_back("Gerir habitacoes");							//1
+	menuOptions[7].push_back("Gerir funcionarios");							//2
+	menuOptions[7].push_back("Gerir servicos");								//3
+	menuOptions[7].push_back("Fim do Mes");									//4
+	menuOptions[7].push_back("Voltar atras");								//5
 
 	vector<string> menuGerirCondominos;
 	menuOptions.push_back(menuGerirCondominos);
-	menuOptions[8].push_back("Ver lista de todos os condominos");	//0
-	menuOptions[8].push_back("Alterar condomino");	//1
-	menuOptions[8].push_back("Adicionar condomino");	//2
-	menuOptions[8].push_back("Remover condomino");	//2
-	menuOptions[8].push_back("Voltar atras");	//3
+	menuOptions[8].push_back("Ver lista de todos os condominos");			//0
+	menuOptions[8].push_back("Alterar condomino");							//1
+	menuOptions[8].push_back("Adicionar condomino");						//2
+	menuOptions[8].push_back("Remover condomino");							//2
+	menuOptions[8].push_back("Voltar atras");								//3
 
 	vector<string> menuGerirHabitacoes;
 	menuOptions.push_back(menuGerirHabitacoes);
-	menuOptions[9].push_back("Ver lista de todas as habitacoes");	//0
-	menuOptions[9].push_back("Alterar habitacao");	//1
-	menuOptions[9].push_back("Adicionar habitacao");	//2
-	menuOptions[9].push_back("Remover habitacao");	//3
-	menuOptions[9].push_back("Voltar atras");	//4
+	menuOptions[9].push_back("Ver lista de todas as habitacoes");			//0
+	menuOptions[9].push_back("Alterar habitacao");							//1
+	menuOptions[9].push_back("Adicionar habitacao");						//2
+	menuOptions[9].push_back("Remover habitacao");							//3
+	menuOptions[9].push_back("Voltar atras");								//4
 
 	vector<string> menuGerirFuncionarios;	//TODO acabar menuGerirFuncionarios
 	menuOptions.push_back(menuGerirFuncionarios);
-	menuOptions[10].push_back("Ver lista de todos os funcionarios");	//0
-	menuOptions[10].push_back("Alterar funcionario");	//1
-	menuOptions[10].push_back("Adicionar funcionarios");	//2
-	menuOptions[10].push_back("Remover funcionarios");	//3
-	menuOptions[10].push_back("Voltar atras");	//4
+	menuOptions[10].push_back("Ver lista de todos os funcionarios");		//0
+	menuOptions[10].push_back("Alterar funcionario");						//1
+	menuOptions[10].push_back("Adicionar funcionarios");					//2
+	menuOptions[10].push_back("Remover funcionarios");						//3
+	menuOptions[10].push_back("Voltar atras");								//4
 
 	vector<string> menuGerirServicos;
 	menuOptions.push_back(menuGerirServicos);	//TODO acabar menuGerirServicos
@@ -2561,48 +2776,64 @@ void createMenuOptions() {
 	vector<string> menuDadosContaCondomino;
 	menuOptions.push_back(menuDadosContaCondomino);
 
-	menuOptions[12].push_back("Alterar nome de utilizador");	//0
-	menuOptions[12].push_back("Alterar password");	//1
-	menuOptions[12].push_back("Alterar estado da conta");	//2
-	menuOptions[12].push_back("Alterar nome civil");	//3
-	menuOptions[12].push_back("Alterar NIF");	//4
-	menuOptions[12].push_back("Alterar fundos mensais");	//5
-	menuOptions[12].push_back("Saldar divida");	//6
-	menuOptions[12].push_back("Voltar atras");	//7
+	menuOptions[12].push_back("Alterar nome de utilizador");				//0
+	menuOptions[12].push_back("Alterar password");							//1
+	menuOptions[12].push_back("Alterar estado da conta");					//2
+	menuOptions[12].push_back("Alterar nome civil");						//3
+	menuOptions[12].push_back("Alterar NIF");								//4
+	menuOptions[12].push_back("Alterar fundos mensais");					//5
+	menuOptions[12].push_back("Saldar divida");								//6
+	menuOptions[12].push_back("Voltar atras");								//7
 
 	vector<string> menuDadosVivenda;
 	menuOptions.push_back(menuDadosVivenda);
 
-	menuOptions[13].push_back("Alterar morada");	//0
-	menuOptions[13].push_back("Alterar codigo postal");	//1
-	menuOptions[13].push_back("Alterar area habitacional");	//2
-	menuOptions[13].push_back("Alterar area exterior");	//3
-	menuOptions[13].push_back("Alterar piscina");	//4
-	menuOptions[13].push_back("Voltar atras");	//5
+	menuOptions[13].push_back("Alterar morada");							//0
+	menuOptions[13].push_back("Alterar codigo postal");						//1
+	menuOptions[13].push_back("Alterar area habitacional");					//2
+	menuOptions[13].push_back("Alterar area exterior");						//3
+	menuOptions[13].push_back("Alterar piscina");							//4
+	menuOptions[13].push_back("Voltar atras");								//5
 
 	vector<string> menuDadosApartamento;
 	menuOptions.push_back(menuDadosApartamento);
 
-	menuOptions[14].push_back("Alterar morada");	//0
-	menuOptions[14].push_back("Alterar codigo postal");	//1
-	menuOptions[14].push_back("Alterar area habitacional");	//2
-	menuOptions[14].push_back("Alterar tipologia");	//3
-	menuOptions[14].push_back("Alterar piso");	//4
-	menuOptions[14].push_back("Voltar atras");	//5
+	menuOptions[14].push_back("Alterar morada");							//0
+	menuOptions[14].push_back("Alterar codigo postal");						//1
+	menuOptions[14].push_back("Alterar area habitacional");					//2
+	menuOptions[14].push_back("Alterar tipologia");							//3
+	menuOptions[14].push_back("Alterar piso");								//4
+	menuOptions[14].push_back("Voltar atras");								//5
 
 	vector<string> menuAddHabitacaoNormal;
 	menuOptions.push_back(menuAddHabitacaoNormal);
 
-	menuOptions[15].push_back("Selecionar habitacao");	//0
-	menuOptions[15].push_back("Nova habitacao");	//1
-	menuOptions[15].push_back("Voltar atras");	//2
+	menuOptions[15].push_back("Selecionar habitacao");						//0
+	menuOptions[15].push_back("Nova habitacao");							//1
+	menuOptions[15].push_back("Voltar atras");								//2
 
 	vector<string> menuAddHabitacaoAdmin;
 	menuOptions.push_back(menuAddHabitacaoAdmin);
 
-	menuOptions[16].push_back("Selecionar condomino");	//0
-	menuOptions[16].push_back("Habitacao sem proprietario");	//1
-	menuOptions[16].push_back("Voltar atras");	//2
+	menuOptions[16].push_back("Selecionar condomino");						//0
+	menuOptions[16].push_back("Habitacao sem proprietario");				//1
+	menuOptions[16].push_back("Voltar atras");								//2
+
+	vector<string> menuDisplayCondominosBy;
+	menuOptions.push_back(menuDisplayCondominosBy);
+
+	menuOptions[17].push_back("Nome de utilizador");
+	menuOptions[17].push_back("Nome Civil");
+	menuOptions[17].push_back("NIF");
+	menuOptions[17].push_back("Voltar atras");
+
+	vector<string> menuDisplayHabitacoesBy;
+	menuOptions.push_back(menuDisplayHabitacoesBy);
+
+	menuOptions[18].push_back("Tipo");
+	menuOptions[18].push_back("Renda");
+	menuOptions[18].push_back("NIF Proprietario");
+	menuOptions[18].push_back("Voltar atras");
 
 	menu = menuOptions;
 }

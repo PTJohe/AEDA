@@ -29,6 +29,7 @@ public:
 	void setCodigoPostal(string codigoPostal);
 	void setProprietario(string nif);
 	void setPago(int mes);
+	void resetPago();
 
 	virtual void setAreaInterior(float area) = 0;
 	virtual void setAreaExterior(float area) = 0;

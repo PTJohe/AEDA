@@ -27,7 +27,6 @@ public:
 	bool displayVivendaApartamento(int option);
 	bool displayMenuOptions(int position);
 
-	bool displaySelectUtilizador();
 	bool displaySelectCondomino();
 	bool displaySelectHabitacao(vector<Habitacao*> habitacoes);
 	bool displaySelectHabitacaoPossuida();
@@ -54,6 +53,8 @@ public:
 	void displayAllFuncionarios() const; //TODO displayAllFuncionarios()
 	void displayAllServicos() const; //TODO displayAllServicos()
 
+	bool fimDoMes();
+
 	//Menu Functions
 	int menuInicial();
 
@@ -74,19 +75,21 @@ public:
 	int menuAddHabitacao(Condomino condomino);
 	int menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1);
 
-
 	int menuRequisitarServico();
+
 
 	//Menu Administrador
 	int menuAdministrador();
 
 	int menuGerirCondominos();
+	int menuDisplayCondominosBy();
 	int menuDisplayAllCondominos();
 	int menuSelectCondomino(bool remover);
 	int menuEditCondomino(Condomino &condomino);
 	int menuDeleteCondomino(Condomino &condomino, int menuOption);
 
 	int menuGerirHabitacoes();
+	int menuDisplayHabitacoesBy();
 	int menuDisplayAllHabitacoes();
 	int menuSelectHabitacao(bool editar);
 	int menuEditHabitacao(Habitacao* habitacao);
@@ -96,6 +99,8 @@ public:
 
 	int menuGerirFuncionarios(); //TODO menuGerirFuncionarios()
 	int menuGerirServicos(); //TODO menuGerirServicos()
+
+
 
 	//Import & extract functions
 	bool importCondominio();

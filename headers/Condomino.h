@@ -43,6 +43,7 @@ public:
 	void setNIF(string novoNIF);
 	void setFundosMensais(long int novosFundos);
 	void setDivida(long int novaDivida);
+	void addDivida(long int novaDivida);
 	void setHabitacoes(vector<Habitacao*> propriedades);
 
 	bool validPassword(string password);
@@ -60,6 +61,7 @@ public:
 	void infoRenda() const;
 };
 
-bool compHabitacao(Habitacao* h1, Habitacao* h2);
-
+bool compHabitacaoTipo(Habitacao* h1, Habitacao* h2);
+bool compHabitacaoRenda(Habitacao* h1, Habitacao* h2);
+bool compHabitacaoNIF(Habitacao* h1, Habitacao* h2);
 #endif

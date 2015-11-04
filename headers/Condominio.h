@@ -1,9 +1,10 @@
 #ifndef HEADERS_CONDOMINIO_H_
 #define HEADERS_CONDOMINIO_H_
 
+#include "../headers/Header.h"
 #include "../headers/Condomino.h"
 #include "../headers/Servico.h"
-#include "../headers/Header.h"
+#include "../headers/Funcionario.h"
 
 class Condominio {
 private:
@@ -33,11 +34,11 @@ public:
 	void setFuncionarios(vector<Funcionario> funcionarios);
 
 
-	void sortMoradores();
+	void sortMoradores(int sort);
 	int addMorador(Condomino condomino);
 	int eraseMorador(Condomino condomino);
 
-	void sortHabitacoes();
+	void sortHabitacoes(int sort);
 	int findHabitacao(vector<Habitacao*> habitacoes, Habitacao* habitacao);
 	bool addHabitacao(Habitacao* h1);
 	bool eraseHabitacao(int pos);
@@ -57,12 +58,18 @@ public:
 
 	//Funcoes Funcionario
 	bool addFuncionario(Funcionario funcionario);
-
-	void fimDoMes();
 	bool contratarFuncionarios(); //TODO contratarFuncionarios();
+
+	//Funcoes Servico
+	bool addServico(Servico servico);
+
+	vector<Condomino> fimDoMes();
 
 	void infoMoradores() const;
 	void infoHabitacoes() const;
 };
+
+bool compCondominoNomeCivil(Condomino c1, Condomino c2);
+bool compCondominoNIF(Condomino c1, Condomino c2);
 
 #endif

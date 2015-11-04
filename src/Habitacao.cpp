@@ -59,6 +59,10 @@ void Habitacao::setProprietario(string nif) {
 void Habitacao::setPago(int mes) {
 	this->pago[mes] = true;
 }
+void Habitacao::resetPago(){
+	for(size_t i = 0; i < 12; i++)
+		this->pago[i] = false;
+}
 
 /*
  * Vivenda

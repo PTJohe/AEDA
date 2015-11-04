@@ -18,7 +18,7 @@ vector<Condomino> Condominio::getMoradores() {
 vector<Habitacao*> Condominio::getHabitacoes() {
 	return habitacoes;
 }
-vector<Funcionario> Condominio::getFuncionarios(){
+vector<Funcionario> Condominio::getFuncionarios() {
 	return funcionarios;
 }
 void Condominio::setFundos(long int fundos) {
@@ -33,7 +33,7 @@ void Condominio::setMoradores(vector<Condomino> moradores) {
 void Condominio::setHabitacoes(vector<Habitacao*> habitacoes) {
 	this->habitacoes = habitacoes;
 }
-void Condominio::setFuncionarios(vector<Funcionario> funcionarios){
+void Condominio::setFuncionarios(vector<Funcionario> funcionarios) {
 	this->funcionarios = funcionarios;
 }
 Condomino* Condominio::getCondomino(int pos) {
@@ -41,8 +41,13 @@ Condomino* Condominio::getCondomino(int pos) {
 	return p;
 }
 
-void Condominio::sortMoradores() {
-	insertionSort(moradores);
+void Condominio::sortMoradores(int sortOption) {
+	if (sortOption == 0)
+		insertionSort(moradores);
+	else if(sortOption == 1)
+		sort(moradores.begin(), moradores.end(), compCondominoNomeCivil);
+	else if(sortOption == 2)
+		sort(moradores.begin(), moradores.end(), compCondominoNIF);
 }
 int Condominio::addMorador(Condomino condomino) {
 	int pos = sequentialSearch(this->moradores, condomino);
@@ -64,14 +69,19 @@ int Condominio::eraseMorador(Condomino condomino) {
 			if (habitacoes[i]->getNIFProprietario() == condomino.getNIF())
 				habitacoes[i]->setProprietario("");
 		}
-		sortHabitacoes();
+		sortHabitacoes(2);
 		return pos;
 	} else
 		return -1;
 }
 
-void Condominio::sortHabitacoes() {
-	sort(habitacoes.begin(), habitacoes.end(), compHabitacao);
+void Condominio::sortHabitacoes(int sortOption) {
+	if (sortOption == 0)
+		sort(habitacoes.begin(), habitacoes.end(), compHabitacaoTipo);
+	else if (sortOption == 1)
+		sort(habitacoes.begin(), habitacoes.end(), compHabitacaoRenda);
+	else if (sortOption == 2)
+		sort(habitacoes.begin(), habitacoes.end(), compHabitacaoNIF);
 	updateHabitacoesCondominos();
 }
 int Condominio::findHabitacao(vector<Habitacao*> habitacoes,
@@ -94,7 +104,7 @@ bool Condominio::addHabitacao(Habitacao* habitacao) {
 	}
 	if (pos == -1) {
 		this->habitacoes.push_back(habitacao);
-		sortHabitacoes();
+		sortHabitacoes(2);
 		return true;
 	} else
 		return false;
@@ -110,7 +120,7 @@ bool Condominio::eraseHabitacaoPossuida(Condomino condomino, int pos) {
 			this->habitacoes.erase(habitacoes.begin() + pos2);
 
 		bool success = moradores[pos1].eraseHabitacao(pos);
-		sortHabitacoes();
+		sortHabitacoes(2);
 		return success;
 	}
 }
@@ -188,7 +198,7 @@ bool Condominio::saldarDivida(Condomino condomino) {
 		this->moradores[pos].setDivida(0);
 		for (size_t i = 0; i < this->moradores[pos].getHabitacoes().size();
 				i++) {
-			for (size_t j = 0; j < this->currentMes; j++) {
+			for (size_t j = 0; j <= this->currentMes; j++) {
 				this->moradores[pos].getHabitacoes()[i]->setPago(j);
 			}
 		}
@@ -209,24 +219,81 @@ bool Condominio::updateHabitacoesCondominos() {
 	return true;
 }
 
-
-bool Condominio::addFuncionario(Funcionario funcionario){
+bool Condominio::addFuncionario(Funcionario funcionario) {
 	/*
 	 * TODO Verificar se o funcionario ja existe no vector antes de adicionar aqui
 	 */
 	this->funcionarios.push_back(funcionario);
 }
+bool Condominio::addServico(Servico servico) {
+	//if houver recursos, adiciona ao servicosEmCurso
+	//else adiciona servicosEmEspera
+	return false;
+}
 
-void Condominio::fimDoMes() {
-	for (size_t i = 0; i < moradores.size(); i++)
-		for (size_t j = 0; j < moradores[i].getHabitacoes().size(); j++)
-			fundos += moradores[i].getHabitacoes()[j]->calcRenda();
+//Retorna vector com condominos que nao pagaram totalmente as rendas nesse mes
+vector<Condomino> Condominio::fimDoMes() {
+	vector<Condomino> caloteiros;
+
+	//Actualiza o mes actual. Se o ano acabar, reinicializa o estado da renda das habitacoes de todos os condominos
+	if (this->currentMes < 11) //0 = Janeiro
+		this->currentMes++;
+	else if (this->currentMes == 11) { //11 = Dezembro
+		this->currentMes = 0;
+		for (size_t i = 0; i < this->moradores.size(); i++) {
+			for (size_t j = 0; j < this->moradores[i].getHabitacoes().size();
+					j++)
+				this->moradores[i].getHabitacoes()[j]->resetPago();
+		}
+	}
+
+	for (size_t i = 0; i < moradores.size(); i++) {
+		//Fundos mensais que o condomino tem para pagar as rendas
+		int fundosRestantes = moradores[i].getFundosMensais();
+		//Actualizar o pagamento da renda para cada habitacao que ele possuir
+		for (size_t j = 0; j < moradores[i].getHabitacoes().size(); j++) {
+			if (fundosRestantes > 0) {
+				int diferenca = fundosRestantes
+						- moradores[i].getHabitacoes()[j]->calcRenda();
+				//Adiciona a renda aos fundos do condominio e define como pago o mes actual da habitacao
+				if (diferenca >= 0) {
+					fundos += moradores[i].getHabitacoes()[j]->calcRenda();
+					moradores[i].getHabitacoes()[j]->setPago(this->currentMes);
+					fundosRestantes -=
+							moradores[i].getHabitacoes()[j]->calcRenda();
+				}
+				//Se nao tiver fundos para pagar totalmente a renda, adiciona o que conseguir aos fundos do condominio
+				//e adiciona à divida do condomino o montante que nao conseguiu pagar
+				else {
+					fundos += moradores[i].getHabitacoes()[j]->calcRenda()
+							+ diferenca;
+					moradores[i].addDivida(diferenca);
+					fundosRestantes -=
+							moradores[i].getHabitacoes()[j]->calcRenda();
+				}
+			}
+			//Se nao tiver fundos, adiciona à divida do condomino a renda que nao conseguiu pagar
+			else
+				moradores[i].addDivida(
+						-moradores[i].getHabitacoes()[j]->calcRenda());
+		}
+		//Se ainda restarem fundos e o condomino tiver uma divida,
+		//ele usa esses fundos para saldar essa divida (total ou parcialmente)
+		if (fundosRestantes > 0 && moradores[i].getDivida() < 0) {
+			int novaDivida = moradores[i].getDivida() + fundosRestantes;
+			if (novaDivida > 0)
+				novaDivida = 0;
+			moradores[i].setDivida(novaDivida);
+		}
+		//Se o condomino nao conseguiu pagar o mes, adiciona ao vector dos caloteiros que vai ser retornado
+		if (fundosRestantes < 0)
+			caloteiros.push_back(moradores[i]);
+	}
+
+	//Actualiza o pagamento aos funcionarios
 	fundos -= this->funcionarios.size() * 500;
 
-	if (this->currentMes < 12)
-		this->currentMes++;
-	else if (this->currentMes == 12)
-		this->currentMes = 1;
+	return caloteiros;
 }
 
 void Condominio::infoMoradores() const {
@@ -242,4 +309,20 @@ void Condominio::infoHabitacoes() const {
 		cout << i + 1 << " - ";
 		habitacoes[i]->info();
 	}
+}
+
+/*
+ * Non-class functions
+ */
+
+bool compCondominoNomeCivil(Condomino c1, Condomino c2) {
+	if (c1.getNomeCivil() < c2.getNomeCivil())
+		return true;
+	else if (c1.getNomeCivil() > c2.getNomeCivil())
+		return false;
+	else
+		return c1.getNomeUtilizador() < c2.getNomeUtilizador();
+}
+bool compCondominoNIF(Condomino c1, Condomino c2) {
+	return c1.getNIF() < c2.getNIF();
 }

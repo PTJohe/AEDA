@@ -6,50 +6,38 @@
  */
 #include "../headers/Funcionario.h"
 
-int Funcionario::id = 1;
+static int nextId = 1;
 
-void verificaEspecialidades(string toCompare){
-	vector<string> tempVec;
-	string tempStr;
-	fstream especs;
-
-	especs.open(pathEspecialidades);
-
-	while(!especs.eof()){
-		getline(especs,tempStr);
-		tempVec.push_back(tempStr);
-	}
-
-	if(!sequentialSearch(tempVec,toCompare)){
-		especs << toCompare << endl;
-	}
-
-}
-
-void atualizaCondominio(Condominio &condo){
-	vector<Funcionario> velho;
-	Funcionario tmp = this;
-	velho = condo.getFuncionarios();
-	velho.push_back(tmp);
-}
-
-Funcionario::Funcionario(string nome,string especialidade,Condominio &condo){
+Funcionario::Funcionario(string nome, string especialidade) {
 	this->nome = nome;
-	this->especialidades.push_back(especialidade);
-	this->status = true;
-	this->Funcionario;
-	id++;
-	verificaEspecialidades(especialidade);
-	atualizaCondominio(condo);
+	this->id = nextId;
+	this->especialidade = especialidade;
+	this->ocupado = false;
+	nextId++;
 }
 
 
-void Funcionario::giveEspecialidade(string especialidade){
-	this->especialidades.push_back(especialidade);
+string Funcionario::getNome() const{
+	return nome;
+}
+int Funcionario::getID() const{
+	return id;
+}
+bool Funcionario::getOcupado() const{
+	return ocupado;
+}
+string Funcionario::getEspecialidade() const{
+	return especialidade;
 }
 
-void Funcionario::giveStatus(bool status){
 
-	this->status = status;
+void Funcionario::setNome(string nome){
+	this->nome = nome;
+}
+void Funcionario::setOcupado(bool ocupado){
+	this->ocupado = ocupado;
+}
+void Funcionario::setEspecialidade(string especialidade){
+	this->especialidade = especialidade;
 }
 

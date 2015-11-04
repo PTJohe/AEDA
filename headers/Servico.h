@@ -2,25 +2,30 @@
 #define HEADERS_SERVICO_H_
 
 #include "../headers/Header.h"
-#include "../headers/Funcionario.h"
 
 class Servico {
 private:
-	string nome;
-	static int id; //id unico de cada servico
+	string especialidade;
+	int id; //id unico de cada servico
 	float duracao; //em horas
-	int numFuncionarios; //numero de funcionários necessários para a realização do serviço
-	vector<Funcionario> funcionarios;
 	float preco; //em dolares
+	int idFuncionario;
 
 public:
-	Servico(string nome,float duracao,int numFuncionarios,Condominio &condo, float preco, string especialidade);
+	Servico(string especialidade,float duracao, float preco, int idFuncionario);
 
-	string getNome(){return nome;}
-	float getDuracao(){return duracao;}
-	vector<Funcionario> getFuncionarios(){return funcionarios;}
+	string getEspecialidade() const;
+	int getID() const;
+	float getDuracao() const;
+	float getPreco() const;
+	int getIDFuncionario() const;
 
-	class faltaPessoal{ }; //excepção
+	void setEspecialidade(string especialidade);
+	void setDuracao(float duracao);
+	void setPreco(float preco);
+	void setIDFuncionario(int idFuncionario);
+
+	//class faltaPessoal{ }; //TODO isto tem que ir para a class Condominio, não aqui
 };
 
 #endif

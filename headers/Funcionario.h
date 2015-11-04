@@ -3,26 +3,25 @@
 
 #include "../headers/Header.h"
 
-#define pathEspecialidades "../savedata/especialidades.txt"
-
 class Funcionario {
 private:
 	string nome;
-	static int id;
-	bool status; // false -> ocupado
-	vector<string> especialidades;
+	int id;
+	bool ocupado;
+	string especialidade;
 
 public:
 	Funcionario();
-	Funcionario(string nome,string especialidade,Condominio &condo);
+	Funcionario(string nome,string especialidade);
 
-	string getNome(){return nome;}
-	bool getStatus(){return status;}
-	vector<string> getEspecialidades(){return especialidades;}
+	string getNome() const;
+	int getID() const;
+	bool getOcupado() const;
+	string getEspecialidade() const;
 
-	void giveEspecialidade(string especialidade);
-	void giveStatus(bool status);
-
+	void setNome(string nome);
+	void setOcupado(bool status);
+	void setEspecialidade(string especialidade);
 };
 
 
