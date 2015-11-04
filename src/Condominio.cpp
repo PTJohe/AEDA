@@ -18,11 +18,9 @@ vector<Condomino> Condominio::getMoradores() {
 vector<Habitacao*> Condominio::getHabitacoes() {
 	return habitacoes;
 }
-
 vector<Funcionario> Condominio::getFuncionarios(){
 	return funcionarios;
 }
-
 void Condominio::setFundos(long int fundos) {
 	this->fundos = fundos;
 }
@@ -35,11 +33,9 @@ void Condominio::setMoradores(vector<Condomino> moradores) {
 void Condominio::setHabitacoes(vector<Habitacao*> habitacoes) {
 	this->habitacoes = habitacoes;
 }
-
 void Condominio::setFuncionarios(vector<Funcionario> funcionarios){
 	this->funcionarios = funcionarios;
 }
-
 Condomino* Condominio::getCondomino(int pos) {
 	Condomino* p = &moradores[pos];
 	return p;
@@ -64,8 +60,8 @@ int Condominio::eraseMorador(Condomino condomino) {
 	if (pos != -1) {
 		this->moradores.erase(moradores.begin() + pos);
 		insertionSort(moradores);
-		for(size_t i = 0; i < this->habitacoes.size(); i++){
-			if(habitacoes[i]->getNIFProprietario() == condomino.getNIF())
+		for (size_t i = 0; i < this->habitacoes.size(); i++) {
+			if (habitacoes[i]->getNIFProprietario() == condomino.getNIF())
 				habitacoes[i]->setProprietario("");
 		}
 		sortHabitacoes();
@@ -74,48 +70,66 @@ int Condominio::eraseMorador(Condomino condomino) {
 		return -1;
 }
 
-void Condominio::sortHabitacoes(){
-	sort(habitacoes.begin(),habitacoes.end(), compHabitacao);
+void Condominio::sortHabitacoes() {
+	sort(habitacoes.begin(), habitacoes.end(), compHabitacao);
 	updateHabitacoesCondominos();
 }
 int Condominio::findHabitacao(vector<Habitacao*> habitacoes,
 		Habitacao* habitacao) {
 	int pos = -1;
-	if (habitacao->getTipo() == "Vivenda") {
-		for (size_t i = 0; i < habitacoes.size(); i++) {
-			if (habitacao->getNIFProprietario()
-					== habitacoes[i]->getNIFProprietario())
-				if (habitacao->getMorada() == habitacoes[i]->getMorada()) {
-					pos = i;
-					return pos;
-				}
-		}
-	} else if (habitacao->getTipo() == "Apartamento") {
-		for (size_t i = 0; i < habitacoes.size(); i++) {
-			if (habitacao->getNIFProprietario()
-					== habitacoes[i]->getNIFProprietario())
-				if (habitacao->getMorada() == habitacoes[i]->getMorada())
-					if (habitacao->getPiso() == habitacoes[i]->getPiso()) {
-						pos = i;
-						return pos;
-					}
+	for (size_t i = 0; i < habitacoes.size(); i++) {
+		if (habitacao->getMorada() == habitacoes[i]->getMorada()) {
+			pos = i;
+			return pos;
 		}
 	}
 	return pos;
 }
-bool Condominio::eraseHabitacao(Condomino condomino, int pos) {
-	int pos1 = sequentialSearch(this->moradores, condomino);
-	if (pos == -1)
+
+bool Condominio::addHabitacao(Habitacao* habitacao) {
+	int pos = -1;
+	for (size_t i = 0; i < this->habitacoes.size(); i++) {
+		if (habitacoes[i]->getMorada() == habitacao->getMorada())
+			pos = i;
+	}
+	if (pos == -1) {
+		this->habitacoes.push_back(habitacao);
+		sortHabitacoes();
+		return true;
+	} else
 		return false;
+}
+bool Condominio::eraseHabitacaoPossuida(Condomino condomino, int pos) {
+	int pos1 = sequentialSearch(this->moradores, condomino);
+	if (pos1 == -1) {
+		return false;
+	} else {
+		Habitacao* h1 = moradores[pos1].getHabitacoes()[pos];
+		int pos2 = this->findHabitacao(this->habitacoes, h1);
+		if (pos2 != -1)
+			this->habitacoes.erase(habitacoes.begin() + pos2);
 
-	Habitacao* h1 = moradores[pos1].getHabitacoes()[pos];
-	int pos2 = this->findHabitacao(this->habitacoes, h1);
-	if (pos2 != -1)
-		this->habitacoes.erase(habitacoes.begin() + pos2);
+		bool success = moradores[pos1].eraseHabitacao(pos);
+		sortHabitacoes();
+		return success;
+	}
+}
 
-	bool success = moradores[pos1].eraseHabitacao(pos);
-	sortHabitacoes();
-	return success;
+bool Condominio::eraseHabitacao(int pos) {
+	Condomino c1 = Condomino("nome", "password", "nomeCivil",
+			this->habitacoes[pos]->getNIFProprietario());
+	int pos1 = sequentialSearch(this->moradores, c1);
+
+	if (pos1 == -1) {
+		delete habitacoes[pos];
+		habitacoes.erase(habitacoes.begin() + pos);
+		return true;
+	} else {
+		int pos2 = this->findHabitacao(moradores[pos1].getHabitacoes(),
+				habitacoes[pos]);
+		habitacoes.erase(habitacoes.begin() + pos);
+		return this->moradores[pos1].eraseHabitacao(pos2);
+	}
 }
 
 bool Condominio::setNomeUtilizador(Condomino condomino, string nomeUtilizador) {
@@ -182,17 +196,6 @@ bool Condominio::saldarDivida(Condomino condomino) {
 	}
 }
 
-int Condominio::addHabitacao(Habitacao* habitacao) {
-	int pos = sequentialSearch(this->habitacoes, habitacao);
-	if (pos == -1) {
-		this->habitacoes.push_back(habitacao);
-		insertionSort(habitacoes);
-		pos = sequentialSearch(this->habitacoes, habitacao);
-		return pos;
-	} else
-		return -1;
-}
-
 bool Condominio::updateHabitacoesCondominos() {
 	for (size_t i = 0; i < this->moradores.size(); i++) {
 		vector<Habitacao*> habitacoes;
@@ -204,6 +207,14 @@ bool Condominio::updateHabitacoesCondominos() {
 		this->moradores[i].setHabitacoes(habitacoes);
 	}
 	return true;
+}
+
+
+bool Condominio::addFuncionario(Funcionario funcionario){
+	/*
+	 * TODO Verificar se o funcionario ja existe no vector antes de adicionar aqui
+	 */
+	this->funcionarios.push_back(funcionario);
 }
 
 void Condominio::fimDoMes() {

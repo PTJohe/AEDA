@@ -86,6 +86,15 @@ Vivenda::Vivenda(string morada, string codigoPostal, string proprietario,
 	this->areaExterior = areaExterior;
 	this->piscina = piscina;
 }
+void Vivenda::setAreaInterior(float area){
+	this->areaInterior = area;
+}
+void Vivenda::setAreaExterior(float area){
+	this->areaExterior = area;
+}
+void Vivenda::setPiscina(bool piscina){
+	this->piscina = piscina;
+}
 
 float Vivenda::getAreaInterior() const {
 	return areaInterior;
@@ -144,6 +153,16 @@ Apartamento::Apartamento(string morada, string codigoPostal,
 		Habitacao(morada, codigoPostal, proprietario, pago) {
 	this->tipologia = tipologia;
 	this->areaInterior = areaInterior;
+	this->piso = piso;
+}
+
+void Apartamento::setAreaInterior(float area){
+	this->areaInterior = area;
+}
+void Apartamento::setTipologia(int tipologia){
+	this->tipologia = tipologia;
+}
+void Apartamento::setPiso(int piso){
 	this->piso = piso;
 }
 

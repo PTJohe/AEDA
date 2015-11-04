@@ -86,19 +86,12 @@ void Condomino::setHabitacoes(vector<Habitacao*> habitacoes) {
 void Condomino::sortHabitacoes() {
 	sort(habitacoes.begin(), habitacoes.end(), compHabitacao);
 }
-bool Condomino::addHabitacao(Habitacao* h1) {
-	int pos = -1;
-	for (size_t i = 0; i < this->habitacoes.size(); i++) {
-		if (habitacoes[i]->getMorada() == h1->getMorada())
-			pos = i;
-	}
-	if (pos == -1) {
-		h1->setProprietario(this->NIF);
-		this->habitacoes.push_back(h1);
-		insertionSort(this->habitacoes);
-		return true;
-	} else
-		return false;
+void Condomino::addHabitacao(Habitacao* h1, int currentMes) {
+	h1->setProprietario(this->NIF);
+	for (size_t i = 0; i < currentMes; i++)
+		h1->setPago(i);
+	this->habitacoes.push_back(h1);
+	sortHabitacoes();
 }
 bool Condomino::eraseHabitacao(int pos) {
 	if (pos != -1) {
@@ -124,9 +117,7 @@ bool Condomino::hasDados() const {
 bool Condomino::operator==(const Condomino c1) const {
 	if (this->nomeUtilizador == c1.nomeUtilizador) {
 		return true;
-	} else if (this->NIF == "NAO DEFINIDO")
-		return false;
-	else
+	} else
 		return (this->NIF == c1.NIF);
 }
 bool Condomino::operator<(const Condomino c1) const {
@@ -173,12 +164,13 @@ void Condomino::infoRenda() const {
 	cout << "Numero de habitacoes = " << this->habitacoes.size() << "\n"
 			<< endl;
 
-	cout << "\t\t J F M A M J J A S O N D" << endl;
+	cout << "\t\tRenda\t J F M A M J J A S O N D" << endl;
 	if (habitacoes.empty())
 		cout << "Nao possui habitacoes." << endl;
 	else {
 		for (size_t i = 0; i < this->habitacoes.size(); i++) {
-			cout << i + 1 << " - " << habitacoes[i]->getTipo() << "\t|";
+			cout << i + 1 << " - " << habitacoes[i]->getTipo() << "\t"
+					<< habitacoes[i]->calcRenda() << "$" << "\t|";
 			for (size_t j = 0; j < 12; j++) {
 				if (this->habitacoes[i]->getPago(j) == 1)
 					cout << "X|";

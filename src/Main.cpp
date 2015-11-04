@@ -49,9 +49,6 @@ bool Main::displayYesNo(int option) {
 	if (option >= 2) {
 		return EXIT_FAILURE;
 	}
-	vector<string> YesNo;
-	YesNo.push_back("Sim");
-	YesNo.push_back("Nao");
 
 	if (option == 0) {
 		setcolor(BLACK, LIGHTGREY);
@@ -63,6 +60,25 @@ bool Main::displayYesNo(int option) {
 		cout << "Sim\t";
 		setcolor(BLACK, LIGHTGREY);
 		cout << "Nao" << endl;
+		setcolor(WHITE, BLACK);
+	}
+	return EXIT_SUCCESS;
+}
+bool Main::displayVivendaApartamento(int option) {
+	if (option >= 2) {
+		return EXIT_FAILURE;
+	}
+
+	if (option == 0) {
+		setcolor(BLACK, LIGHTGREY);
+		cout << "Vivenda";
+		setcolor(WHITE, BLACK);
+		cout << "\tApartamento" << endl;
+	} else if (option == 1) {
+		setcolor(WHITE, BLACK);
+		cout << "Vivenda\t";
+		setcolor(BLACK, LIGHTGREY);
+		cout << "Apartamento" << endl;
 		setcolor(WHITE, BLACK);
 	}
 	return EXIT_SUCCESS;
@@ -111,59 +127,30 @@ bool Main::displaySelectCondomino() {
 	}
 	return EXIT_SUCCESS;
 }
-bool Main::displaySelectHabitacao() {
-	if (option >= this->condominio.getHabitacoes().size()) {
+bool Main::displaySelectHabitacao(vector<Habitacao*> habitacoes) {
+	if (option >= habitacoes.size()) {
 		return EXIT_FAILURE;
 	}
-	for (size_t i = 0; i < this->condominio.getHabitacoes().size(); i++) {
+	for (size_t i = 0; i < habitacoes.size(); i++) {
 		gotoxy(0, 14 + i);
 		if (i == option) {
 			setcolor(BLACK, LIGHTGREY);
-			cout << left << setw(12) << setfill(' ')
-					<< this->condominio.getHabitacoes()[i]->getTipo() << " - "
-					<< this->condominio.getHabitacoes()[i]->calcRenda() << "$"
-					<< left << setw(10) << setfill(' ') << " - "
-					<< this->condominio.getHabitacoes()[i]->getNIFProprietario()
-					<< endl;
+			cout << left << setw(12) << setfill(' ') << habitacoes[i]->getTipo()
+					<< " - " << habitacoes[i]->calcRenda() << "$" << left
+					<< setw(10) << setfill(' ') << " - "
+					<< habitacoes[i]->getNIFProprietario() << endl;
 			setcolor(WHITE, BLACK);
 		} else {
-			cout << left << setw(12) << setfill(' ')
-					<< this->condominio.getHabitacoes()[i]->getTipo() << " - "
-					<< this->condominio.getHabitacoes()[i]->calcRenda() << "$"
-					<< left << setw(10) << setfill(' ') << " - "
-					<< this->condominio.getHabitacoes()[i]->getNIFProprietario()
-					<< endl;
+			cout << left << setw(12) << setfill(' ') << habitacoes[i]->getTipo()
+					<< " - " << habitacoes[i]->calcRenda() << "$" << left
+					<< setw(10) << setfill(' ') << " - "
+					<< habitacoes[i]->getNIFProprietario() << endl;
 		}
 	}
 	return EXIT_SUCCESS;
 
 }
-bool Main::displaySelectHabitacaoPossuida() {
-	if (option >= this->currentUser->getHabitacoes().size()) {
-		return EXIT_FAILURE;
-	}
-	for (size_t i = 0; i < this->currentUser->getHabitacoes().size(); i++) {
-		gotoxy(0, 14 + i);
-		if (i == option) {
-			setcolor(BLACK, LIGHTGREY);
-			cout << left << setw(12) << setfill(' ')
-					<< this->currentUser->getHabitacoes()[i]->getTipo() << " - "
-					<< this->currentUser->getHabitacoes()[i]->calcRenda() << "$"
-					<< left << setw(10) << setfill(' ') << " - "
-					<< this->currentUser->getHabitacoes()[i]->getMorada()
-					<< endl;
-			setcolor(WHITE, BLACK);
-		} else {
-			cout << left << setw(12) << setfill(' ')
-					<< this->currentUser->getHabitacoes()[i]->getTipo() << " - "
-					<< this->currentUser->getHabitacoes()[i]->calcRenda() << "$"
-					<< left << setw(10) << setfill(' ') << " - "
-					<< this->currentUser->getHabitacoes()[i]->getMorada()
-					<< endl;
-		}
-	}
-	return EXIT_SUCCESS;
-}
+
 // Checks if the user exists and, if so, updates currentUser.
 bool Main::validLogin(string utilizador, string password) {
 	Condomino c1 = Condomino(utilizador, password);
@@ -586,6 +573,148 @@ bool Main::editDadosCondominoAdmin(int editOption, Condomino &condomino) {
 	return false;
 }
 
+bool Main::editHabitacao(int editOption, Habitacao* h1) {
+	displayLogo();
+	gotoxy(0, 8);
+	if (editOption == 0) {
+		cout << "Alterar morada:\n" << endl;
+		string moradaActual = h1->getMorada();
+		cout << "Morada actual: " << moradaActual << endl;
+		string moradaNova = "";
+		cout << "Introduza a nova morada: ";
+		getline(cin, moradaNova);
+		Vivenda* v1 = new Vivenda(moradaNova, "", 0, 0, false);
+		if (this->condominio.findHabitacao(this->condominio.getHabitacoes(), v1)
+				!= -1) {
+			cout << "\nNao foi possivel alterar a morada." << endl;
+			cout << "Ja existe outra habitacao com a mesma morada." << endl;
+			pressEnterToContinue();
+			return false;
+		}
+		delete v1;
+		h1->setMorada(moradaNova);
+		cout << "\nMorada alterada." << endl;
+		pressEnterToContinue();
+		return true;
+	} else if (editOption == 1) {
+		cout << "Alterar codigo postal:\n" << endl;
+		string codPostalActual = h1->getCodigoPostal();
+		cout << "Codigo postal actual: " << codPostalActual << endl;
+
+		string novoCodigo = "";
+		cout << "Introduza o novo codigo postal: ";
+		getline(cin, novoCodigo);
+		h1->setCodigoPostal(novoCodigo);
+		cout << "Codigo postal alterado." << endl;
+		pressEnterToContinue();
+		return true;
+	} else if (editOption == 2) {
+		cout << "Alterar area habitacional:\n" << endl;
+		float areaInteriorActual = h1->getAreaInterior();
+		cout << "Area habitacional actual: " << areaInteriorActual << " m2"
+				<< endl;
+		string novaAreaInterior = "";
+		do {
+			cout << "Introduza a nova area habitacional: ";
+			getline(cin, novaAreaInterior);
+			if (!isNumber(novaAreaInterior))
+				cout
+						<< "Area habitacional tem que ser um numero inteiro positivo.\n"
+						<< endl;
+		} while (!isNumber(novaAreaInterior));
+		float area = atof(novaAreaInterior.c_str());
+		h1->setAreaInterior(area);
+		cout << "\nArea habitacional alterada." << endl;
+		pressEnterToContinue();
+		return true;
+	} else {
+		if (h1->getTipo() == "Vivenda") {
+			if (editOption == 3) {
+				cout << "Alterar area exterior:\n" << endl;
+				float areaExteriorActual = h1->getAreaExterior();
+				cout << "Area exterior actual: " << areaExteriorActual << " m2"
+						<< endl;
+				string input = "";
+				do {
+					cout << "Introduza a nova area exterior: ";
+					getline(cin, input);
+					if (!isNumber(input))
+						cout
+								<< "Area habitacional tem que ser um numero inteiro positivo.\n"
+								<< endl;
+				} while (!isNumber(input));
+				float area = atof(input.c_str());
+				h1->setAreaExterior(area);
+				cout << "\nArea exterior alterada." << endl;
+				pressEnterToContinue();
+				return true;
+			} else if (editOption == 4) {
+				cout << "Alterar piscina:\n" << endl;
+				bool piscinaActual = h1->getPiscina();
+				cout << "Piscina actual: ";
+				if (piscinaActual)
+					cout << "SIM" << endl;
+				else
+					cout << "NAO" << endl;
+				string input = "";
+				do {
+					cout << "Introduza o novo estado de piscina (Sim/Nao): ";
+					getline(cin, input);
+				} while (input != "Sim" && input != "sim" && input != "Nao"
+						&& input != "nao");
+				if (input == "Sim" || input == "sim")
+					piscinaActual = true;
+				else if (input == "Nao" || input == "nao")
+					piscinaActual = false;
+				h1->setPiscina(piscinaActual);
+				cout << "\nEstado de piscina alterado." << endl;
+				pressEnterToContinue();
+				return true;
+			}
+		} else {
+			if (editOption == 3) {
+				cout << "Alterar a tipologia:\n" << endl;
+				int tipologiaActual = h1->getTipologia();
+				cout << "Tipologia actual: T" << tipologiaActual << endl;
+				string input = "";
+				do {
+					cout << "Introduza a novo numero de quartos: ";
+					getline(cin, input);
+					if (!isNumber(input)) {
+						cout
+								<< "A tipologia tem que ser um numero inteiro positivo.\n"
+								<< endl;
+					}
+				} while (!isNumber(input));
+				int tipologia = atoi(input.c_str());
+				h1->setTipologia(tipologia);
+				cout << "\nTipologia alterada." << endl;
+				pressEnterToContinue();
+				return true;
+			} else if (editOption == 4) {
+				cout << "Alterar o piso:\n" << endl;
+				int pisoActual = h1->getPiso();
+				cout << "Piso actual: " << pisoActual << endl;
+				string input = "";
+				do {
+					cout << "Introduza o novo piso: ";
+					getline(cin, input);
+					if (!isNumber(input)) {
+						cout
+								<< "O piso tem que ser um numero inteiro positivo.\n"
+								<< endl;
+					}
+				} while (!isNumber(input));
+				int piso = atoi(input.c_str());
+				h1->setPiso(piso);
+				cout << "\nPiso alterado." << endl;
+				pressEnterToContinue();
+				return true;
+			}
+		}
+	}
+}
+
 void Main::displayCurrentUserInfoConta() {
 	displayLogo();
 	gotoxy(0, 8);
@@ -728,6 +857,8 @@ int Main::menuRegisto() {
 
 	string utilizador = "";
 	string password = "";
+	string nomeCivil = "";
+	string NIF = "";
 
 	cout << "Utilizador: ";
 	getline(cin, utilizador);
@@ -735,17 +866,38 @@ int Main::menuRegisto() {
 	getline(cin, password);
 
 	if (validRegister(utilizador, password)) {
-		Condomino c1 = Condomino(utilizador, password);
-		this->condominio.addMorador(c1);
-		cout << "\nConta criada com sucesso!" << endl;
+		do {
+			cout << "Nome Civil: ";
+			getline(cin, nomeCivil);
+			if (!isName(nomeCivil))
+				cout << "Introduza um nome valido.\n" << endl;
+		} while (!isName(nomeCivil));
+		do {
+			cout << "NIF: ";
+			getline(cin, NIF);
+			if ((NIF.size() != 9) && (!isNumber(NIF))) {
+				cout << "Introduza um NIF valido.\n" << endl;
+			}
+		} while ((NIF.size() != 9) && (!isNumber(NIF)));
+		Condomino c1 = Condomino(utilizador, password, nomeCivil, NIF);
+		int pos = this->condominio.addMorador(c1);
+		if (pos != -1)
+			cout << "\nConta criada com sucesso!" << endl;
+		else {
+			cout << "\nNao foi possivel criar uma conta." << endl;
+			cout
+					<< "Ja existe um condomino com o mesmo nome de utilizador e/ou NIF."
+					<< endl;
+		}
 	} else {
-		cout << "Nao foi possivel criar uma conta." << endl;
+		cout << "\nNao foi possivel criar uma conta." << endl;
 	}
 	pressEnterToContinue();
 	resetOption();
 	return EXIT_SUCCESS;
 }
 
+//Menu Utilizador
 int Main::menuUtilizador() {
 	displayLogo();
 
@@ -780,21 +932,24 @@ int Main::menuUtilizador() {
 		break;
 	case KEY_ENTER:
 		if (menuOption == 1)
-			if (option == 0) {
+			if (option == 0) { //Menu Administrador
 				resetOption();
 				return menuAdministrador();
-			} else if (option == 1) {
+			} else if (option == 1) { //Editar dados canto
 				resetOption();
 				return menuEditDadosConta(*(this->currentUser));
-			} else if (option == 2) {
+			} else if (option == 2) { //Ver dados condomino
 				displayCurrentUserInfoCondomino();
-			} else if (option == 3) {
+			} else if (option == 3) { //Editar dados condomino
 				resetOption();
 				return menuEditDadosCondomino(*(this->currentUser));
-			} else if (option == 4) {
+			} else if (option == 4) { //Ver habitacoes possuidas
 				resetOption();
 				return menuHabitacoesPossuidas();
-			} else {
+			} else if (option == 5) { //Adicionar habitacao
+				resetOption();
+				return menuSelectOrNewHabitacao();
+			} else { //Sair
 				resetOption();
 				return menuInicial();
 			}
@@ -926,6 +1081,7 @@ int Main::menuEditDadosCondomino(Condomino &condomino) {
 	}
 	return menuEditDadosCondomino(condomino);
 }
+
 int Main::menuHabitacoesPossuidas() {
 	displayLogo();
 
@@ -997,7 +1153,7 @@ int Main::menuSelectHabitacoesPossuida(bool remover) {
 		resetOption();
 		return menuHabitacoesPossuidas();
 	}
-	displaySelectHabitacaoPossuida();
+	displaySelectHabitacao(currentUser->getHabitacoes());
 
 	int c = getch();
 	switch (c) {
@@ -1026,7 +1182,6 @@ int Main::menuSelectHabitacoesPossuida(bool remover) {
 	}
 	return menuSelectHabitacoesPossuida(remover);
 }
-
 int Main::menuDeleteHabitacaoPossuida(int pos, int menuOption) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -1034,7 +1189,7 @@ int Main::menuDeleteHabitacaoPossuida(int pos, int menuOption) {
 	cout << "Tipo: ";
 	this->currentUser->getHabitacoes()[pos]->info();
 
-	cout << "Tem a certeza que deseja remover esta habitacao?" << endl;
+	cout << "Tem a certeza que pretende remover esta habitacao?" << endl;
 	displayYesNo(menuOption);
 
 	int c = getch();
@@ -1048,15 +1203,15 @@ int Main::menuDeleteHabitacaoPossuida(int pos, int menuOption) {
 			menuOption++;
 		break;
 	case KEY_ENTER:
-		if (option == 0) {
-			this->condominio.eraseHabitacao(*currentUser, pos);
+		if (menuOption == 0) {
+			this->condominio.eraseHabitacaoPossuida(*currentUser, pos);
 			cout << "\nHabitacao removida." << endl;
 			if (this->option > 0)
 				option--;
 			pressEnterToContinue();
 			return menuSelectHabitacoesPossuida(true);
-		} else if (option == 1) {
-			resetOption();
+		} else if (menuOption == 1) {
+			return menuSelectHabitacoesPossuida(true);
 		}
 		break;
 	default:
@@ -1064,7 +1219,278 @@ int Main::menuDeleteHabitacaoPossuida(int pos, int menuOption) {
 	}
 	return menuDeleteHabitacaoPossuida(pos, menuOption);
 }
+int Main::menuSelectOrNewHabitacao() {
+	displayLogo();
 
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "ADICIONAR HABITACAO" << endl;
+	displayMenuOptions(15);
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[15].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) {
+			resetOption();
+			vector<Habitacao*> habitacoesLivres;
+			for (size_t i = 0; i < this->condominio.getHabitacoes().size();
+					i++) {
+				if (!this->condominio.getHabitacoes()[i]->hasProprietario())
+					habitacoesLivres.push_back(
+							this->condominio.getHabitacoes()[i]);
+			}
+			return menuSelectHabitacaoAdd(habitacoesLivres);
+		} else if (option == 1) {
+			resetOption();
+			return menuAddHabitacao(*currentUser);
+		} else {
+			resetOption();
+			return menuHabitacoesPossuidas();
+		}
+		break;
+	default:
+		break;
+	}
+
+	return menuSelectOrNewHabitacao();
+}
+int Main::menuSelectHabitacaoAdd(vector<Habitacao*> habitacoes) {
+	displayLogo();
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "SELECIONE A HABITACAO:\n" << endl;
+	cout << "[ENTER] Adicionar habitacao" << endl;
+	cout << "[ESC] Voltar atras\n" << endl;
+	cout << "Habitacao      Renda         Morada" << endl;
+
+	if (habitacoes.empty()) {
+		cout << "Nao existem habitacoes livres.\n" << endl;
+		pressEnterToContinue();
+		resetOption();
+		return menuSelectOrNewHabitacao();
+	}
+	displaySelectHabitacao(habitacoes);
+
+	int pos = -1;
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < habitacoes.size())
+			option++;
+		break;
+	case KEY_ENTER:
+		pos = option;
+		resetOption();
+		return menuConfirmAddHabitacao(*this->currentUser, habitacoes[pos]);
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuUtilizador();
+		break;
+	default:
+		break;
+	}
+	return menuSelectHabitacaoAdd(habitacoes);
+}
+int Main::menuAddHabitacao(Condomino condomino) {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "ADICIONAR HABITACAO" << endl;
+
+	cout << "\nSelecione o tipo de habitacao: ";
+	displayVivendaApartamento(this->option);
+
+	string line = "";
+	string morada = "";
+	string codigoPostal = "";
+	float areaInterior = 0;
+	float areaExterior = 0;
+	bool piscina = false;
+	int tipologia = 0;
+	int piso = 0;
+
+	int c = getch();
+	switch (c) {
+	case KEY_LEFT:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_RIGHT:
+		if (option + 1 < 2)
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) { //Vivenda
+			cout << "Morada: ";
+			getline(cin, morada);
+			cout << "Codigo Postal: ";
+			getline(cin, codigoPostal);
+			do {
+				cout << "Area habitacional: ";
+				getline(cin, line);
+				if (!isNumber(line))
+					cout
+							<< "A area habitacional tem que ser um numero inteiro positivo.\n"
+							<< endl;
+			} while (!isNumber(line));
+			areaInterior = atof(line.c_str());
+			do {
+				cout << "Area exterior: ";
+				getline(cin, line);
+				if (!isNumber(line))
+					cout
+							<< "A area exterior tem que ser um numero inteiro positivo.\n"
+							<< endl;
+			} while (!isNumber(line));
+			areaExterior = atof(line.c_str());
+			while (line != "Sim" && line != "sim" && line != "Nao"
+					&& line != "nao") {
+				cout << "Piscina(Sim/Nao): ";
+				getline(cin, line);
+				if (line == "Sim" || line == "sim")
+					piscina = true;
+				else if (line == "Nao" || line == "nao")
+					piscina = false;
+			}
+
+			Vivenda* v1 = new Vivenda(morada, codigoPostal, condomino.getNIF(),
+					areaInterior, areaExterior, piscina);
+			return menuConfirmAddHabitacao(condomino, v1);
+
+		} else if (option == 1) {
+			cout << "Morada: ";
+			getline(cin, morada);
+			cout << "Codigo Postal: ";
+			getline(cin, codigoPostal);
+			do {
+				cout << "Area habitacional: ";
+				getline(cin, line);
+				if (!isNumber(line))
+					cout
+							<< "A area habitacional tem que ser um numero inteiro positivo.\n"
+							<< endl;
+			} while (!isNumber(line));
+			areaInterior = atof(line.c_str());
+			do {
+				cout << "Numero de quartos: ";
+				getline(cin, line);
+				if (!isNumber(line))
+					cout
+							<< "O numero de quartos tem que ser um numero inteiro positivo.\n"
+							<< endl;
+				else
+					break;
+			} while (!isNumber(line));
+			tipologia = atoi(line.c_str());
+			do {
+				cout << "Piso: ";
+				getline(cin, line);
+				if (!isNumber(line))
+					cout << "O piso tem que ser um numero inteiro positivo.\n"
+							<< endl;
+			} while (!isNumber(line));
+			piso = atoi(line.c_str());
+
+			Apartamento* a1 = new Apartamento(morada, codigoPostal,
+					condomino.getNIF(), tipologia, areaInterior, piso);
+
+			return menuConfirmAddHabitacao(condomino, a1);
+		}
+		break;
+	default:
+		break;
+	}
+	return menuAddHabitacao(condomino);
+}
+int Main::menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1) {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "DADOS DA HABITACAO\n" << endl;
+	cout << "Tipo: ";
+	h1->info();
+
+	cout << "Tem a certeza que pretende adicionar esta habitacao?" << endl;
+	displayYesNo(option);
+
+	int c = getch();
+	switch (c) {
+	case KEY_LEFT:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_RIGHT:
+		if (option + 1 < 2)
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) {
+			int pos = sequentialSearch(this->condominio.getMoradores(),
+					condomino);
+			if (h1->hasProprietario()) {
+				if (this->condominio.addHabitacao(h1)) {
+					this->condominio.getCondomino(pos)->addHabitacao(h1,
+							this->condominio.getMes());
+					cout << "\nHabitacao adicionada." << endl;
+				} else {
+					cout << "\nNao foi possivel adicionar a habitacao." << endl;
+					cout << "Ja existe uma habitacao com a mesma morada."
+							<< endl;
+				}
+				pressEnterToContinue();
+				resetOption();
+				return menuUtilizador();
+			} else {
+				this->condominio.getCondomino(pos)->addHabitacao(h1,
+						this->condominio.getMes());
+				cout << "\nHabitacao adicionada." << endl;
+				pressEnterToContinue();
+				resetOption();
+				return menuSelectOrNewHabitacao();
+			}
+		} else if (option == 1) {
+			resetOption();
+			return menuUtilizador();
+		}
+		break;
+	default:
+		break;
+	}
+	return menuConfirmAddHabitacao(condomino, h1);
+}
+
+//MenuAdministrador
 int Main::menuAdministrador() {
 	displayLogo();
 
@@ -1112,7 +1538,7 @@ int Main::menuAdministrador() {
 
 	return menuAdministrador();
 }
-
+//Gerir Condominos
 int Main::menuGerirCondominos() {
 	displayLogo();
 
@@ -1375,7 +1801,7 @@ int Main::menuDeleteCondomino(Condomino &condomino, int menuOption) {
 	}
 	return menuDeleteCondomino(condomino, menuOption);
 }
-
+//Gerir Habitacoes
 int Main::menuGerirHabitacoes() {
 	displayLogo();
 
@@ -1406,13 +1832,13 @@ int Main::menuGerirHabitacoes() {
 			return menuDisplayAllHabitacoes();
 		else if (option == 1) { //Alterar dados de uma habitacao
 			resetOption();
-			return menuSelectHabitacao(true);
+			return menuSelectHabitacao(false);
 		} else if (option == 2) { //Adicionar habitacao
 			resetOption();
-			return menuGerirHabitacoes();
+			return menuSelectOrVacantHabitacao();
 		} else if (option == 3) { //Remover habitacao
 			resetOption();
-			return menuSelectHabitacao(false);
+			return menuSelectHabitacao(true);
 		} else {
 			resetOption();
 			return menuAdministrador();
@@ -1441,7 +1867,7 @@ int Main::menuDisplayAllHabitacoes() {
 	cout << "[ENTER] Ver dados" << endl;
 	cout << "[ESC] Voltar atras\n" << endl;
 	cout << "Habitacao      Renda         NIF Proprietario" << endl;
-	displaySelectHabitacao();
+	displaySelectHabitacao(this->condominio.getHabitacoes());
 
 	int c = getch();
 	switch (c) {
@@ -1465,18 +1891,228 @@ int Main::menuDisplayAllHabitacoes() {
 	}
 	return menuDisplayAllHabitacoes();
 }
-int Main::menuSelectHabitacao(bool editar) {
+int Main::menuSelectHabitacao(bool remover) {
+	displayLogo();
 
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "SELECIONE A HABITACAO:\n" << endl;
+	if (remover)
+		cout << "[ENTER] Remover" << endl;
+	else
+		cout << "[ENTER] Editar" << endl;
+	cout << "[ESC] Voltar atras\n" << endl;
+	cout << "Habitacao      Renda         NIF Proprietario" << endl;
+	displaySelectHabitacao(this->condominio.getHabitacoes());
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < this->condominio.getHabitacoes().size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (remover)
+			return menuDeleteHabitacao(option, 0);
+		else
+			return menuEditHabitacao(this->condominio.getHabitacoes()[option]);
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuGerirHabitacoes();
+		break;
+	default:
+		break;
+	}
+	return menuSelectHabitacao(remover);
 }
 int Main::menuEditHabitacao(Habitacao* habitacao) {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "ALTERAR DADOS\n" << endl;
+
+	int tipoHabitacao = 0;
+	if (habitacao->getTipo() == "Vivenda")
+		tipoHabitacao = 13;
+	else
+		tipoHabitacao = 14;
+
+	displayMenuOptions(tipoHabitacao);
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < this->menu[tipoHabitacao].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 5) {
+			resetOption();
+			return menuGerirHabitacoes();
+		} else {
+			editHabitacao(option, habitacao);
+			this->condominio.sortHabitacoes();
+		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuGerirHabitacoes();
+		break;
+	default:
+		break;
+	}
+	return menuEditHabitacao(habitacao);
+}
+int Main::menuDeleteHabitacao(int pos, int menuOption) {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "DADOS DA HABITACAO\n" << endl;
+	cout << "Tipo: ";
+	this->condominio.getHabitacoes()[pos]->info();
+
+	cout << "Tem a certeza que pretende remover esta habitacao?" << endl;
+	displayYesNo(menuOption);
+
+	int c = getch();
+	switch (c) {
+	case KEY_LEFT:
+		if (menuOption - 1 >= 0)
+			menuOption--;
+		break;
+	case KEY_RIGHT:
+		if (menuOption + 1 < 2)
+			menuOption++;
+		break;
+	case KEY_ENTER:
+		if (menuOption == 0) {
+			this->condominio.eraseHabitacao(pos);
+			cout << "\nHabitacao removida." << endl;
+			if (this->option > 0)
+				option--;
+			pressEnterToContinue();
+			return menuSelectHabitacao(true);
+		} else if (menuOption == 1) {
+			return menuSelectHabitacao(true);
+		}
+		break;
+	default:
+		break;
+	}
+	return menuDeleteHabitacao(pos, menuOption);
+}
+int Main::menuSelectOrVacantHabitacao() {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "ADICIONAR HABITACAO" << endl;
+	displayMenuOptions(16);
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[16].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) {
+			resetOption();
+			return menuSelectOwnerHabitacao();
+		} else if (option == 1) {
+			resetOption();
+			Condomino c1 = Condomino("nome", "password", "nomeCivil", "");
+			return menuAddHabitacao(c1);
+		} else {
+			resetOption();
+			return menuGerirHabitacoes();
+		}
+		break;
+	default:
+		break;
+	}
+
+	return menuSelectOrVacantHabitacao();
+}
+int Main::menuSelectOwnerHabitacao() {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "SELECIONE O UTILIZADOR:\n" << endl;
+	cout << "[ENTER] Selecionar" << endl;
+	cout << "[ESC] Voltar atras\n" << endl;
+	cout << "Utilizador   Nome Civil                    NIF" << endl;
+	displaySelectCondomino();
+
+	int pos = -1;
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < this->condominio.getMoradores().size())
+			option++;
+		break;
+	case KEY_ENTER:
+		pos = option;
+		resetOption();
+		return menuAddHabitacao(this->condominio.getMoradores()[pos]);
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuSelectOrVacantHabitacao();
+		break;
+	default:
+		break;
+	}
+
+	return menuSelectOwnerHabitacao();
 
 }
-int Main::menuDeleteHabitacao(Habitacao* habitacao) {
-
-}
+//Gerir Funcionarios
 int Main::menuGerirFuncionarios() {
 	return EXIT_FAILURE;
 } //TODO menuGerirFuncionarios()
+//Gerir Servicos
 int Main::menuGerirServicos() {
 	return EXIT_FAILURE;
 } //TODO menuGerirServicos()
@@ -1676,8 +2312,6 @@ bool Main::exportHabitacoes() {
 
 	if (myfile.is_open()) {
 		vector<Habitacao*> habitacoes = this->condominio.getHabitacoes();
-		//insertionSort(habitacoes);
-		//this->condominio.setHabitacoes(habitacoes);
 
 		for (size_t j = 0; j < habitacoes.size(); j++) {
 			myfile << habitacoes[j]->getTipo() << endl;
@@ -1728,7 +2362,6 @@ int Main::exitFunction() {
 /*
  * Non-class functions
  */
-
 
 // Checks if string has at least one space
 bool hasWhitespace(string s) {
@@ -1830,54 +2463,54 @@ void createMenuOptions() {
 
 	menuOptions[0].push_back("Login");										//0
 	menuOptions[0].push_back("Registo");									//1
-	menuOptions[0].push_back("Sair");										//2
+	menuOptions[0].push_back("Sair");	//2
 
 	vector<string> menuUtilizadorAdmin;
 	menuOptions.push_back(menuUtilizadorAdmin);
 
-	menuOptions[1].push_back("Menu Administrador");							//0
-	menuOptions[1].push_back("Alterar dados da conta");						//1
-	menuOptions[1].push_back("Ver dados de condomino");						//2
-	menuOptions[1].push_back("Alterar dados de condomino");					//3
-	menuOptions[1].push_back("Ver habitacoes possuidas");					//4
-	menuOptions[1].push_back("Adicionar habitacao");						//5
-	menuOptions[1].push_back("Requisitar um servico");						//6
-	menuOptions[1].push_back("Sair");										//7
+	menuOptions[1].push_back("Menu Administrador");	//0
+	menuOptions[1].push_back("Alterar dados da conta");	//1
+	menuOptions[1].push_back("Ver dados de condomino");	//2
+	menuOptions[1].push_back("Alterar dados de condomino");	//3
+	menuOptions[1].push_back("Ver habitacoes possuidas");	//4
+	menuOptions[1].push_back("Adicionar habitacao");	//5
+	menuOptions[1].push_back("Requisitar um servico");	//6
+	menuOptions[1].push_back("Sair");	//7
 
 	vector<string> menuUtilizadorNormal;
 	menuOptions.push_back(menuUtilizadorNormal);
 
-	menuOptions[2].push_back("Alterar dados da conta");						//0
-	menuOptions[2].push_back("Ver dados de condomino");						//1
-	menuOptions[2].push_back("Alterar dados de condomino");					//2
-	menuOptions[2].push_back("Ver habitacoes possuidas");					//3
-	menuOptions[2].push_back("Adicionar habitacao");						//4
-	menuOptions[2].push_back("Requisitar um servico");						//5
-	menuOptions[2].push_back("Sair");										//6
+	menuOptions[2].push_back("Alterar dados da conta");	//0
+	menuOptions[2].push_back("Ver dados de condomino");	//1
+	menuOptions[2].push_back("Alterar dados de condomino");	//2
+	menuOptions[2].push_back("Ver habitacoes possuidas");	//3
+	menuOptions[2].push_back("Adicionar habitacao");	//4
+	menuOptions[2].push_back("Requisitar um servico");	//5
+	menuOptions[2].push_back("Sair");	//6
 
 	vector<string> menuDadosConta;
 	menuOptions.push_back(menuDadosConta);
 
-	menuOptions[3].push_back("Alterar nome de utilizador");					//0
-	menuOptions[3].push_back("Alterar password");							//1
-	menuOptions[3].push_back("Voltar atras");								//2
+	menuOptions[3].push_back("Alterar nome de utilizador");	//0
+	menuOptions[3].push_back("Alterar password");	//1
+	menuOptions[3].push_back("Voltar atras");	//2
 
 	vector<string> menuDadosCondomino;
 	menuOptions.push_back(menuDadosCondomino);
 
-	menuOptions[4].push_back("Alterar nome civil");							//0
-	menuOptions[4].push_back("Alterar NIF");								//1
-	menuOptions[4].push_back("Alterar fundos mensais");						//2
-	menuOptions[4].push_back("Saldar divida");								//3
-	menuOptions[4].push_back("Voltar atras");								//4
+	menuOptions[4].push_back("Alterar nome civil");	//0
+	menuOptions[4].push_back("Alterar NIF");	//1
+	menuOptions[4].push_back("Alterar fundos mensais");	//2
+	menuOptions[4].push_back("Saldar divida");	//3
+	menuOptions[4].push_back("Voltar atras");	//4
 
 	vector<string> menuHabitacoesPossuidas;
 	menuOptions.push_back(menuHabitacoesPossuidas);
 
-	menuOptions[5].push_back("Ver informacao das habitacoes");				//0
-	menuOptions[5].push_back("Ver estado da renda");						//1
-	menuOptions[5].push_back("Remover habitacao");							//2
-	menuOptions[5].push_back("Voltar atras");								//3
+	menuOptions[5].push_back("Ver informacao das habitacoes");	//0
+	menuOptions[5].push_back("Ver estado da renda");	//1
+	menuOptions[5].push_back("Remover habitacao");	//2
+	menuOptions[5].push_back("Voltar atras");	//3
 
 	vector<string> menuRequisitarServico;
 	menuOptions.push_back(menuRequisitarServico);
@@ -1887,36 +2520,36 @@ void createMenuOptions() {
 	vector<string> menuAdmin;
 	menuOptions.push_back(menuAdmin);
 
-	menuOptions[7].push_back("Gerir condominos");							//0
-	menuOptions[7].push_back("Gerir habitacoes");							//1
-	menuOptions[7].push_back("Gerir funcionarios");							//2
-	menuOptions[7].push_back("Gerir servicos");								//3
-	menuOptions[7].push_back("Fim do Mes");									//4
-	menuOptions[7].push_back("Voltar atras");								//5
+	menuOptions[7].push_back("Gerir condominos");	//0
+	menuOptions[7].push_back("Gerir habitacoes");	//1
+	menuOptions[7].push_back("Gerir funcionarios");	//2
+	menuOptions[7].push_back("Gerir servicos");	//3
+	menuOptions[7].push_back("Fim do Mes");	//4
+	menuOptions[7].push_back("Voltar atras");	//5
 
 	vector<string> menuGerirCondominos;
 	menuOptions.push_back(menuGerirCondominos);
-	menuOptions[8].push_back("Ver lista de todos os condominos");			//0
-	menuOptions[8].push_back("Alterar condomino");							//1
-	menuOptions[8].push_back("Adicionar condomino");						//2
-	menuOptions[8].push_back("Remover condomino");							//2
-	menuOptions[8].push_back("Voltar atras");								//3
+	menuOptions[8].push_back("Ver lista de todos os condominos");	//0
+	menuOptions[8].push_back("Alterar condomino");	//1
+	menuOptions[8].push_back("Adicionar condomino");	//2
+	menuOptions[8].push_back("Remover condomino");	//2
+	menuOptions[8].push_back("Voltar atras");	//3
 
 	vector<string> menuGerirHabitacoes;
 	menuOptions.push_back(menuGerirHabitacoes);
-	menuOptions[9].push_back("Ver lista de todas as habitacoes");			//0
-	menuOptions[9].push_back("Alterar habitacao");							//1
-	menuOptions[9].push_back("Adicionar habitacao");						//2
-	menuOptions[9].push_back("Remover habitacao");							//3
-	menuOptions[9].push_back("Voltar atras");								//4
+	menuOptions[9].push_back("Ver lista de todas as habitacoes");	//0
+	menuOptions[9].push_back("Alterar habitacao");	//1
+	menuOptions[9].push_back("Adicionar habitacao");	//2
+	menuOptions[9].push_back("Remover habitacao");	//3
+	menuOptions[9].push_back("Voltar atras");	//4
 
 	vector<string> menuGerirFuncionarios;	//TODO acabar menuGerirFuncionarios
 	menuOptions.push_back(menuGerirFuncionarios);
-	menuOptions[10].push_back("Ver lista de todos os funcionarios");		//0
-	menuOptions[10].push_back("Alterar funcionario");						//1
-	menuOptions[10].push_back("Adicionar funcionarios");					//2
-	menuOptions[10].push_back("Remover funcionarios");						//3
-	menuOptions[10].push_back("Voltar atras");								//4
+	menuOptions[10].push_back("Ver lista de todos os funcionarios");	//0
+	menuOptions[10].push_back("Alterar funcionario");	//1
+	menuOptions[10].push_back("Adicionar funcionarios");	//2
+	menuOptions[10].push_back("Remover funcionarios");	//3
+	menuOptions[10].push_back("Voltar atras");	//4
 
 	vector<string> menuGerirServicos;
 	menuOptions.push_back(menuGerirServicos);	//TODO acabar menuGerirServicos
@@ -1928,34 +2561,48 @@ void createMenuOptions() {
 	vector<string> menuDadosContaCondomino;
 	menuOptions.push_back(menuDadosContaCondomino);
 
-	menuOptions[12].push_back("Alterar nome de utilizador");				//0
-	menuOptions[12].push_back("Alterar password");							//1
-	menuOptions[12].push_back("Alterar estado da conta");					//2
-	menuOptions[12].push_back("Alterar nome civil");						//3
-	menuOptions[12].push_back("Alterar NIF");								//4
-	menuOptions[12].push_back("Alterar fundos mensais");					//5
-	menuOptions[12].push_back("Saldar divida");								//6
-	menuOptions[12].push_back("Voltar atras");								//7
+	menuOptions[12].push_back("Alterar nome de utilizador");	//0
+	menuOptions[12].push_back("Alterar password");	//1
+	menuOptions[12].push_back("Alterar estado da conta");	//2
+	menuOptions[12].push_back("Alterar nome civil");	//3
+	menuOptions[12].push_back("Alterar NIF");	//4
+	menuOptions[12].push_back("Alterar fundos mensais");	//5
+	menuOptions[12].push_back("Saldar divida");	//6
+	menuOptions[12].push_back("Voltar atras");	//7
 
 	vector<string> menuDadosVivenda;
 	menuOptions.push_back(menuDadosVivenda);
 
-	menuOptions[13].push_back("Alterar morada");							//0
-	menuOptions[13].push_back("Alterar codigo postal");						//1
-	menuOptions[13].push_back("Alterar area habitacional");					//2
-	menuOptions[13].push_back("Alterar area exterior");						//3
-	menuOptions[13].push_back("Alterar piscina");							//4
-	menuOptions[13].push_back("Voltar atras");								//5
+	menuOptions[13].push_back("Alterar morada");	//0
+	menuOptions[13].push_back("Alterar codigo postal");	//1
+	menuOptions[13].push_back("Alterar area habitacional");	//2
+	menuOptions[13].push_back("Alterar area exterior");	//3
+	menuOptions[13].push_back("Alterar piscina");	//4
+	menuOptions[13].push_back("Voltar atras");	//5
 
 	vector<string> menuDadosApartamento;
 	menuOptions.push_back(menuDadosApartamento);
 
-	menuOptions[14].push_back("Alterar morada");							//0
-	menuOptions[14].push_back("Alterar codigo postal");						//1
-	menuOptions[14].push_back("Alterar tipologia");							//2
-	menuOptions[14].push_back("Alterar area habitacional");					//3
-	menuOptions[14].push_back("Alterar piso");								//4
-	menuOptions[14].push_back("Voltar atras");								//5
+	menuOptions[14].push_back("Alterar morada");	//0
+	menuOptions[14].push_back("Alterar codigo postal");	//1
+	menuOptions[14].push_back("Alterar area habitacional");	//2
+	menuOptions[14].push_back("Alterar tipologia");	//3
+	menuOptions[14].push_back("Alterar piso");	//4
+	menuOptions[14].push_back("Voltar atras");	//5
+
+	vector<string> menuAddHabitacaoNormal;
+	menuOptions.push_back(menuAddHabitacaoNormal);
+
+	menuOptions[15].push_back("Selecionar habitacao");	//0
+	menuOptions[15].push_back("Nova habitacao");	//1
+	menuOptions[15].push_back("Voltar atras");	//2
+
+	vector<string> menuAddHabitacaoAdmin;
+	menuOptions.push_back(menuAddHabitacaoAdmin);
+
+	menuOptions[16].push_back("Selecionar condomino");	//0
+	menuOptions[16].push_back("Habitacao sem proprietario");	//1
+	menuOptions[16].push_back("Voltar atras");	//2
 
 	menu = menuOptions;
 }
@@ -1973,8 +2620,8 @@ int main() {
 	main.importHabitacoes();
 
 	main.menuInicial();
-	//main.displayAllCondominos();
-	//main.displayAllHabitacoes();
+//main.displayAllCondominos();
+//main.displayAllHabitacoes();
 	return main.exitFunction();
 }
 

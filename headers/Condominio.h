@@ -5,8 +5,6 @@
 #include "../headers/Servico.h"
 #include "../headers/Header.h"
 
-class Condomino;
-
 class Condominio {
 private:
 	long int fundos;
@@ -25,8 +23,8 @@ public:
 	int getMes() const;
 	vector<Condomino> getMoradores();
 	vector<Habitacao*> getHabitacoes();
-	Condomino* getCondomino(int pos);
 	vector<Funcionario> getFuncionarios();
+	Condomino* getCondomino(int pos);
 
 	void setFundos(long int fundos);
 	void setCurrentMes(int currentMes);
@@ -34,13 +32,16 @@ public:
 	void setHabitacoes(vector<Habitacao*> habitacoes);
 	void setFuncionarios(vector<Funcionario> funcionarios);
 
+
 	void sortMoradores();
 	int addMorador(Condomino condomino);
 	int eraseMorador(Condomino condomino);
 
 	void sortHabitacoes();
 	int findHabitacao(vector<Habitacao*> habitacoes, Habitacao* habitacao);
-	bool eraseHabitacao(Condomino condomino, int pos);
+	bool addHabitacao(Habitacao* h1);
+	bool eraseHabitacao(int pos);
+	bool eraseHabitacaoPossuida(Condomino condomino, int pos);
 
 	//Funcoes Condomino
 	bool setNomeUtilizador(Condomino condomino, string nomeUtilizador);
@@ -52,10 +53,10 @@ public:
 	bool saldarDivida(Condomino condomino);
 
 	//Funcoes Habitacao
-
-	int addHabitacao(Habitacao* h1);
-
 	bool updateHabitacoesCondominos();
+
+	//Funcoes Funcionario
+	bool addFuncionario(Funcionario funcionario);
 
 	void fimDoMes();
 	bool contratarFuncionarios(); //TODO contratarFuncionarios();

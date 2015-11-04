@@ -24,10 +24,12 @@ public:
 
 	void resetOption();
 	bool displayYesNo(int option);
+	bool displayVivendaApartamento(int option);
 	bool displayMenuOptions(int position);
+
 	bool displaySelectUtilizador();
 	bool displaySelectCondomino();
-	bool displaySelectHabitacao();
+	bool displaySelectHabitacao(vector<Habitacao*> habitacoes);
 	bool displaySelectHabitacaoPossuida();
 	bool displaySelectFuncionario(); //TODO displaySelectFuncionario()
 	bool displaySelectServico(); //TODO displaySelectServico()
@@ -39,6 +41,7 @@ public:
 	bool editDadosContaAdmin(int editOption, Condomino &condomino);
 	bool editDadosCondomino(int editOption);
 	bool editDadosCondominoAdmin(int editOption, Condomino &condomino);
+	bool editHabitacao(int editOption, Habitacao* h1);
 
 	void displayCurrentUserInfoConta();
 	void displayCurrentUserInfoCondomino();
@@ -62,11 +65,16 @@ public:
 
 	int menuEditDadosConta(Condomino &condomino);
 	int menuEditDadosCondomino(Condomino &condomino);
+
 	int menuHabitacoesPossuidas();
 	int menuSelectHabitacoesPossuida(bool remover);
-	int menuEditDadosHabitacaoPossuida(Condomino condomino);
 	int menuDeleteHabitacaoPossuida(int pos, int menuOption);
-	int menuAdicionarHabitacao();
+	int menuSelectOrNewHabitacao();
+	int menuSelectHabitacaoAdd(vector<Habitacao*> habitacoes);
+	int menuAddHabitacao(Condomino condomino);
+	int menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1);
+
+
 	int menuRequisitarServico();
 
 	//Menu Administrador
@@ -74,7 +82,7 @@ public:
 
 	int menuGerirCondominos();
 	int menuDisplayAllCondominos();
-	int menuSelectCondomino(bool editar);
+	int menuSelectCondomino(bool remover);
 	int menuEditCondomino(Condomino &condomino);
 	int menuDeleteCondomino(Condomino &condomino, int menuOption);
 
@@ -82,7 +90,9 @@ public:
 	int menuDisplayAllHabitacoes();
 	int menuSelectHabitacao(bool editar);
 	int menuEditHabitacao(Habitacao* habitacao);
-	int menuDeleteHabitacao(Habitacao* habitacao);
+	int menuSelectOrVacantHabitacao();
+	int menuSelectOwnerHabitacao();
+	int menuDeleteHabitacao(int pos, int menuOption);
 
 	int menuGerirFuncionarios(); //TODO menuGerirFuncionarios()
 	int menuGerirServicos(); //TODO menuGerirServicos()

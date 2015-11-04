@@ -33,7 +33,7 @@ public:
 	vector<Habitacao *> getHabitacoes();
 
 	void sortHabitacoes();
-	bool addHabitacao(Habitacao* h1);
+	void addHabitacao(Habitacao* h1, int currentMes);
 	bool eraseHabitacao(int pos);
 
 	void setNomeUtilizador(string novoNomeUtilizador);
