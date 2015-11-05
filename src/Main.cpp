@@ -11,13 +11,6 @@
 #define pathEspecialidades "../savedata/especialidades.txt"
 #define pathServicos "../savedata/servicos.txt"
 
-const string currentTime();
-void pressEnterToContinue();
-bool compHabitacao(Habitacao* h1, Habitacao* h2);
-bool hasWhitespace(string s);
-bool isNumber(string s);
-bool isName(string s);
-
 vector<string> mesesAno;
 vector<vector<string> > menu;
 
@@ -25,16 +18,26 @@ vector<vector<string> > menu;
  * Class functions
  */
 
-// Displays time using currentDateTime()
+/**
+ * Displays month and time of the day in position (x,y) = (50,20), using currentDateTime().
+ */
 void Main::displayTime() {
 	string time = currentTime();
 	gotoxy(50, 20);
 	cout << mesesAno[this->condominio.getMes()] << "\t" << time;
 }
 
+/**
+ * Sets the menu options vector (this is only done on startup).
+ * @param menu New menu.
+ */
 void Main::setMenus(vector<vector<string> > menu) {
 	this->menu = menu;
 }
+/**
+ * Sets the currentUser pointer.
+ * @param condomino Copy of a condomino to be searched in the users menu and set as currentUser.
+ */
 void Main::setCurrentUser(Condomino condomino) {
 	int pos = sequentialSearch(this->condominio.getMoradores(), condomino);
 	if (pos == -1) {
@@ -43,11 +46,16 @@ void Main::setCurrentUser(Condomino condomino) {
 		this->currentUser = this->condominio.getCondomino(pos);
 }
 
-// Resets menu option. Called every time we switch to a new menu.
+/**
+ * Resets menu option to 0. Called every time we switch to a new menu.
+ */
 void Main::resetOption() {
 	this->option = 0;
 }
-// Prints a Yes/No select screen at position (x,y);
+/**
+ * Prints a Yes/No select screen.
+ * @param option If 0, highlights "Yes", else if 1, highlights "No".
+ */
 bool Main::displayYesNo(int option) {
 	if (option >= 2) {
 		return EXIT_FAILURE;
@@ -67,6 +75,10 @@ bool Main::displayYesNo(int option) {
 	}
 	return EXIT_SUCCESS;
 }
+/**
+ * Prints a Vivenda/Apartamento select screen.
+ * @param option If 0, highlights "Vivenda, else if 1, highlights "Apartamento.
+ */
 bool Main::displayVivendaApartamento(int option) {
 	if (option >= 2) {
 		return EXIT_FAILURE;
@@ -86,7 +98,10 @@ bool Main::displayVivendaApartamento(int option) {
 	}
 	return EXIT_SUCCESS;
 }
-// Prints a Menu Select screen
+/**
+ * Prints a Menu select screen.
+ * @param position Position of the menu in the menu options vector.
+ */
 bool Main::displayMenuOptions(int position) {
 	if (option >= menu[position].size()) {
 		return EXIT_FAILURE;
@@ -104,6 +119,9 @@ bool Main::displayMenuOptions(int position) {
 	return EXIT_SUCCESS;
 }
 
+/**
+ * Prints a Condomino select screen.
+ */
 bool Main::displaySelectCondomino() {
 	if (option >= this->condominio.getMoradores().size()) {
 		return EXIT_FAILURE;
@@ -130,6 +148,9 @@ bool Main::displaySelectCondomino() {
 	}
 	return EXIT_SUCCESS;
 }
+/**
+ * Prints a Habitacao select screen.
+ */
 bool Main::displaySelectHabitacao(vector<Habitacao*> habitacoes) {
 	if (option >= habitacoes.size()) {
 		return EXIT_FAILURE;
@@ -154,7 +175,13 @@ bool Main::displaySelectHabitacao(vector<Habitacao*> habitacoes) {
 
 }
 
-// Checks if the user exists and, if so, updates currentUser.
+/*
+ * Checks if the user trying to log in exists and, if so, updates currentUser.
+ * @param utilizador Name of the user.
+ * @param password Password of the user.
+ * @retval TRUE Successful login.
+ * @retval FALSE Invalid login.
+ */
 bool Main::validLogin(string utilizador, string password) {
 	Condomino c1 = Condomino(utilizador, password);
 	int pos = sequentialSearch(this->condominio.getMoradores(), c1);
@@ -165,7 +192,13 @@ bool Main::validLogin(string utilizador, string password) {
 	setCurrentUser(c1);
 	return true;
 }
-// Checks if username and password are within the rules
+/**
+ * Checks if username and password are within the rules
+ * @param utilizador Name of the new user.
+ * @param password Password of the new user.
+ * @retval TRUE Valid register.
+ * @retval FALSE Either user already exists or the parameters were invalid.
+ */
 bool Main::validRegister(string utilizador, string password) {
 	if (utilizador.size() < 1 || utilizador.size() > 20) {
 		cout
@@ -192,7 +225,12 @@ bool Main::validRegister(string utilizador, string password) {
 		return false;
 	}
 }
-
+/**
+ * Receives user input to change the user account data specified by editOption.
+ * @param editOption 0 = Username, 1 = Password.
+ * @retval TRUE Successfully changed account data.
+ * @retval FALSE Account data wasn't changed.
+ */
 bool Main::editDadosConta(int editOption) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -263,7 +301,13 @@ bool Main::editDadosConta(int editOption) {
 	}
 	return false;
 }
-
+/**
+ * Receives user input to change the user account data specified by editOption. This function is for administrators only.
+ * @param editOption 0 = Username, 1 = Password.
+ * @param condomino User to be changed.
+ * @retval TRUE Successfully changed account data.
+ * @retval FALSE Account data wasn't changed.
+ */
 bool Main::editDadosContaAdmin(int editOption, Condomino &condomino) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -379,7 +423,12 @@ bool Main::editDadosContaAdmin(int editOption, Condomino &condomino) {
 	}
 	return false;
 }
-
+/**
+ * Receives user input to change the user tenant data specified by editOption.
+ * @param editOption 0 = Name, 1 = NIF, 2 = Monthly funds, 3 = Clear debt.
+ * @retval TRUE Successfully changed tenant data.
+ * @retval FALSE Tenant data wasn't changed.
+ */
 bool Main::editDadosCondomino(int editOption) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -495,6 +544,13 @@ bool Main::editDadosCondomino(int editOption) {
 	}
 	return false;
 }
+/**
+ * Receives user input to change the user tenant data specified by editOption. This function is for administrators only.
+ * @param editOption 0 = Name, 1 = NIF, 2 = Monthly funds, 3 = Clear debt.
+ * @param condomino User to be changed.
+ * @retval TRUE Successfully changed tenant data.
+ * @retval FALSE Tenant data wasn't changed.
+ */
 bool Main::editDadosCondominoAdmin(int editOption, Condomino &condomino) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -608,7 +664,12 @@ bool Main::editDadosCondominoAdmin(int editOption, Condomino &condomino) {
 	}
 	return false;
 }
-
+/**
+ * Receives user input to change housing data specified by editOption.
+ * @param editOption 0 = Address, 1 = Postal Code, 2 = Living area.  If it's a house -> 3 = Exterior area, 4 = Swimming pool, else if it's an apartment -> 3 = Number of rooms, 4 = Floor.
+ * @retval TRUE Successfully changed housing data.
+ * @retval FALSE Housing data wasn't changed.
+ */
 bool Main::editHabitacao(int editOption, Habitacao* h1) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -751,6 +812,9 @@ bool Main::editHabitacao(int editOption, Habitacao* h1) {
 	}
 }
 
+/**
+ * Displays current user account info.
+ */
 void Main::displayCurrentUserInfoConta() {
 	displayLogo();
 	gotoxy(0, 8);
@@ -758,6 +822,9 @@ void Main::displayCurrentUserInfoConta() {
 	this->currentUser->infoConta();
 	pressEnterToContinue();
 }
+/**
+ * Displays current user tenant info.
+ */
 void Main::displayCurrentUserInfoCondomino() {
 	displayLogo();
 	gotoxy(0, 8);
@@ -765,6 +832,10 @@ void Main::displayCurrentUserInfoCondomino() {
 	(*this->currentUser).infoCondomino();
 	pressEnterToContinue();
 }
+/**
+ * Displays info of a house owned by the current user..
+ * @param pos Position of the house in the vector of houses owned by user.
+ */
 void Main::displayCurrentUserHabitacao(int pos) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -774,7 +845,9 @@ void Main::displayCurrentUserHabitacao(int pos) {
 
 	pressEnterToContinue();
 }
-
+/**
+ * Displays rent status for every house owned by the current user.
+ */
 void Main::displayCurrentUserRenda() {
 	displayLogo();
 	gotoxy(0, 8);
@@ -786,7 +859,10 @@ void Main::displayCurrentUserRenda() {
 	cout << endl;
 	pressEnterToContinue();
 }
-
+/**
+ * Displays info of a specified user.
+ * @param pos Position of the user in the vector of tenants of the condominium.
+ */
 void Main::displayCondominoInfo(int pos) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -799,6 +875,10 @@ void Main::displayCondominoInfo(int pos) {
 	cout << endl;
 	pressEnterToContinue();
 }
+/**
+ * Displays info of a specified house.
+ * @param pos Position of the house in the vector of houses of the condominium.
+ */
 void Main::displayHabitacaoInfo(int pos) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -819,7 +899,11 @@ void Main::displayHabitacaoInfo(int pos) {
 	}
 	pressEnterToContinue();
 }
-
+/**
+ * Displays end month info.
+ * @retval TRUE Every tenant paid their rent.
+ * @retval FALSE Not every tenant paid their rent.
+ */
 bool Main::fimDoMes() {
 	displayLogo();
 	gotoxy(30, 8);
@@ -862,6 +946,11 @@ bool Main::fimDoMes() {
  * Menu functions
  */
 
+/**
+ *	Initial menu. User has the option to log in, create a new account or exit the program.
+ *	@retval EXIT_SUCCESS Shutdown.
+ *	@return A new menu.
+ */
 int Main::menuInicial() {
 	displayLogo();
 	gotoxy(30, 8);
@@ -898,6 +987,10 @@ int Main::menuInicial() {
 	return menuInicial();
 }
 
+/**
+ * Login screen. User needs to input their username and password.
+ * @return User menu if valid login, initial menu if invalid login.
+ */
 int Main::menuLogin() {
 	displayLogo();
 	gotoxy(30, 8);
@@ -923,6 +1016,10 @@ int Main::menuLogin() {
 	}
 	return EXIT_SUCCESS;
 }
+/**
+ * Register screen. User needs to input their username, password, name and NIF to create a new account.
+ * @retval EXIT_SUCCESS Initial menu.
+ */
 int Main::menuRegisto() {
 	displayLogo();
 	gotoxy(30, 8);
@@ -971,7 +1068,10 @@ int Main::menuRegisto() {
 	return EXIT_SUCCESS;
 }
 
-//Menu Utilizador
+/**
+ * User menu. The user has several options such as view or change their user info. Add a house, request service, etc.
+ * @return A new menu.
+ */
 int Main::menuUtilizador() {
 	displayLogo();
 
@@ -1051,6 +1151,10 @@ int Main::menuUtilizador() {
 
 	return menuUtilizador();
 }
+/**
+ * Change user account data menu. The user selects which info of their account data they want to change.
+ * @return User menu.
+ */
 int Main::menuEditDadosConta(Condomino &condomino) {
 	displayLogo();
 
@@ -1099,6 +1203,10 @@ int Main::menuEditDadosConta(Condomino &condomino) {
 	}
 	return menuEditDadosConta(condomino);
 }
+/**
+ * ´Change tenant data menu. The user selects which info of their tenant data they want to change.
+ * @return User menu.
+ */
 int Main::menuEditDadosCondomino(Condomino &condomino) {
 	displayLogo();
 
@@ -1155,7 +1263,10 @@ int Main::menuEditDadosCondomino(Condomino &condomino) {
 	}
 	return menuEditDadosCondomino(condomino);
 }
-
+/**
+ * Owned housing menu. The user selects if they want to view an owned house info, remove an owned house or view their rent status.
+ * @return A new menu.
+ */
 int Main::menuHabitacoesPossuidas() {
 	displayLogo();
 
@@ -1204,6 +1315,11 @@ int Main::menuHabitacoesPossuidas() {
 	}
 	return menuHabitacoesPossuidas();
 }
+/**
+ * Select owned housing menu. The user selects which house they want to remove or just see its data.
+ * @param remover If true, selecting an house will remove it. If false, selecting an house will display its info.
+ * @return A new menu.
+ */
 int Main::menuSelectHabitacoesPossuida(bool remover) {
 	displayLogo();
 	gotoxy(10, 6);
@@ -1256,6 +1372,12 @@ int Main::menuSelectHabitacoesPossuida(bool remover) {
 	}
 	return menuSelectHabitacoesPossuida(remover);
 }
+/**
+ * Delete owned house menu. The user is given a prompt to confirm if they want to remove a house.
+ * @param pos Position of the house in the vector of houses owned by the user.
+ * @param menuOption Changes the highlighted option. 0 = Yes, 1 = No.
+ * @return A new menu.
+ */
 int Main::menuDeleteHabitacaoPossuida(int pos, int menuOption) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -1293,6 +1415,10 @@ int Main::menuDeleteHabitacaoPossuida(int pos, int menuOption) {
 	}
 	return menuDeleteHabitacaoPossuida(pos, menuOption);
 }
+/**
+ * Rent an empty house or add a new house. The user is given the choice to rent an empty house or add a new house.
+ * @return A new menu.
+ */
 int Main::menuSelectOrNewHabitacao() {
 	displayLogo();
 
@@ -1343,6 +1469,11 @@ int Main::menuSelectOrNewHabitacao() {
 
 	return menuSelectOrNewHabitacao();
 }
+/**
+ * Select empty house to add menu. The user is given a list of empty houses which they can rent.
+ * @param habitacoes Vector containing all the empty houses in the condominium.
+ * @return A new menu.
+ */
 int Main::menuSelectHabitacaoAdd(vector<Habitacao*> habitacoes) {
 	displayLogo();
 	gotoxy(10, 6);
@@ -1391,6 +1522,11 @@ int Main::menuSelectHabitacaoAdd(vector<Habitacao*> habitacoes) {
 	}
 	return menuSelectHabitacaoAdd(habitacoes);
 }
+/**
+ * Add a new house menu. The user inputs the info of the new house to be added to his owned houses.
+ * @param condomino User to whom the house is added.
+ * @return A new menu.
+ */
 int Main::menuAddHabitacao(Condomino condomino) {
 	displayLogo();
 
@@ -1508,6 +1644,12 @@ int Main::menuAddHabitacao(Condomino condomino) {
 	}
 	return menuAddHabitacao(condomino);
 }
+/**
+ * Confirm adding a new house menu. The user is given the info of the house they're about to own and is given a prompt to confirm that addition.
+ *	@param condomino User to whom the house is added.
+ *	@param h1 Pointer to the house being added.
+ *	@return A new menu.
+ */
 int Main::menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -1580,7 +1722,10 @@ int Main::menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1) {
 	return menuConfirmAddHabitacao(condomino, h1);
 }
 
-//MenuAdministrador
+/**
+ * Administrator menu. The admin is given several options, such as create, edit or remove users, houses, services or employees. The admin can also end the month.
+ * @return A new menu.
+ */
 int Main::menuAdministrador() {
 	displayLogo();
 
@@ -1630,7 +1775,11 @@ int Main::menuAdministrador() {
 
 	return menuAdministrador();
 }
-//Gerir Condominos
+
+/**
+ * Manage users menu. The admin can create, edit or remove users.
+ * @return A new menu.
+ */
 int Main::menuGerirCondominos() {
 	displayLogo();
 
@@ -1685,6 +1834,9 @@ int Main::menuGerirCondominos() {
 	}
 	return menuGerirCondominos();
 }
+/**
+ * Display users by menu. The admin can list users by username, name or NIF.
+ */
 int Main::menuDisplayCondominosBy() {
 	displayLogo();
 
@@ -1755,6 +1907,10 @@ int Main::menuDisplayCondominosBy() {
 	}
 	return menuDisplayCondominosBy();
 }
+/**
+ * Display all users menu. The users are listed according to the option specified before. The admin can view their info by selecting them.
+ * @return A new menu.
+ */
 int Main::menuDisplayAllCondominos() {
 	displayLogo();
 	gotoxy(0, 8);
@@ -1798,6 +1954,11 @@ int Main::menuDisplayAllCondominos() {
 
 	return menuDisplayAllCondominos();
 }
+/**
+ * Select user menu. The admin can choose a user to remove or to view its info.
+ * @param remover If true, selecting will remove the user. If false, selecting will view its info.
+ * @return A new menu.
+ */
 int Main::menuSelectCondomino(bool remover) {
 	displayLogo();
 
@@ -1848,6 +2009,11 @@ int Main::menuSelectCondomino(bool remover) {
 	return menuSelectCondomino(remover);
 
 }
+/**
+ * Edit tenant menu. The admin can choose a tenant data to be edited.
+ * @param condomino Tenant whose data is going to be changed.
+ * @return A new menu.
+ */
 int Main::menuEditCondomino(Condomino &condomino) {
 	displayLogo();
 
@@ -1909,6 +2075,11 @@ int Main::menuEditCondomino(Condomino &condomino) {
 	}
 	return menuEditCondomino(condomino);
 }
+/**
+ * Delete tenant menu. The admin can remove a tenant from the condominium.
+ * @param condomino Tenant to be removed.
+ * @param menuOption Option to be highlighted. 0 = Yes, 1 = No.
+ */
 int Main::menuDeleteCondomino(Condomino &condomino, int menuOption) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -1964,7 +2135,11 @@ int Main::menuDeleteCondomino(Condomino &condomino, int menuOption) {
 	}
 	return menuDeleteCondomino(condomino, menuOption);
 }
-//Gerir Habitacoes
+
+/**
+ * Manage houses menu. The admin can create, edit or remove houses.
+ * @return A new menu.
+ */
 int Main::menuGerirHabitacoes() {
 	displayLogo();
 
@@ -2016,6 +2191,10 @@ int Main::menuGerirHabitacoes() {
 	}
 	return menuGerirHabitacoes();
 }
+/**
+ * Display houses by menu. The admin can list houses by type, rent or owner's NIF.
+ * @return A new menu.
+ */
 int Main::menuDisplayHabitacoesBy() {
 	displayLogo();
 
@@ -2068,6 +2247,10 @@ int Main::menuDisplayHabitacoesBy() {
 	}
 	return menuDisplayHabitacoesBy();
 }
+/**
+ * Display all houses menu. The houses are listed according to the option specified before. The admin can view their info by selecting them.
+ * @return A new menu.
+ */
 int Main::menuDisplayAllHabitacoes() {
 	displayLogo();
 
@@ -2106,6 +2289,10 @@ int Main::menuDisplayAllHabitacoes() {
 	}
 	return menuDisplayAllHabitacoes();
 }
+/**
+ * Select house menu. The admin can choose a house to remove or to view its info.
+ * @param remover If true, selecting will remove the house. If false, selecting will display its info.
+ */
 int Main::menuSelectHabitacao(bool remover) {
 	displayLogo();
 
@@ -2150,6 +2337,11 @@ int Main::menuSelectHabitacao(bool remover) {
 	}
 	return menuSelectHabitacao(remover);
 }
+/**
+ * Edit house menu. The admin can choose a house data to be edited.
+ * @param habitacao Pointer to the house that is going to be changed.
+ * @return A new menu.
+ */
 int Main::menuEditHabitacao(Habitacao* habitacao) {
 	displayLogo();
 
@@ -2198,6 +2390,11 @@ int Main::menuEditHabitacao(Habitacao* habitacao) {
 	}
 	return menuEditHabitacao(habitacao);
 }
+/**
+ * Delete house menu. The admin can remove a house from the condominium.
+ * @param pos Position of the house in the vector of houses of the condominium.
+ * @param menuOption Option to be highlighted. 0 = Yes, 1 = No.
+ */
 int Main::menuDeleteHabitacao(int pos, int menuOption) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -2235,6 +2432,10 @@ int Main::menuDeleteHabitacao(int pos, int menuOption) {
 	}
 	return menuDeleteHabitacao(pos, menuOption);
 }
+/**
+ * Select user or add an empty house menu. The admin can choose a user to add a house or add an empty house to the condominium.
+ * @return A new menu.
+ */
 int Main::menuSelectOrVacantHabitacao() {
 	displayLogo();
 
@@ -2279,6 +2480,10 @@ int Main::menuSelectOrVacantHabitacao() {
 
 	return menuSelectOrVacantHabitacao();
 }
+/**
+ * Select user to whom a house is added menu. The admin can choose the owner of the house about to be added.
+ * @return A new menu.
+ */
 int Main::menuSelectOwnerHabitacao() {
 	displayLogo();
 
@@ -2323,15 +2528,21 @@ int Main::menuSelectOwnerHabitacao() {
 	return menuSelectOwnerHabitacao();
 
 }
-//Gerir Funcionarios
+
+//TODO menuGerirFuncionarios()
 int Main::menuGerirFuncionarios() {
 	return EXIT_FAILURE;
-} //TODO menuGerirFuncionarios()
-//Gerir Servicos
+}
+//TODO menuGerirServicos()
 int Main::menuGerirServicos() {
 	return EXIT_FAILURE;
-} //TODO menuGerirServicos()
+}
 
+/**
+ * Imports condominium data from a .txt file. Updates condominium funds and current month.
+ * @retval TRUE Successfully imported data.
+ * @retval FALSE Couldn't read from .txt file.
+ */
 // Extracts data from condominio.txt to create condominio
 bool Main::importCondominio() {
 	ifstream myfile(pathCondominio);
@@ -2357,6 +2568,11 @@ bool Main::importCondominio() {
 		return false;
 	}
 }
+/**
+ * Exports condominium data to a .txt file. Exports condominum funds and current month.
+ * @retval TRUE Successfully exported data.
+ * @retval FALSE Couldn't write to .txt file.
+ */
 bool Main::exportCondominio() {
 	ofstream myfile(pathCondominio);
 
@@ -2373,7 +2589,11 @@ bool Main::exportCondominio() {
 		return false;
 	}
 }
-
+/**
+ * Imports user data from a .txt file. Updates condominium users.
+ * @retval TRUE Successfully imported data.
+ * @retval FALSE Couldn't read from .txt file.
+ */
 // Extracts data from condominos.txt to create a vector of condominos
 bool Main::importCondominos() {
 	ifstream myfile(pathCondominos);
@@ -2417,6 +2637,11 @@ bool Main::importCondominos() {
 	}
 
 }
+/**
+ * Exports user data to a .txt file. Exports condominum users.
+ * @retval TRUE Successfully exported data.
+ * @retval FALSE Couldn't write to .txt file.
+ */
 bool Main::exportCondominos() {
 	ofstream myfile(pathCondominos, ios::trunc);
 
@@ -2446,7 +2671,11 @@ bool Main::exportCondominos() {
 		return false;
 	}
 }
-
+/**
+ * Imports house data from a .txt file. Updates condominium houses.
+ * @retval TRUE Successfully imported data.
+ * @retval FALSE Couldn't read from .txt file.
+ */
 // Extracts data from habitacoes.txt to create vector of habitacoes
 bool Main::importHabitacoes() {
 	ifstream myfile(pathHabitacoes);
@@ -2522,6 +2751,11 @@ bool Main::importHabitacoes() {
 		return false;
 	}
 }
+/**
+ * Exports house data to a .txt file. Exports condominum houses.
+ * @retval TRUE Successfully exported data.
+ * @retval FALSE Couldn't write to .txt file.
+ */
 bool Main::exportHabitacoes() {
 	ofstream myfile(pathHabitacoes, ios::trunc);
 
@@ -2566,6 +2800,11 @@ bool Main::exportHabitacoes() {
 	}
 }
 
+/**
+ * Calls functions to export data to several .txt files.
+ * @retval TRUE Successfully exported data.
+ * @retval FALSE At least one of the called functions couldn't export data.
+ */
 int Main::exitFunction() {
 	if (!this->exportCondominio() || !this->exportCondominos()
 			|| !this->exportHabitacoes())
@@ -2577,7 +2816,12 @@ int Main::exitFunction() {
 /*
  * Non-class functions
  */
-
+/**
+ * Checks if string has a whitespace.
+ * @param s String to be checked.
+ * @retval TRUE String has at least one whitespace.
+ * @retval FALSE No whitespaces were found.
+ */
 // Checks if string has at least one space
 bool hasWhitespace(string s) {
 	for (size_t i = 0; i < s.size(); i++) {
@@ -2586,6 +2830,12 @@ bool hasWhitespace(string s) {
 	}
 	return false;
 }
+/**
+ * Checks if string is a positive integer.
+ * @param s String to be checked.
+ * @retval TRUE String is a positive integer.
+ * @retval FALSE String isn't a positive integer.
+ */
 // Checks if string is a positive integer
 bool isNumber(string s) {
 	string::const_iterator it = s.begin();
@@ -2593,11 +2843,15 @@ bool isNumber(string s) {
 		++it;
 	return (!s.empty() && it == s.end());
 }
-// Checks if string is a valid name:
-// - Name must start with an uppercase letter;
-// - No consecutive spaces;
-// - Letter after space must be uppercase;
-// - Name must end with a letter;
+/** Checks if string is a valid name:
+ * - Name must start with an uppercase letter;
+ * - No consecutive spaces;
+ * - Letter after space must be uppercase;
+ * - Name must end with a letter;
+ * @param s String to be checked.
+ * @retval TRUE String is a valid name.
+ * @retval FAIL Name failed one of above requirements.
+ */
 bool isName(string s) {
 	if (s.empty() || islower(s[0]) || s[0] == ' ')
 		return false;
@@ -2620,7 +2874,9 @@ bool isName(string s) {
 	return true;
 }
 
-// Displays the program logo
+/**
+ * Displays the program logo.
+ */
 void displayLogo() {
 	ifstream myfile(pathLogo);
 	string line = "";
@@ -2637,8 +2893,11 @@ void displayLogo() {
 				<< endl;
 	}
 }
-// Get current date/time, format is HH:mm:ss
-const string currentTime() {
+/**
+ * Get current time, format is HH:mm:ss
+ * @return A string with the time.
+ */
+string currentTime() {
 	time_t now = time(0);
 	struct tm tstruct;
 	char buf[80];
@@ -2647,14 +2906,18 @@ const string currentTime() {
 	strftime(buf, sizeof(buf), "%H:%M:%S", &tstruct);
 	return buf;
 }
-// Waits until user presses Enter
+/**
+ * Waits until user presses Enter.
+ */
 void pressEnterToContinue() {
 	cout << "Pressione ENTER para continuar." << endl;
 	cin.ignore();
 	fflush(stdin);
 }
 
-// Initializes vector<string> of months
+/**
+ * Initializes a vector<string> of months. Updates mesesAno vector.
+ */
 void createMesesAno() {
 	mesesAno.push_back("Janeiro");
 	mesesAno.push_back("Fevereiro");
@@ -2669,7 +2932,9 @@ void createMesesAno() {
 	mesesAno.push_back("Novembro");
 	mesesAno.push_back("Dezembro");
 }
-// Returns a vector with vectors of strings, containing the options for each menu.
+/**
+ * Initializes a vector with vectors of strings, containing the options for each menu. Updates menuOptions vector.
+ */
 void createMenuOptions() {
 	vector<vector<string> > menuOptions;
 
@@ -2838,7 +3103,12 @@ void createMenuOptions() {
 	menu = menuOptions;
 }
 
-// Main function
+
+/**
+ * Main function.
+ * @retval EXIT_SUCCESS No errors occurred during the execution.
+ * @retval EXIT_FAILURE Error occurred.
+ */
 int main() {
 	Main main = Main();
 
@@ -2851,8 +3121,6 @@ int main() {
 	main.importHabitacoes();
 
 	main.menuInicial();
-//main.displayAllCondominos();
-//main.displayAllHabitacoes();
 	return main.exitFunction();
 }
 

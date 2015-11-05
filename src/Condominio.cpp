@@ -1,54 +1,102 @@
 #include "../headers/Condominio.h"
-
+/**
+ * Default constructor.
+ */
 Condominio::Condominio() {
 	this->fundos = 5000;
 	this->currentMes = 0;
 }
-
+/**
+ * @return Condominium funds.
+ */
 long int Condominio::getFundos() const {
 	return fundos;
 }
+/**
+ * @return Current month.
+ */
 int Condominio::getMes() const {
 	return currentMes;
 }
-
+/**
+ * @return Vector of condominium's tenants.
+ */
 vector<Condomino> Condominio::getMoradores() {
 	return moradores;
 }
+/**
+ * @return Vector of condominium's houses.
+ */
 vector<Habitacao*> Condominio::getHabitacoes() {
 	return habitacoes;
 }
+/**
+ * @return Vector of condominium's employees.
+ */
 vector<Funcionario> Condominio::getFuncionarios() {
 	return funcionarios;
 }
+/**
+ * Sets the condominium funds.
+ * @param fundos New amount of funds.
+ */
 void Condominio::setFundos(long int fundos) {
 	this->fundos = fundos;
 }
+/**
+ * Sets the current month.
+ * @param currentMes Position of the month. 0 = January, ... , 11 = December.
+ */
 void Condominio::setCurrentMes(int currentMes) {
 	this->currentMes = currentMes;
 }
+/**
+ * Sets the condominium's tenants.
+ * @param moradores New vector of tenants.
+ */
 void Condominio::setMoradores(vector<Condomino> moradores) {
 	this->moradores = moradores;
 }
+/**
+ * Sets the condominium's houses.
+ * @param habitacoes New vector of houses.
+ */
 void Condominio::setHabitacoes(vector<Habitacao*> habitacoes) {
 	this->habitacoes = habitacoes;
 }
+/**
+ * Sets the condominium's employees.
+ * @param funcionarios New vector of employees.
+ */
 void Condominio::setFuncionarios(vector<Funcionario> funcionarios) {
 	this->funcionarios = funcionarios;
 }
+/**
+ * Given a position in the tenants vector, returns a pointer to that tenant.
+ * @param pos Position in the tenants vector.
+ * @return Pointer to the specified tenant.
+ */
 Condomino* Condominio::getCondomino(int pos) {
 	Condomino* p = &moradores[pos];
 	return p;
 }
-
+/*
+ * Sorts the tenants according to a specified option.
+ * @param sortOption 0 = Username, 1 = Name, 2 = NIF.
+ */
 void Condominio::sortMoradores(int sortOption) {
 	if (sortOption == 0)
 		insertionSort(moradores);
-	else if(sortOption == 1)
+	else if (sortOption == 1)
 		sort(moradores.begin(), moradores.end(), compCondominoNomeCivil);
-	else if(sortOption == 2)
+	else if (sortOption == 2)
 		sort(moradores.begin(), moradores.end(), compCondominoNIF);
 }
+/**
+ * Adds a tenant to the condominium.
+ * @param condomino Tenant to be added.
+ * @return Position of the new tenant in the vector of tenants. Position = -1 if tenant to be added is already in the vector.
+ */
 int Condominio::addMorador(Condomino condomino) {
 	int pos = sequentialSearch(this->moradores, condomino);
 	if (pos == -1) {
@@ -59,6 +107,11 @@ int Condominio::addMorador(Condomino condomino) {
 	} else
 		return -1;
 }
+/**
+ * Removes a tenant from the condominium.
+ * @param condomino Tenant to be removed.
+ * @return Position where the tenant used to be in the vector. Position = -1 if tenant to be removed isn't in the vector.
+ */
 int Condominio::eraseMorador(Condomino condomino) {
 	int pos = sequentialSearch(this->moradores, condomino);
 
@@ -74,7 +127,10 @@ int Condominio::eraseMorador(Condomino condomino) {
 	} else
 		return -1;
 }
-
+/**
+ * Sorts houses according to a specified option.
+ * @param sortOption 0 = Type, 1 = Rent, 2 = Owner's NIF.
+ */
 void Condominio::sortHabitacoes(int sortOption) {
 	if (sortOption == 0)
 		sort(habitacoes.begin(), habitacoes.end(), compHabitacaoTipo);
@@ -84,6 +140,12 @@ void Condominio::sortHabitacoes(int sortOption) {
 		sort(habitacoes.begin(), habitacoes.end(), compHabitacaoNIF);
 	updateHabitacoesCondominos();
 }
+/**
+ * Checks if a given house is in a given vector of houses.
+ * @param habitacoes Vector of houses.
+ * @param habitacao House to be searched.
+ * @return Position of the house in the given vector. Position = -1 if the house isn't in the vector.
+ */
 int Condominio::findHabitacao(vector<Habitacao*> habitacoes,
 		Habitacao* habitacao) {
 	int pos = -1;
@@ -95,7 +157,12 @@ int Condominio::findHabitacao(vector<Habitacao*> habitacoes,
 	}
 	return pos;
 }
-
+/**
+ * Adds house to the condominium.
+ * @param habitacao House to be added.
+ * @retval TRUE House was added.
+ * @retval FALSE House with the same address was already in the vector of houses.
+ */
 bool Condominio::addHabitacao(Habitacao* habitacao) {
 	int pos = -1;
 	for (size_t i = 0; i < this->habitacoes.size(); i++) {
@@ -109,6 +176,11 @@ bool Condominio::addHabitacao(Habitacao* habitacao) {
 	} else
 		return false;
 }
+/**
+ * Removes a house from a given user.
+ * @param condomino User whose house is being removed.
+ * @param pos Position of the house in the owner's vector of owned houses.
+ */
 bool Condominio::eraseHabitacaoPossuida(Condomino condomino, int pos) {
 	int pos1 = sequentialSearch(this->moradores, condomino);
 	if (pos1 == -1) {
@@ -124,7 +196,10 @@ bool Condominio::eraseHabitacaoPossuida(Condomino condomino, int pos) {
 		return success;
 	}
 }
-
+/**
+ * Removes a house from the condominium.
+ * @param pos Position of the house in the condominium's vector of houses.
+ */
 bool Condominio::eraseHabitacao(int pos) {
 	Condomino c1 = Condomino("nome", "password", "nomeCivil",
 			this->habitacoes[pos]->getNIFProprietario());
@@ -141,7 +216,13 @@ bool Condominio::eraseHabitacao(int pos) {
 		return this->moradores[pos1].eraseHabitacao(pos2);
 	}
 }
-
+/**
+ * Sets a new username for the given tenant.
+ * @param condomino Tenant whose username is being changed.
+ * @param nomeUtilizador New username.
+ * @retval TRUE Username successfully changed.
+ * @retval FALSE Tenant doesn't exist.
+ */
 bool Condominio::setNomeUtilizador(Condomino condomino, string nomeUtilizador) {
 	int pos = sequentialSearch(this->moradores, condomino);
 	if (pos == -1) {
@@ -150,6 +231,13 @@ bool Condominio::setNomeUtilizador(Condomino condomino, string nomeUtilizador) {
 	this->moradores[pos].setNomeUtilizador(nomeUtilizador);
 	return true;
 }
+/**
+ * Sets a new password for the given tenant.
+ * @param condomino Tenant whose password is being changed.
+ * @param password New password.
+ * @retval TRUE Password successfully changed.
+ * @retval FALSE Tenant doesn't exist.
+ */
 bool Condominio::setPassword(Condomino condomino, string password) {
 	int pos = sequentialSearch(this->moradores, condomino);
 	if (pos == -1) {
@@ -158,6 +246,13 @@ bool Condominio::setPassword(Condomino condomino, string password) {
 	this->moradores[pos].setPassword(password);
 	return true;
 }
+/**
+ * Sets or revokes administrator rights for the given tenant.
+ * @param condomino Tenant whose admin rights is being changed.
+ * @param admin If true, sets the tenant as admin. If false, revokes admin rights of the tenant.
+ * @retval TRUE Admin right successfully changed.
+ * @retval FALSE Tenant doesn't exist.
+ */
 bool Condominio::setAdmin(Condomino condomino, bool admin) {
 	int pos = sequentialSearch(this->moradores, condomino);
 	if (pos == -1) {
@@ -166,6 +261,13 @@ bool Condominio::setAdmin(Condomino condomino, bool admin) {
 	this->moradores[pos].setAdmin(admin);
 	return true;
 }
+/**
+ * Sets a new name for the given tenant.
+ * @param condomino Tenant whose name is being changed.
+ * @param nomeCivil New name.
+ * @retval TRUE Name successfully changed.
+ * @retval FALSE Tenant doesn't exist.
+ */
 bool Condominio::setNomeCivil(Condomino condomino, string nomeCivil) {
 	int pos = sequentialSearch(this->moradores, condomino);
 	if (pos == -1) {
@@ -174,6 +276,13 @@ bool Condominio::setNomeCivil(Condomino condomino, string nomeCivil) {
 	this->moradores[pos].setNomeCivil(nomeCivil);
 	return true;
 }
+/**
+ * Sets a new NIF for the given tenant.
+ * @param condomino Tenant whose NIF is being changed.
+ * @param NIF New NIF.
+ * @retval TRUE NIF successfully changed.
+ * @retval FALSE Tenant doesn't exist.
+ */
 bool Condominio::setNIF(Condomino condomino, string NIF) {
 	int pos = sequentialSearch(this->moradores, condomino);
 	if (pos == -1) {
@@ -182,6 +291,13 @@ bool Condominio::setNIF(Condomino condomino, string NIF) {
 	this->moradores[pos].setNIF(NIF);
 	return true;
 }
+/**
+ * Sets new monthly funds for the given tenant.
+ * @param condomino Tenant whose monthly funds is being changed.
+ * @param fundos New monthly funds.
+ * @retval TRUE Monthly funds successfully changed.
+ * @retval FALSE Tenant doesn't exist.
+ */
 bool Condominio::setFundosMensais(Condomino condomino, long int fundos) {
 	int pos = sequentialSearch(this->moradores, condomino);
 	if (pos == -1) {
@@ -190,6 +306,12 @@ bool Condominio::setFundosMensais(Condomino condomino, long int fundos) {
 	this->moradores[pos].setFundosMensais(fundos);
 	return true;
 }
+/**
+ * Clears debt of a given tenant and updates paid rent of his houses.
+ * @param condomino Tenant whose debt is being cleared.
+ * @retval TRUE Debt successfully cleared.
+ * @retval FALSE Tenant doesn't exist.
+ */
 bool Condominio::saldarDivida(Condomino condomino) {
 	int pos = sequentialSearch(this->moradores, condomino);
 	if (pos == -1) {
@@ -205,7 +327,10 @@ bool Condominio::saldarDivida(Condomino condomino) {
 		return true;
 	}
 }
-
+/**
+ * Updates the vector of house pointers for every user in the condominium. This function never fails.
+ * @retval TRUE Pointers successfully updated.
+ */
 bool Condominio::updateHabitacoesCondominos() {
 	for (size_t i = 0; i < this->moradores.size(); i++) {
 		vector<Habitacao*> habitacoes;
@@ -218,20 +343,37 @@ bool Condominio::updateHabitacoesCondominos() {
 	}
 	return true;
 }
-
+/**
+ * Adds a given employee to the condominium.
+ * @param funcionario Employee to be added.
+ * @retval TRUE Employee successfully added to the vector of employees.
+ * @retval FALSE Employee already exists in the vector of employees.
+ */
 bool Condominio::addFuncionario(Funcionario funcionario) {
-	/*
-	 * TODO Verificar se o funcionario ja existe no vector antes de adicionar aqui
-	 */
+	int pos = sequentialSearch(this->funcionarios, funcionario);
+	if (pos == -1) {
+		return false;
+	}
 	this->funcionarios.push_back(funcionario);
+	return true;
 }
+/**
+ * Adds a given service to the condominium.
+ * @param servico Service to be added.
+ * @retval TRUE Service successfully added.
+ * @retval FALSE Service already exists or there aren't enough employees to do it.
+ */
 bool Condominio::addServico(Servico servico) {
 	//if houver recursos, adiciona ao servicosEmCurso
 	//else adiciona servicosEmEspera
-	return false;
+	return true;
 }
 
-//Retorna vector com condominos que nao pagaram totalmente as rendas nesse mes
+
+/**
+ * Updates the month and gets the rent from every tenant.
+ * @return Vector of tenants that didn't fully pay their rent.
+ */
 vector<Condomino> Condominio::fimDoMes() {
 	vector<Condomino> caloteiros;
 
@@ -296,6 +438,9 @@ vector<Condomino> Condominio::fimDoMes() {
 	return caloteiros;
 }
 
+/**
+ * Displays info of every single tenant in the condominium.
+ */
 void Condominio::infoMoradores() const {
 	cout << "Numero de moradores = " << this->moradores.size() << "\n" << endl;
 	for (size_t i = 0; i < this->moradores.size(); i++) {
@@ -303,6 +448,9 @@ void Condominio::infoMoradores() const {
 		this->moradores[i].infoCondomino();
 	}
 }
+/**
+ * Displays info of every single house in the condomonium.
+ */
 void Condominio::infoHabitacoes() const {
 	cout << "Numero de habitacoes = " << habitacoes.size() << "\n" << endl;
 	for (size_t i = 0; i < habitacoes.size(); i++) {
@@ -315,6 +463,11 @@ void Condominio::infoHabitacoes() const {
  * Non-class functions
  */
 
+/**
+ * Compares two tenants by name for sorting purposes.
+ * @retval TRUE If first tenant is "lower" than the second tenant.
+ * @retval FALSE If the first tenant is "equal or higher" than the second tenant.
+ */
 bool compCondominoNomeCivil(Condomino c1, Condomino c2) {
 	if (c1.getNomeCivil() < c2.getNomeCivil())
 		return true;
@@ -323,6 +476,11 @@ bool compCondominoNomeCivil(Condomino c1, Condomino c2) {
 	else
 		return c1.getNomeUtilizador() < c2.getNomeUtilizador();
 }
+/**
+ * Compares two tenants by NIF for sorting purposes.
+ * @retval TRUE If first tenant is "lower" than the second tenant.
+ * @retval FALSE If the first tenant is "equal or higher" than the second tenant.
+ */
 bool compCondominoNIF(Condomino c1, Condomino c2) {
 	return c1.getNIF() < c2.getNIF();
 }

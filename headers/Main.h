@@ -121,7 +121,7 @@ bool isNumber(string s);
 bool isName(string s);
 
 void displayLogo();
-const string currentTime();
+string currentTime();
 void pressEnterToContinue();
 
 void createMesesAno();

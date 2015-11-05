@@ -22,6 +22,8 @@ public:
 	void setNome(string nome);
 	void setOcupado(bool status);
 	void setEspecialidade(string especialidade);
+
+	bool operator== (const Funcionario f1) const;
 };
 
 

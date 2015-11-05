@@ -16,28 +16,29 @@ Funcionario::Funcionario(string nome, string especialidade) {
 	nextId++;
 }
 
-
-string Funcionario::getNome() const{
+string Funcionario::getNome() const {
 	return nome;
 }
-int Funcionario::getID() const{
+int Funcionario::getID() const {
 	return id;
 }
-bool Funcionario::getOcupado() const{
+bool Funcionario::getOcupado() const {
 	return ocupado;
 }
-string Funcionario::getEspecialidade() const{
+string Funcionario::getEspecialidade() const {
 	return especialidade;
 }
 
-
-void Funcionario::setNome(string nome){
+void Funcionario::setNome(string nome) {
 	this->nome = nome;
 }
-void Funcionario::setOcupado(bool ocupado){
+void Funcionario::setOcupado(bool ocupado) {
 	this->ocupado = ocupado;
 }
-void Funcionario::setEspecialidade(string especialidade){
+void Funcionario::setEspecialidade(string especialidade) {
 	this->especialidade = especialidade;
 }
 
+bool Funcionario::operator==(const Funcionario f1) const {
+	return (this->id == f1.id);
+}
