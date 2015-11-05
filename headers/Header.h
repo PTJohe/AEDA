@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <stdlib.h>
 #include <algorithm>
+#include <ctime>
 
 
 #include "../sort&search/insertionSort.h"

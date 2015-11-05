@@ -5,7 +5,6 @@
 // JAS
 // Example of a program that prints colored characters on the console (in text mode)
 #include <iostream>
-#include <ctime>
 #include <conio.h>
 #include <windows.h>
 

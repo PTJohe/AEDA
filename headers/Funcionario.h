@@ -11,19 +11,18 @@ private:
 	string especialidade;
 
 public:
-	Funcionario();
-	Funcionario(string nome,string especialidade);
+	Funcionario(string especialidade);
+	Funcionario(string especialidade, int id);
 
-	string getNome() const;
 	int getID() const;
 	bool getOcupado() const;
 	string getEspecialidade() const;
 
-	void setNome(string nome);
 	void setOcupado(bool status);
 	void setEspecialidade(string especialidade);
 
 	bool operator== (const Funcionario f1) const;
+	bool operator< (const Funcionario f1) const;
 };
 
 

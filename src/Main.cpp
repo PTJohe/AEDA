@@ -8,7 +8,6 @@
 #define pathCondominos "../savedata/condominos.txt"
 #define pathHabitacoes "../savedata/habitacoes.txt"
 #define pathFuncionarios "../savedata/funcionarios.txt"
-#define pathEspecialidades "../savedata/especialidades.txt"
 #define pathServicos "../savedata/servicos.txt"
 
 vector<string> mesesAno;
@@ -833,7 +832,7 @@ void Main::displayCurrentUserInfoCondomino() {
 	pressEnterToContinue();
 }
 /**
- * Displays info of a house owned by the current user..
+ * Displays info of a house owned by the current user.
  * @param pos Position of the house in the vector of houses owned by user.
  */
 void Main::displayCurrentUserHabitacao(int pos) {
@@ -971,14 +970,15 @@ int Main::menuInicial() {
 			option++;
 		break;
 	case KEY_ENTER:
-		if (option == 0) {
+		if (option == 0) { //Menu Login
 			resetOption();
 			return menuLogin();
-		} else if (option == 1) {
+		} else if (option == 1) { //Menu Registo
 			resetOption();
 			menuRegisto();
-		}
-		return EXIT_SUCCESS;
+		} else
+			//Sair
+			return EXIT_SUCCESS;
 		break;
 	default:
 		break;
@@ -1109,7 +1109,7 @@ int Main::menuUtilizador() {
 			if (option == 0) { //Menu Administrador
 				resetOption();
 				return menuAdministrador();
-			} else if (option == 1) { //Editar dados canto
+			} else if (option == 1) { //Editar dados conta
 				resetOption();
 				return menuEditDadosConta(*(this->currentUser));
 			} else if (option == 2) { //Ver dados condomino
@@ -1128,18 +1128,21 @@ int Main::menuUtilizador() {
 				return menuInicial();
 			}
 		else if (menuOption == 2) {
-			if (option == 0) {
+			if (option == 0) { //Editar dados conta
 				resetOption();
 				return menuEditDadosConta(*(this->currentUser));
-			} else if (option == 1) {
+			} else if (option == 1) { //Ver dados condomino
 				displayCurrentUserInfoCondomino();
-			} else if (option == 2) {
+			} else if (option == 2) { //Editar dados condomino
 				resetOption();
 				return menuEditDadosCondomino(*(this->currentUser));
-			} else if (option == 3) {
+			} else if (option == 3) { //Ver habitacoes possuidas
 				resetOption();
 				return menuHabitacoesPossuidas();
-			} else {
+			} else if (option == 4) { //Adicionar habitacao
+				resetOption();
+				return menuSelectOrNewHabitacao();
+			} else { //Sair
 				resetOption();
 				return menuInicial();
 			}
@@ -1181,15 +1184,15 @@ int Main::menuEditDadosConta(Condomino &condomino) {
 			option++;
 		break;
 	case KEY_ENTER:
-		if (option == 0) {
+		if (option == 0) { //Alterar nome de utilizador
 			editDadosConta(0);
 			resetOption();
 			return menuUtilizador();
-		} else if (option == 1) {
+		} else if (option == 1) { //Alterar password
 			editDadosConta(1);
 			resetOption();
 			return menuUtilizador();
-		} else if (option == 2) {
+		} else if (option == 2) { //Voltar atras
 			resetOption();
 			return menuUtilizador();
 		}
@@ -1233,23 +1236,23 @@ int Main::menuEditDadosCondomino(Condomino &condomino) {
 			option++;
 		break;
 	case KEY_ENTER:
-		if (option == 0) {
+		if (option == 0) { //Alterar nome civil
 			resetOption();
 			editDadosCondomino(0);
 			return menuUtilizador();
-		} else if (option == 1) {
+		} else if (option == 1) { //Alterar NIF
 			resetOption();
 			editDadosCondomino(1);
 			return menuUtilizador();
-		} else if (option == 2) {
+		} else if (option == 2) { //Alterar fundos mensais
 			resetOption();
 			editDadosCondomino(2);
 			return menuUtilizador();
-		} else if (option == 3) {
+		} else if (option == 3) { //Saldar divida
 			resetOption();
 			editDadosCondomino(3);
 			return menuUtilizador();
-		} else {
+		} else { //Voltar atras
 			resetOption();
 			return menuUtilizador();
 		}
@@ -1293,15 +1296,15 @@ int Main::menuHabitacoesPossuidas() {
 			option++;
 		break;
 	case KEY_ENTER:
-		if (option == 0) {
+		if (option == 0) { //Ver informacao das habitacoes
 			resetOption();
 			return menuSelectHabitacoesPossuida(false);
-		} else if (option == 1) {
+		} else if (option == 1) { //Ver estado da renda
 			displayCurrentUserRenda();
-		} else if (option == 2) {
+		} else if (option == 2) { //Remover habitacao
 			resetOption();
 			return menuSelectHabitacoesPossuida(true);
-		} else {
+		} else { //Voltar atras
 			resetOption();
 			return menuUtilizador();
 		}
@@ -1445,7 +1448,7 @@ int Main::menuSelectOrNewHabitacao() {
 			option++;
 		break;
 	case KEY_ENTER:
-		if (option == 0) {
+		if (option == 0) { //Selecionar habitacao
 			resetOption();
 			vector<Habitacao*> habitacoesLivres;
 			for (size_t i = 0; i < this->condominio.getHabitacoes().size();
@@ -1455,10 +1458,10 @@ int Main::menuSelectOrNewHabitacao() {
 							this->condominio.getHabitacoes()[i]);
 			}
 			return menuSelectHabitacaoAdd(habitacoesLivres);
-		} else if (option == 1) {
+		} else if (option == 1) { //Nova habitacao
 			resetOption();
 			return menuAddHabitacao(*currentUser);
-		} else {
+		} else { //Voltar atras
 			resetOption();
 			return menuHabitacoesPossuidas();
 		}
@@ -1752,13 +1755,13 @@ int Main::menuAdministrador() {
 			option++;
 		break;
 	case KEY_ENTER:
-		if (option == 0) {
+		if (option == 0) { //Gerir condominos
 			resetOption();
 			return menuGerirCondominos();
-		} else if (option == 1) {
+		} else if (option == 1) { //Gerir habitacoes
 			resetOption();
 			return menuGerirHabitacoes();
-		} else if (option == 4) {
+		} else if (option == 4) { //Fim do Mes
 			fimDoMes();
 		} else {
 			resetOption();
@@ -1820,7 +1823,7 @@ int Main::menuGerirCondominos() {
 		} else if (option == 3) { //Remover condomino
 			resetOption();
 			return menuSelectCondomino(true);
-		} else {
+		} else { //Voltar atras
 			resetOption();
 			return menuAdministrador();
 		}
@@ -1847,7 +1850,7 @@ int Main::menuDisplayCondominosBy() {
 	setcolor(WHITE, BLACK);
 
 	gotoxy(30, 8);
-	cout << "ORDENAR POR:" << endl;
+	cout << "ORDENAR POR" << endl;
 	displayMenuOptions(17);
 
 	displayTime();
@@ -2061,7 +2064,7 @@ int Main::menuEditCondomino(Condomino &condomino) {
 		} else if (option == 6) {
 			resetOption();
 			editDadosCondominoAdmin(3, condomino); //Saldar divida
-		} else {
+		} else { //Voltar atras
 			resetOption();
 			return menuGerirCondominos();
 		}
@@ -2177,7 +2180,7 @@ int Main::menuGerirHabitacoes() {
 		} else if (option == 3) { //Remover habitacao
 			resetOption();
 			return menuSelectHabitacao(true);
-		} else {
+		} else { //Voltar atras
 			resetOption();
 			return menuAdministrador();
 		}
@@ -2205,7 +2208,7 @@ int Main::menuDisplayHabitacoesBy() {
 	setcolor(WHITE, BLACK);
 
 	gotoxy(30, 8);
-	cout << "ORDENAR POR:" << endl;
+	cout << "ORDENAR POR" << endl;
 	displayMenuOptions(18);
 
 	displayTime();
@@ -2290,8 +2293,8 @@ int Main::menuDisplayAllHabitacoes() {
 	return menuDisplayAllHabitacoes();
 }
 /**
- * Select house menu. The admin can choose a house to remove or to view its info.
- * @param remover If true, selecting will remove the house. If false, selecting will display its info.
+ * Select house menu. The admin can choose a house to remove or edit its info.
+ * @param remover If true, selecting will remove the house. If false, selecting will edit its info.
  */
 int Main::menuSelectHabitacao(bool remover) {
 	displayLogo();
@@ -2352,7 +2355,7 @@ int Main::menuEditHabitacao(Habitacao* habitacao) {
 	setcolor(WHITE, BLACK);
 
 	gotoxy(30, 8);
-	cout << "ALTERAR DADOS\n" << endl;
+	cout << "ALTERAR DADOS" << endl;
 
 	int tipoHabitacao = 0;
 	if (habitacao->getTipo() == "Vivenda")
@@ -2462,14 +2465,14 @@ int Main::menuSelectOrVacantHabitacao() {
 			option++;
 		break;
 	case KEY_ENTER:
-		if (option == 0) {
+		if (option == 0) { //Selecionar condomino
 			resetOption();
 			return menuSelectOwnerHabitacao();
-		} else if (option == 1) {
+		} else if (option == 1) { //Habitacao sem proprietario
 			resetOption();
 			Condomino c1 = Condomino("nome", "password", "nomeCivil", "");
 			return menuAddHabitacao(c1);
-		} else {
+		} else { //Voltar atras
 			resetOption();
 			return menuGerirHabitacoes();
 		}
@@ -2531,7 +2534,55 @@ int Main::menuSelectOwnerHabitacao() {
 
 //TODO menuGerirFuncionarios()
 int Main::menuGerirFuncionarios() {
-	return EXIT_FAILURE;
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "GERIR FUNCIONARIOS" << endl;
+	displayMenuOptions(9);
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[9].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) //Ver lista de habitacoes
+			return menuDisplayHabitacoesBy();
+		else if (option == 1) { //Alterar dados de uma habitacao
+			resetOption();
+			return menuSelectHabitacao(false);
+		} else if (option == 2) { //Adicionar habitacao
+			resetOption();
+			return menuSelectOrVacantHabitacao();
+		} else if (option == 3) { //Remover habitacao
+			resetOption();
+			return menuSelectHabitacao(true);
+		} else { //Voltar atras
+			resetOption();
+			return menuAdministrador();
+		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuAdministrador();
+		break;
+	default:
+		break;
+	}
+	return menuGerirFuncionarios();
 }
 //TODO menuGerirServicos()
 int Main::menuGerirServicos() {
@@ -2676,7 +2727,6 @@ bool Main::exportCondominos() {
  * @retval TRUE Successfully imported data.
  * @retval FALSE Couldn't read from .txt file.
  */
-// Extracts data from habitacoes.txt to create vector of habitacoes
 bool Main::importHabitacoes() {
 	ifstream myfile(pathHabitacoes);
 	string line = "";
@@ -2799,7 +2849,66 @@ bool Main::exportHabitacoes() {
 		return false;
 	}
 }
+/**
+ * Imports employee data from a .txt file. Updates condominium employees.
+ * @retval TRUE Successfully imported data.
+ * @retval FALSE Couldn't read from .txt file.
+ */
+bool Main::importFuncionarios() {
+	ifstream myfile(pathFuncionarios);
+	string line = "";
+	int id = 0;
+	string especialidade = "";
 
+	vector<Funcionario> funcionarios;
+
+	if (myfile.is_open()) {
+		while (getline(myfile, line)) {
+			id = atoi(line.c_str());
+			getline(myfile, especialidade);
+			Funcionario f1 = Funcionario(especialidade, id);
+			funcionarios.push_back(f1);
+
+			getline(myfile, line);
+		}
+		myfile.close();
+		insertionSort(funcionarios);
+		this->condominio.setFuncionarios(funcionarios);
+		return true;
+	} else {
+		displayLogo();
+		cout
+				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro de funcionarios.\n";
+		pressEnterToContinue();
+		return false;
+	}
+}
+/**
+ * Exports employee data to a .txt file. Exports condominum employees.
+ * @retval TRUE Successfully exported data.
+ * @retval FALSE Couldn't write to .txt file.
+ */
+bool Main::exportFuncionarios() {
+	ofstream myfile(pathFuncionarios, ios::trunc);
+
+	if (myfile.is_open()) {
+		vector<Funcionario> funcionarios = this->condominio.getFuncionarios();
+
+		for (size_t i = 0; i < funcionarios.size(); i++) {
+			myfile << funcionarios[i].getID() << endl;
+			myfile << funcionarios[i].getEspecialidade() << endl;
+			myfile << endl;
+		}
+		myfile.close();
+		return true;
+	} else {
+		displayLogo();
+		cout
+				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro de funcionarios.\n";
+		pressEnterToContinue();
+		return false;
+	}
+}
 /**
  * Calls functions to export data to several .txt files.
  * @retval TRUE Successfully exported data.
@@ -2807,7 +2916,7 @@ bool Main::exportHabitacoes() {
  */
 int Main::exitFunction() {
 	if (!this->exportCondominio() || !this->exportCondominos()
-			|| !this->exportHabitacoes())
+			|| !this->exportHabitacoes() || !this->exportFuncionarios())
 		return EXIT_FAILURE;
 	else
 		return EXIT_SUCCESS;
@@ -2965,8 +3074,9 @@ void createMenuOptions() {
 	menuOptions[2].push_back("Alterar dados de condomino");					//2
 	menuOptions[2].push_back("Ver habitacoes possuidas");					//3
 	menuOptions[2].push_back("Adicionar habitacao");						//4
-	menuOptions[2].push_back("Requisitar um servico");						//5
-	menuOptions[2].push_back("Sair");										//6
+	menuOptions[2].push_back("Ver servicos requisitados");					//5
+	menuOptions[2].push_back("Requisitar um servico");						//6
+	menuOptions[2].push_back("Sair");										//7
 
 	vector<string> menuDadosConta;
 	menuOptions.push_back(menuDadosConta);
@@ -2995,7 +3105,10 @@ void createMenuOptions() {
 	vector<string> menuRequisitarServico;
 	menuOptions.push_back(menuRequisitarServico);
 
-	menuOptions[6].push_back("Voltar atras");
+	menuOptions[6].push_back("Limpeza (2 min)");							//0
+	menuOptions[6].push_back("Canalizacao (5 min)");						//1
+	menuOptions[6].push_back("Pintura (10 min)");							//2
+	menuOptions[6].push_back("Voltar atras");								//3
 
 	vector<string> menuAdmin;
 	menuOptions.push_back(menuAdmin);
@@ -3026,17 +3139,17 @@ void createMenuOptions() {
 	vector<string> menuGerirFuncionarios;	//TODO acabar menuGerirFuncionarios
 	menuOptions.push_back(menuGerirFuncionarios);
 	menuOptions[10].push_back("Ver lista de todos os funcionarios");		//0
-	menuOptions[10].push_back("Alterar funcionario");						//1
-	menuOptions[10].push_back("Adicionar funcionarios");					//2
-	menuOptions[10].push_back("Remover funcionarios");						//3
+	menuOptions[10].push_back("Contratar funcionario");						//1
+	menuOptions[10].push_back("Despedir funcionario");						//3
 	menuOptions[10].push_back("Voltar atras");								//4
 
 	vector<string> menuGerirServicos;
-	menuOptions.push_back(menuGerirServicos);	//TODO acabar menuGerirServicos
+	menuOptions.push_back(menuGerirServicos);
 	menuOptions[11].push_back("Ver lista de todos os servicos efectuados");	//0
 	menuOptions[11].push_back("Ver lista de todos os servicos em curso");	//1
 	menuOptions[11].push_back("Ver lista de todos os servicos em espera");	//2
-	menuOptions[11].push_back("Voltar atras");
+	menuOptions[11].push_back("Cancelar servico");							//3
+	menuOptions[11].push_back("Voltar atras");								//4
 
 	vector<string> menuDadosContaCondomino;
 	menuOptions.push_back(menuDadosContaCondomino);
@@ -3087,22 +3200,37 @@ void createMenuOptions() {
 	vector<string> menuDisplayCondominosBy;
 	menuOptions.push_back(menuDisplayCondominosBy);
 
-	menuOptions[17].push_back("Nome de utilizador");
-	menuOptions[17].push_back("Nome Civil");
-	menuOptions[17].push_back("NIF");
-	menuOptions[17].push_back("Voltar atras");
+	menuOptions[17].push_back("Nome de utilizador");						//0
+	menuOptions[17].push_back("Nome Civil");								//1
+	menuOptions[17].push_back("NIF");										//2
+	menuOptions[17].push_back("Voltar atras");								//3
 
 	vector<string> menuDisplayHabitacoesBy;
 	menuOptions.push_back(menuDisplayHabitacoesBy);
 
-	menuOptions[18].push_back("Tipo");
-	menuOptions[18].push_back("Renda");
-	menuOptions[18].push_back("NIF Proprietario");
-	menuOptions[18].push_back("Voltar atras");
+	menuOptions[18].push_back("Tipo");										//0
+	menuOptions[18].push_back("Renda");										//1
+	menuOptions[18].push_back("NIF Proprietario");							//2
+	menuOptions[18].push_back("Voltar atras");								//3
+
+	vector<string> menuDisplayFuncionariosBy;
+	menuOptions.push_back(menuDisplayFuncionariosBy);
+
+	menuOptions[19].push_back("ID");										//0
+	menuOptions[19].push_back("Especialidade");								//1
+	menuOptions[19].push_back("Estado de ocupacao");						//2
+	menuOptions[19].push_back("Voltar atras");								//3
+
+	vector<string> menuServicosRequisitados;
+	menuOptions.push_back(menuServicosRequisitados);
+	menuOptions[20].push_back("Ver a lista dos servicos efectuados");		//0
+	menuOptions[20].push_back("Ver a lista dos servicos em curso");			//1
+	menuOptions[20].push_back("Ver a lista dos servicos em espera");		//2
+	menuOptions[20].push_back("Cancelar servico");							//3
+	menuOptions[20].push_back("Voltar atras");								//4
 
 	menu = menuOptions;
 }
-
 
 /**
  * Main function.

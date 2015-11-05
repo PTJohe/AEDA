@@ -44,6 +44,7 @@ public:
 	bool eraseHabitacao(int pos);
 	bool eraseHabitacaoPossuida(Condomino condomino, int pos);
 
+
 	//Funcoes Condomino
 	bool setNomeUtilizador(Condomino condomino, string nomeUtilizador);
 	bool setPassword(Condomino condomino, string password);
@@ -57,8 +58,10 @@ public:
 	bool updateHabitacoesCondominos();
 
 	//Funcoes Funcionario
+
+	void sortFuncionarios(int sortOption);
 	bool addFuncionario(Funcionario funcionario);
-	bool contratarFuncionarios(); //TODO contratarFuncionarios();
+	int eraseFuncionario(int idFuncionario);
 
 	//Funcoes Servico
 	bool addServico(Servico servico);
@@ -71,5 +74,7 @@ public:
 
 bool compCondominoNomeCivil(Condomino c1, Condomino c2);
 bool compCondominoNIF(Condomino c1, Condomino c2);
+bool compFuncionarioEspecialidade(Funcionario f1, Funcionario f2);
+bool compFuncionarioOcupacao(Funcionario f1, Funcionario f2);
 
 #endif

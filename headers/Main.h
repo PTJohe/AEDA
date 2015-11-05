@@ -112,6 +112,9 @@ public:
 	bool importHabitacoes();
 	bool exportHabitacoes();
 
+	bool importFuncionarios();
+	bool exportFuncionarios();
+
 	int exitFunction();
 
 };

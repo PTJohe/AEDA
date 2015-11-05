@@ -5,24 +5,26 @@
 
 class Servico {
 private:
-	string especialidade;
-	int id; //id unico de cada servico
-	float duracao; //em horas
-	float preco; //em dolares
+	string especialidade; //Limpeza, Canalizacao ou Pintura
+	int id; //ID unico de cada servico
+	float duracao; //Valor retornado em segundos. Limpeza = 2 min, Canalizacao = 5 min, Pintura = 10 min;
+	time_t dataInicio; //Em segundos desde epoch
+	time_t dataFim; //Em segundos desde epoch
 	int idFuncionario;
 
 public:
-	Servico(string especialidade,float duracao, float preco, int idFuncionario);
+	Servico(string especialidade);
+	Servico(string especialidade, int idFuncionario);
 
 	string getEspecialidade() const;
 	int getID() const;
+	time_t getDataInicio() const;
 	float getDuracao() const;
-	float getPreco() const;
 	int getIDFuncionario() const;
 
 	void setEspecialidade(string especialidade);
+	void setDataInicio() const;
 	void setDuracao(float duracao);
-	void setPreco(float preco);
 	void setIDFuncionario(int idFuncionario);
 
 	//class faltaPessoal{ }; //TODO isto tem que ir para a class Condominio, não aqui

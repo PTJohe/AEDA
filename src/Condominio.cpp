@@ -216,6 +216,7 @@ bool Condominio::eraseHabitacao(int pos) {
 		return this->moradores[pos1].eraseHabitacao(pos2);
 	}
 }
+
 /**
  * Sets a new username for the given tenant.
  * @param condomino Tenant whose username is being changed.
@@ -344,18 +345,33 @@ bool Condominio::updateHabitacoesCondominos() {
 	return true;
 }
 /**
+ * Sorts employees according to a specified option.
+ * @param sortOption 0 = ID, 1 = Specialty, 2 = Occupation status.
+ */
+void Condominio::sortFuncionarios(int sortOption) {
+	if (sortOption == 0)
+		insertionSort(funcionarios);
+	else if (sortOption == 1)
+		sort(funcionarios.begin(), funcionarios.end(), compFuncionarioEspecialidade);
+	else if (sortOption == 2)
+		sort(funcionarios.begin(), funcionarios.end(), compFuncionarioOcupacao);
+	updateHabitacoesCondominos();
+}
+/**
  * Adds a given employee to the condominium.
  * @param funcionario Employee to be added.
  * @retval TRUE Employee successfully added to the vector of employees.
- * @retval FALSE Employee already exists in the vector of employees.
+ * @retval FALSE Condominium can't afford a new employee.
  */
 bool Condominio::addFuncionario(Funcionario funcionario) {
-	int pos = sequentialSearch(this->funcionarios, funcionario);
-	if (pos == -1) {
+	if (this->fundos > 500) {
+		this->funcionarios.push_back(funcionario);
+		return true;
+	} else
 		return false;
-	}
-	this->funcionarios.push_back(funcionario);
-	return true;
+}
+int Condominio::eraseFuncionario(int idFuncionario) {
+
 }
 /**
  * Adds a given service to the condominium.
@@ -368,7 +384,6 @@ bool Condominio::addServico(Servico servico) {
 	//else adiciona servicosEmEspera
 	return true;
 }
-
 
 /**
  * Updates the month and gets the rent from every tenant.
@@ -483,4 +498,30 @@ bool compCondominoNomeCivil(Condomino c1, Condomino c2) {
  */
 bool compCondominoNIF(Condomino c1, Condomino c2) {
 	return c1.getNIF() < c2.getNIF();
+}
+/**
+ * Compares two employees by specialty for sorting purposes.
+ * @retval TRUE If first employee is "lower" than the second employee.
+ * @retval FALSE If the first employee is "equal or higher" than the second employee.
+ */
+bool compFuncionarioEspecialidade(Funcionario f1, Funcionario f2) {
+	if (f1.getEspecialidade() < f2.getEspecialidade())
+		return true;
+	else if (f1.getEspecialidade() > f2.getEspecialidade())
+		return false;
+	else
+		return (f1.getID() < f2.getID());
+}
+/**
+ * Compares two employees by occupation status for sorting purposes.
+ * @retval TRUE If first employee is "lower" than the second employee.
+ * @retval FALSE If the first employee is "equal or higher" than the second employee.
+ */
+bool compFuncionarioOcupacao(Funcionario f1, Funcionario f2) {
+	if (f1.getOcupado() < f2.getOcupado())
+		return true;
+	else if (f1.getOcupado() > f2.getOcupado())
+		return false;
+	else
+		return (f1.getID() < f2.getID());
 }

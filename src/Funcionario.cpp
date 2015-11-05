@@ -8,17 +8,19 @@
 
 static int nextId = 1;
 
-Funcionario::Funcionario(string nome, string especialidade) {
-	this->nome = nome;
-	this->id = nextId;
+Funcionario::Funcionario(string especialidade) {
 	this->especialidade = especialidade;
+	this->id = nextId;
 	this->ocupado = false;
 	nextId++;
 }
-
-string Funcionario::getNome() const {
-	return nome;
+Funcionario::Funcionario(string especialidade, int id) {
+	this->especialidade = especialidade;
+	this->id = id;
+	this->ocupado = false;
+	nextId = id + 1;
 }
+
 int Funcionario::getID() const {
 	return id;
 }
@@ -29,9 +31,6 @@ string Funcionario::getEspecialidade() const {
 	return especialidade;
 }
 
-void Funcionario::setNome(string nome) {
-	this->nome = nome;
-}
 void Funcionario::setOcupado(bool ocupado) {
 	this->ocupado = ocupado;
 }
@@ -41,4 +40,7 @@ void Funcionario::setEspecialidade(string especialidade) {
 
 bool Funcionario::operator==(const Funcionario f1) const {
 	return (this->id == f1.id);
+}
+bool Funcionario::operator<(const Funcionario f1) const{
+	return (this->id < f1.id);
 }
