@@ -11,6 +11,8 @@ protected:
 	string codigoPostal;
 	string NIFProprietario;
 	bool pago[12];
+	int idServico;
+
 public:
 	virtual ~Habitacao() {
 	}
@@ -24,12 +26,14 @@ public:
 	string getNIFProprietario() const;
 	bool hasProprietario() const;
 	bool getPago(int mes) const;
+	int getServico() const;
 
 	void setMorada(string morada);
 	void setCodigoPostal(string codigoPostal);
 	void setProprietario(string nif);
 	void setPago(int mes);
 	void resetPago();
+	void setServico(int id);
 
 	virtual void setAreaInterior(float area) = 0;
 	virtual void setAreaExterior(float area) = 0;

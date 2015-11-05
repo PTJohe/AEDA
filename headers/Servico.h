@@ -27,7 +27,7 @@ public:
 	void setDuracao(float duracao);
 	void setIDFuncionario(int idFuncionario);
 
-	//class faltaPessoal{ }; //TODO isto tem que ir para a class Condominio, não aqui
+	void info() const;
 };
 
 #endif

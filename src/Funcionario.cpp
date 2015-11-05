@@ -13,12 +13,14 @@ Funcionario::Funcionario(string especialidade) {
 	this->id = nextId;
 	this->ocupado = false;
 	nextId++;
+	this->servicosEfectuados = 0;
 }
 Funcionario::Funcionario(string especialidade, int id) {
 	this->especialidade = especialidade;
 	this->id = id;
 	this->ocupado = false;
 	nextId = id + 1;
+	this->servicosEfectuados = 0;
 }
 
 int Funcionario::getID() const {
@@ -30,6 +32,9 @@ bool Funcionario::getOcupado() const {
 string Funcionario::getEspecialidade() const {
 	return especialidade;
 }
+int Funcionario::getServicosEfectuados() const{
+	return servicosEfectuados;
+}
 
 void Funcionario::setOcupado(bool ocupado) {
 	this->ocupado = ocupado;
@@ -37,10 +42,26 @@ void Funcionario::setOcupado(bool ocupado) {
 void Funcionario::setEspecialidade(string especialidade) {
 	this->especialidade = especialidade;
 }
+void Funcionario::addServicoEfectuado(){
+	this->servicosEfectuados++;
+}
 
 bool Funcionario::operator==(const Funcionario f1) const {
 	return (this->id == f1.id);
 }
-bool Funcionario::operator<(const Funcionario f1) const{
+bool Funcionario::operator<(const Funcionario f1) const {
 	return (this->id < f1.id);
+}
+
+void Funcionario::info() const {
+	cout << "ID = " << this->id << endl;
+	cout << "Especialidade: " << this->especialidade << endl;
+	cout << "Estado: ";
+	if (this->ocupado)
+		cout << "Ocupado" << endl;
+	else
+		cout << "Livre" << endl;
+	cout << "Servicos efectuados = " << this->servicosEfectuados << endl;
+	cout << "Salario = 500$\n" << endl;
+
 }

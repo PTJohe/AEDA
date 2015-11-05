@@ -9,6 +9,7 @@ private:
 	int id;
 	bool ocupado;
 	string especialidade;
+	int servicosEfectuados = 0;
 
 public:
 	Funcionario(string especialidade);
@@ -17,12 +18,16 @@ public:
 	int getID() const;
 	bool getOcupado() const;
 	string getEspecialidade() const;
+	int getServicosEfectuados() const;
 
 	void setOcupado(bool status);
 	void setEspecialidade(string especialidade);
+	void addServicoEfectuado();
 
 	bool operator== (const Funcionario f1) const;
 	bool operator< (const Funcionario f1) const;
+
+	void info() const;
 };
 
 

@@ -171,6 +171,43 @@ bool Main::displaySelectHabitacao(vector<Habitacao*> habitacoes) {
 		}
 	}
 	return EXIT_SUCCESS;
+}
+/**
+ * Prints a Funcionario select screen.
+ */
+bool Main::displaySelectFuncionario() {
+	if (option >= this->condominio.getFuncionarios().size()) {
+		return EXIT_FAILURE;
+	}
+	for (size_t i = 0; i < this->condominio.getFuncionarios().size(); i++) {
+		gotoxy(0, 14 + i);
+		if (i == option) {
+			setcolor(BLACK, LIGHTGREY);
+			cout << this->condominio.getFuncionarios()[i].getID() << "\t"
+					<< left << setw(16) << setfill(' ')
+					<< this->condominio.getFuncionarios()[i].getEspecialidade();
+			if (this->condominio.getFuncionarios()[i].getOcupado())
+				cout << "Ocupado" << "\t\t";
+			else
+				cout << "Livre" << "\t\t";
+			cout
+					<< this->condominio.getFuncionarios()[i].getServicosEfectuados()
+					<< endl;
+			setcolor(WHITE, BLACK);
+		} else {
+			cout << this->condominio.getFuncionarios()[i].getID() << "\t"
+					<< left << setw(16) << setfill(' ')
+					<< this->condominio.getFuncionarios()[i].getEspecialidade();
+			if (this->condominio.getFuncionarios()[i].getOcupado())
+				cout << "Ocupado" << "\t\t";
+			else
+				cout << "Livre" << "\t\t";
+			cout
+					<< this->condominio.getFuncionarios()[i].getServicosEfectuados()
+					<< endl;
+		}
+	}
+	return EXIT_SUCCESS;
 
 }
 
@@ -899,6 +936,36 @@ void Main::displayHabitacaoInfo(int pos) {
 	pressEnterToContinue();
 }
 /**
+ * Displays info of a specified employee.
+ * @param pos Position of the employee in the vector of employees of the condominium.
+ */
+void Main::displayFuncionarioInfo(int pos) {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "DADOS DO FUNCIONARIO\n" << endl;
+	this->condominio.getFuncionarios()[pos].info();
+	if (this->condominio.getFuncionarios()[pos].getOcupado()) {
+		for (size_t i = 0; i < this->condominio.getServicosEmCurso().size();
+				i++) {
+			if (this->condominio.getServicosEmCurso()[i].getIDFuncionario()
+					== this->condominio.getFuncionarios()[pos].getID()) {
+				cout << "\nA efectuar:" << endl;
+				this->condominio.getServicosEmCurso()[i].info();
+				break;
+			}
+		}
+	}
+	if (this->condominio.getFuncionarios()[pos].getServicosEfectuados() > 0) {
+		cout << "\nServicos efectuados:\n" << endl;
+		for (size_t j = 0; j < this->condominio.getServicosTerminados().size();
+				j++)
+			if (this->condominio.getServicosTerminados()[j].getIDFuncionario()
+					== this->condominio.getFuncionarios()[pos].getID())
+				this->condominio.getServicosTerminados()[j].info();
+	}
+	pressEnterToContinue();
+}
+/**
  * Displays end month info.
  * @retval TRUE Every tenant paid their rent.
  * @retval FALSE Not every tenant paid their rent.
@@ -1123,6 +1190,10 @@ int Main::menuUtilizador() {
 			} else if (option == 5) { //Adicionar habitacao
 				resetOption();
 				return menuSelectOrNewHabitacao();
+			} else if (option == 6) { //Ver servicos requisitados
+
+			} else if (option == 7) { //Requisitar servico
+
 			} else { //Sair
 				resetOption();
 				return menuInicial();
@@ -1142,6 +1213,10 @@ int Main::menuUtilizador() {
 			} else if (option == 4) { //Adicionar habitacao
 				resetOption();
 				return menuSelectOrNewHabitacao();
+			} else if (option == 5) { //Ver servicos requisitados
+
+			} else if (option == 6) { //Requisitar servico
+
 			} else { //Sair
 				resetOption();
 				return menuInicial();
@@ -1761,6 +1836,9 @@ int Main::menuAdministrador() {
 		} else if (option == 1) { //Gerir habitacoes
 			resetOption();
 			return menuGerirHabitacoes();
+		} else if (option == 2) { //Gerir funcionarios
+			resetOption();
+			return menuGerirFuncionarios();
 		} else if (option == 4) { //Fim do Mes
 			fimDoMes();
 		} else {
@@ -2140,7 +2218,7 @@ int Main::menuDeleteCondomino(Condomino &condomino, int menuOption) {
 }
 
 /**
- * Manage houses menu. The admin can create, edit or remove houses.
+ * Manage houses menu. The admin can list, create, edit or remove houses.
  * @return A new menu.
  */
 int Main::menuGerirHabitacoes() {
@@ -2268,6 +2346,12 @@ int Main::menuDisplayAllHabitacoes() {
 	cout << "[ENTER] Ver dados" << endl;
 	cout << "[ESC] Voltar atras\n" << endl;
 	cout << "Habitacao      Renda         NIF Proprietario" << endl;
+
+	if (this->condominio.getHabitacoes().empty()) {
+		cout << "Nao existem habitacoes no condominio" << endl;
+		pressEnterToContinue();
+		return menuDisplayHabitacoesBy();
+	}
 	displaySelectHabitacao(this->condominio.getHabitacoes());
 
 	int c = getch();
@@ -2313,6 +2397,11 @@ int Main::menuSelectHabitacao(bool remover) {
 		cout << "[ENTER] Editar" << endl;
 	cout << "[ESC] Voltar atras\n" << endl;
 	cout << "Habitacao      Renda         NIF Proprietario" << endl;
+	if (this->condominio.getHabitacoes().empty()) {
+		cout << "Nao existem habitacoes no condominio" << endl;
+		pressEnterToContinue();
+		return menuGerirHabitacoes();
+	}
 	displaySelectHabitacao(this->condominio.getHabitacoes());
 
 	int c = getch();
@@ -2532,7 +2621,9 @@ int Main::menuSelectOwnerHabitacao() {
 
 }
 
-//TODO menuGerirFuncionarios()
+/**
+ * Manage employees menu. The admin can list, hire or fire employees.
+ */
 int Main::menuGerirFuncionarios() {
 	displayLogo();
 
@@ -2544,7 +2635,7 @@ int Main::menuGerirFuncionarios() {
 
 	gotoxy(30, 8);
 	cout << "GERIR FUNCIONARIOS" << endl;
-	displayMenuOptions(9);
+	displayMenuOptions(10);
 
 	displayTime();
 
@@ -2555,22 +2646,18 @@ int Main::menuGerirFuncionarios() {
 			option--;
 		break;
 	case KEY_DOWN:
-		if (option + 1 < menu[9].size())
+		if (option + 1 < menu[10].size())
 			option++;
 		break;
 	case KEY_ENTER:
-		if (option == 0) //Ver lista de habitacoes
-			return menuDisplayHabitacoesBy();
-		else if (option == 1) { //Alterar dados de uma habitacao
+		if (option == 0) //Ver lista de todos os funcionarios
+			return menuDisplayFuncionariosBy();
+		else if (option == 1) { //Contratar funcionario
 			resetOption();
-			return menuSelectHabitacao(false);
-		} else if (option == 2) { //Adicionar habitacao
+		} else if (option == 2) { //Despedir funcionario
 			resetOption();
-			return menuSelectOrVacantHabitacao();
-		} else if (option == 3) { //Remover habitacao
-			resetOption();
-			return menuSelectHabitacao(true);
-		} else { //Voltar atras
+			return menuFireFuncionario();
+		} else if (option == 3) { //Voltar atras
 			resetOption();
 			return menuAdministrador();
 		}
@@ -2584,6 +2671,193 @@ int Main::menuGerirFuncionarios() {
 	}
 	return menuGerirFuncionarios();
 }
+
+/**
+ * Display employees by menu. The admin can list employees by ID, specialty, occupation status or services done.
+ * @return A new menu.
+ */
+int Main::menuDisplayFuncionariosBy() {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "ORDENAR POR" << endl;
+	displayMenuOptions(19);
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[19].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) { //Ordenar por ID
+			resetOption();
+			this->condominio.sortFuncionarios(0);
+			return menuDisplayAllFuncionarios();
+		} else if (option == 1) { //Ordenar por especialidade
+			resetOption();
+			this->condominio.sortFuncionarios(1);
+			return menuDisplayAllFuncionarios();
+		} else if (option == 2) { //Ordenar por estado de ocupacao
+			resetOption();
+			this->condominio.sortFuncionarios(2);
+			return menuDisplayAllFuncionarios();
+		} else if (option == 3) { //Ordenar por servicos feitos
+			resetOption();
+			this->condominio.sortFuncionarios(3);
+			return menuDisplayAllFuncionarios();
+		} else { //Voltar atras
+			resetOption();
+			return menuGerirFuncionarios();
+		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuGerirFuncionarios();
+		break;
+	default:
+		break;
+	}
+	return menuDisplayFuncionariosBy();
+}
+int Main::menuDisplayAllFuncionarios() {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "SELECIONE O FUNCIONARIO:\n" << endl;
+	cout << "[ENTER] Ver dados" << endl;
+	cout << "[ESC] Voltar atras\n" << endl;
+	cout << "ID\tEspecialidade\tEstado\tServicos Feitos" << endl;
+	if (this->condominio.getFuncionarios().empty()) {
+		cout << "Nao existem funcionarios no condominio" << endl;
+		pressEnterToContinue();
+		return menuDisplayFuncionariosBy();
+	}
+	displaySelectFuncionario();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < this->condominio.getFuncionarios().size())
+			option++;
+		break;
+	case KEY_ENTER:
+		displayFuncionarioInfo(option);
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuDisplayFuncionariosBy();
+		break;
+	default:
+		break;
+	}
+	return menuDisplayAllFuncionarios();
+}
+int Main::menuAddFuncionario() {
+
+}
+int Main::menuFireFuncionario() {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "SELECIONE O FUNCIONARIO:\n" << endl;
+	cout << "[ENTER] Despedir" << endl;
+	cout << "[ESC] Voltar atras\n" << endl;
+	cout << "ID\tEspecialidade\tEstado\tServicos Feitos" << endl;
+	if (this->condominio.getFuncionarios().empty()) {
+		cout << "Nao existem funcionarios no condominio" << endl;
+		pressEnterToContinue();
+		return menuDisplayFuncionariosBy();
+	}
+	displaySelectFuncionario();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < this->condominio.getFuncionarios().size())
+			option++;
+		break;
+	case KEY_ENTER:
+		menuDeleteFuncionario(option, 0);
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuGerirFuncionarios();
+		break;
+	default:
+		break;
+	}
+	return menuFireFuncionario();
+}
+int Main::menuDeleteFuncionario(int pos, int menuOption) {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "DADOS DO FUNCIONARIO\n" << endl;
+	this->condominio.getFuncionarios()[pos].info();
+
+	cout << "Tem a certeza que pretende despedir este funcionario?" << endl;
+	displayYesNo(menuOption);
+
+	int c = getch();
+	switch (c) {
+	case KEY_LEFT:
+		if (menuOption - 1 >= 0)
+			menuOption--;
+		break;
+	case KEY_RIGHT:
+		if (menuOption + 1 < 2)
+			menuOption++;
+		break;
+	case KEY_ENTER:
+		if (menuOption == 0) {
+			this->condominio.eraseFuncionario(pos);
+			cout << "\nFuncionario despedido." << endl;
+			if (this->option > 0)
+				option--;
+			pressEnterToContinue();
+			return menuFireFuncionario();
+		} else if (menuOption == 1) {
+			return menuFireFuncionario();
+		}
+		break;
+	default:
+		break;
+	}
+	return menuDeleteFuncionario(pos, menuOption);
+}
+
 //TODO menuGerirServicos()
 int Main::menuGerirServicos() {
 	return EXIT_FAILURE;
@@ -3063,8 +3337,9 @@ void createMenuOptions() {
 	menuOptions[1].push_back("Alterar dados de condomino");					//3
 	menuOptions[1].push_back("Ver habitacoes possuidas");					//4
 	menuOptions[1].push_back("Adicionar habitacao");						//5
-	menuOptions[1].push_back("Requisitar um servico");						//6
-	menuOptions[1].push_back("Sair");										//7
+	menuOptions[1].push_back("Ver servicos requisitados");  				//6
+	menuOptions[1].push_back("Requisitar um servico");						//7
+	menuOptions[1].push_back("Sair");										//8
 
 	vector<string> menuUtilizadorNormal;
 	menuOptions.push_back(menuUtilizadorNormal);
@@ -3136,7 +3411,7 @@ void createMenuOptions() {
 	menuOptions[9].push_back("Remover habitacao");							//3
 	menuOptions[9].push_back("Voltar atras");								//4
 
-	vector<string> menuGerirFuncionarios;	//TODO acabar menuGerirFuncionarios
+	vector<string> menuGerirFuncionarios;
 	menuOptions.push_back(menuGerirFuncionarios);
 	menuOptions[10].push_back("Ver lista de todos os funcionarios");		//0
 	menuOptions[10].push_back("Contratar funcionario");						//1
@@ -3219,15 +3494,32 @@ void createMenuOptions() {
 	menuOptions[19].push_back("ID");										//0
 	menuOptions[19].push_back("Especialidade");								//1
 	menuOptions[19].push_back("Estado de ocupacao");						//2
-	menuOptions[19].push_back("Voltar atras");								//3
+	menuOptions[19].push_back("Servicos efectuados");						//3
+	menuOptions[19].push_back("Voltar atras");								//4
+
+	vector<string> menuEspecialidade;
+	menuOptions.push_back(menuEspecialidade);
+
+	menuOptions[20].push_back("Limpeza");									//0
+	menuOptions[20].push_back("Canalizacao");								//1
+	menuOptions[20].push_back("Pintura");									//2
+	menuOptions[20].push_back("Voltar atras");								//3
 
 	vector<string> menuServicosRequisitados;
 	menuOptions.push_back(menuServicosRequisitados);
-	menuOptions[20].push_back("Ver a lista dos servicos efectuados");		//0
-	menuOptions[20].push_back("Ver a lista dos servicos em curso");			//1
-	menuOptions[20].push_back("Ver a lista dos servicos em espera");		//2
-	menuOptions[20].push_back("Cancelar servico");							//3
-	menuOptions[20].push_back("Voltar atras");								//4
+
+	menuOptions[21].push_back("Ver a lista dos servicos efectuados");		//0
+	menuOptions[21].push_back("Ver a lista dos servicos em curso");			//1
+	menuOptions[21].push_back("Ver a lista dos servicos em espera");		//2
+	menuOptions[21].push_back("Cancelar servico");							//3
+	menuOptions[21].push_back("Voltar atras");								//4
+
+	vector<string> menuCancelarServico;
+	menuOptions.push_back(menuCancelarServico);
+
+	menuOptions[22].push_back("Servico em Curso");							//0
+	menuOptions[22].push_back("Servico em Espera");							//1
+	menuOptions[22].push_back("Voltar atras");								//2
 
 	menu = menuOptions;
 }
@@ -3247,8 +3539,10 @@ int main() {
 	main.importCondominio();
 	main.importCondominos();
 	main.importHabitacoes();
+	main.importFuncionarios();
 
 	main.menuInicial();
+
 	return main.exitFunction();
 }
 

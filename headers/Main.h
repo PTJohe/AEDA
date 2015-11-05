@@ -30,7 +30,7 @@ public:
 	bool displaySelectCondomino();
 	bool displaySelectHabitacao(vector<Habitacao*> habitacoes);
 	bool displaySelectHabitacaoPossuida();
-	bool displaySelectFuncionario(); //TODO displaySelectFuncionario()
+	bool displaySelectFuncionario();
 	bool displaySelectServico(); //TODO displaySelectServico()
 
 	bool validLogin(string utilizador, string password);
@@ -49,9 +49,7 @@ public:
 
 	void displayCondominoInfo(int pos);
 	void displayHabitacaoInfo(int pos);
-	void displayAllHabitacoes();
-	void displayAllFuncionarios() const; //TODO displayAllFuncionarios()
-	void displayAllServicos() const; //TODO displayAllServicos()
+	void displayFuncionarioInfo(int pos);
 
 	bool fimDoMes();
 
@@ -97,7 +95,13 @@ public:
 	int menuSelectOwnerHabitacao();
 	int menuDeleteHabitacao(int pos, int menuOption);
 
-	int menuGerirFuncionarios(); //TODO menuGerirFuncionarios()
+	int menuGerirFuncionarios();
+	int menuDisplayFuncionariosBy();
+	int menuDisplayAllFuncionarios();
+	int menuAddFuncionario();
+	int menuFireFuncionario();
+	int menuDeleteFuncionario(int pos, int menuOption);
+
 	int menuGerirServicos(); //TODO menuGerirServicos()
 
 

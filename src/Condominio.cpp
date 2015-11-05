@@ -37,6 +37,24 @@ vector<Funcionario> Condominio::getFuncionarios() {
 	return funcionarios;
 }
 /**
+ * @return Vector of condominium's services done.
+ */
+vector<Servico> Condominio::getServicosTerminados() {
+	return servicosTerminados;
+}
+/**
+ * @return Vector of condominium's services being done.
+ */
+vector<Servico> Condominio::getServicosEmCurso() {
+	return servicosEmCurso;
+}
+/**
+ * @return Vector of condominium's services waiting to be done.
+ */
+vector<Servico> Condominio::getServicosEmEspera() {
+	return servicosEmEspera;
+}
+/**
  * Sets the condominium funds.
  * @param fundos New amount of funds.
  */
@@ -352,10 +370,12 @@ void Condominio::sortFuncionarios(int sortOption) {
 	if (sortOption == 0)
 		insertionSort(funcionarios);
 	else if (sortOption == 1)
-		sort(funcionarios.begin(), funcionarios.end(), compFuncionarioEspecialidade);
+		sort(funcionarios.begin(), funcionarios.end(),
+				compFuncionarioEspecialidade);
 	else if (sortOption == 2)
 		sort(funcionarios.begin(), funcionarios.end(), compFuncionarioOcupacao);
-	updateHabitacoesCondominos();
+	else if (sortOption == 3)
+		sort(funcionarios.begin(), funcionarios.end(), compFuncionarioServicos);
 }
 /**
  * Adds a given employee to the condominium.
@@ -370,8 +390,22 @@ bool Condominio::addFuncionario(Funcionario funcionario) {
 	} else
 		return false;
 }
-int Condominio::eraseFuncionario(int idFuncionario) {
-
+bool Condominio::eraseFuncionario(int pos) {
+	if (pos >= this->funcionarios.size())
+		return false;
+	if (funcionarios[pos].getOcupado())
+		for (size_t i = 0; i < this->servicosEmCurso.size(); i++) {
+			if (this->servicosEmCurso[i].getIDFuncionario()
+					== this->funcionarios[pos].getID())
+				this->eraseServicoEmCurso(servicosEmCurso[i].getID());
+		}
+	else {
+		for (size_t j = 0; j < this->servicosEmEspera.size(); j++)
+			if (this->servicosEmEspera[j].getIDFuncionario()
+					== this->funcionarios[pos].getID())
+				this->eraseServicoEmEspera(servicosEmEspera[j].getID());
+	}
+	this->funcionarios.erase(funcionarios.begin() + pos);
 }
 /**
  * Adds a given service to the condominium.
@@ -384,7 +418,52 @@ bool Condominio::addServico(Servico servico) {
 	//else adiciona servicosEmEspera
 	return true;
 }
-
+/**
+ * Deletes a service from the condominium's vector of services done.
+ * @param pos Position of the service in the vector of services done.
+ * @retval TRUE Service successfully deleted.
+ * @retval FALSE Invalid position in the vector.
+ */
+bool Condominio::eraseServicoTerminado(int pos) {
+	if (pos >= servicosTerminados.size())
+		return false;
+	servicosTerminados.erase(servicosTerminados.begin() + pos);
+	return true;
+}
+/**
+ * Deletes a service from the condominium's vector of services being done.
+ * @param id Service ID
+ * @retval TRUE Service successfully deleted.
+ * @retval FALSE Invalid service ID.
+ */
+bool Condominio::eraseServicoEmCurso(int id) {
+	for (size_t i = 0; i < this->servicosEmCurso.size(); i++) {
+		if (this->servicosEmCurso[i].getID() == id) {
+			for (size_t j = 0; j < this->habitacoes.size(); j++)
+				if (this->habitacoes[j]->getServico() == id) {
+					this->habitacoes[j]->setServico(-1);
+					break;
+				}
+			this->servicosEmCurso.erase(servicosEmCurso.begin() + i);
+			return true;
+		}
+	}
+	return false;
+}
+bool Condominio::eraseServicoEmEspera(int id) {
+	for (size_t i = 0; i < this->servicosEmEspera.size(); i++) {
+		if (this->servicosEmEspera[i].getID() == id) {
+			for (size_t j = 0; j < this->habitacoes.size(); j++)
+				if (this->habitacoes[j]->getServico() == id) {
+					this->habitacoes[j]->setServico(-1);
+					break;
+				}
+			this->servicosEmEspera.erase(servicosEmEspera.begin() + i);
+			return true;
+		}
+	}
+	return false;
+}
 /**
  * Updates the month and gets the rent from every tenant.
  * @return Vector of tenants that didn't fully pay their rent.
@@ -392,7 +471,7 @@ bool Condominio::addServico(Servico servico) {
 vector<Condomino> Condominio::fimDoMes() {
 	vector<Condomino> caloteiros;
 
-	//Actualiza o mes actual. Se o ano acabar, reinicializa o estado da renda das habitacoes de todos os condominos
+//Actualiza o mes actual. Se o ano acabar, reinicializa o estado da renda das habitacoes de todos os condominos
 	if (this->currentMes < 11) //0 = Janeiro
 		this->currentMes++;
 	else if (this->currentMes == 11) { //11 = Dezembro
@@ -447,7 +526,7 @@ vector<Condomino> Condominio::fimDoMes() {
 			caloteiros.push_back(moradores[i]);
 	}
 
-	//Actualiza o pagamento aos funcionarios
+//Actualiza o pagamento aos funcionarios
 	fundos -= this->funcionarios.size() * 500;
 
 	return caloteiros;
@@ -521,6 +600,19 @@ bool compFuncionarioOcupacao(Funcionario f1, Funcionario f2) {
 	if (f1.getOcupado() < f2.getOcupado())
 		return true;
 	else if (f1.getOcupado() > f2.getOcupado())
+		return false;
+	else
+		return (f1.getID() < f2.getID());
+}
+/**
+ * Compares two employees by the number of services for sorting purposes.
+ * @retval TRUE If first employee is "lower" than the second employee.
+ * @retval FALSE If the first employee is "equal or higher" than the second employee.
+ */
+bool compFuncionarioServicos(Funcionario f1, Funcionario f2) {
+	if (f1.getServicosEfectuados() < f2.getServicosEfectuados())
+		return true;
+	else if (f1.getServicosEfectuados() > f2.getServicosEfectuados())
 		return false;
 	else
 		return (f1.getID() < f2.getID());

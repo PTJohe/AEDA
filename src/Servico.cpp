@@ -53,3 +53,7 @@ void Servico::setDuracao(float duracao) {
 void Servico::setIDFuncionario(int idFuncionario) {
 	this->idFuncionario = idFuncionario;
 }
+
+void Servico::info() const{ //TODO info() do servico
+
+}

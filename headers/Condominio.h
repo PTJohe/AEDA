@@ -22,10 +22,13 @@ public:
 
 	long int getFundos() const;
 	int getMes() const;
+	Condomino* getCondomino(int pos);
 	vector<Condomino> getMoradores();
 	vector<Habitacao*> getHabitacoes();
 	vector<Funcionario> getFuncionarios();
-	Condomino* getCondomino(int pos);
+	vector<Servico> getServicosTerminados();
+	vector<Servico> getServicosEmCurso();
+	vector<Servico> getServicosEmEspera();
 
 	void setFundos(long int fundos);
 	void setCurrentMes(int currentMes);
@@ -61,10 +64,13 @@ public:
 
 	void sortFuncionarios(int sortOption);
 	bool addFuncionario(Funcionario funcionario);
-	int eraseFuncionario(int idFuncionario);
+	bool eraseFuncionario(int pos);
 
 	//Funcoes Servico
 	bool addServico(Servico servico);
+	bool eraseServicoTerminado(int pos);
+	bool eraseServicoEmCurso(int id);
+	bool eraseServicoEmEspera(int id);
 
 	vector<Condomino> fimDoMes();
 
@@ -76,5 +82,6 @@ bool compCondominoNomeCivil(Condomino c1, Condomino c2);
 bool compCondominoNIF(Condomino c1, Condomino c2);
 bool compFuncionarioEspecialidade(Funcionario f1, Funcionario f2);
 bool compFuncionarioOcupacao(Funcionario f1, Funcionario f2);
+bool compFuncionarioServicos(Funcionario f1, Funcionario f2);
 
 #endif

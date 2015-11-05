@@ -9,6 +9,7 @@ Habitacao::Habitacao(string morada, string codigoPostal) {
 	this->codigoPostal = codigoPostal;
 	this->NIFProprietario = "";
 	fill(this->pago, pago + sizeof(pago), 0);
+	this->idServico = -1;
 }
 Habitacao::Habitacao(string morada, string codigoPostal,
 		string NIFProprietario) {
@@ -16,6 +17,7 @@ Habitacao::Habitacao(string morada, string codigoPostal,
 	this->codigoPostal = codigoPostal;
 	this->NIFProprietario = NIFProprietario;
 	fill(this->pago, pago + sizeof(pago), 0);
+	this->idServico = -1;
 }
 
 Habitacao::Habitacao(string morada, string codigoPostal, string NIFProprietario,
@@ -26,6 +28,7 @@ Habitacao::Habitacao(string morada, string codigoPostal, string NIFProprietario,
 	for (size_t i = 0; i < 12; i++) {
 		this->pago[i] = pago[i];
 	}
+	this->idServico = -1;
 }
 
 string Habitacao::getMorada() const {
@@ -46,6 +49,9 @@ bool Habitacao::hasProprietario() const {
 bool Habitacao::getPago(int mes) const {
 	return pago[mes];
 }
+int Habitacao::getServico() const{
+	return idServico;
+}
 
 void Habitacao::setMorada(string morada) {
 	this->morada = morada;
@@ -62,6 +68,10 @@ void Habitacao::setPago(int mes) {
 void Habitacao::resetPago(){
 	for(size_t i = 0; i < 12; i++)
 		this->pago[i] = false;
+}
+
+void Habitacao::setServico(int id){
+	this->idServico = id;
 }
 
 /*
