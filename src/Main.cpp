@@ -2654,6 +2654,7 @@ int Main::menuGerirFuncionarios() {
 			return menuDisplayFuncionariosBy();
 		else if (option == 1) { //Contratar funcionario
 			resetOption();
+			return menuAddFuncionario();
 		} else if (option == 2) { //Despedir funcionario
 			resetOption();
 			return menuFireFuncionario();
@@ -2732,6 +2733,10 @@ int Main::menuDisplayFuncionariosBy() {
 	}
 	return menuDisplayFuncionariosBy();
 }
+/**
+ * Display all employees menu. The admin can choose an employee to view its info.
+ * @return A new menu.
+ */
 int Main::menuDisplayAllFuncionarios() {
 	displayLogo();
 
@@ -2775,9 +2780,136 @@ int Main::menuDisplayAllFuncionarios() {
 	}
 	return menuDisplayAllFuncionarios();
 }
+/**
+ * Hire employee menu. The admin can choose a type of employee to hire.
+ * @return A new menu.
+ */
 int Main::menuAddFuncionario() {
+	displayLogo();
 
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "CONTRATAR FUNCIONARIO DE" << endl;
+	displayMenuOptions(20);
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[20].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) { //Limpeza
+			return menuConfirmAddFuncionario(0, 0);
+		} else if (option == 1) { //Canalizacao
+			return menuConfirmAddFuncionario(1, 0);
+		} else if (option == 2) { //Pintura
+			return menuConfirmAddFuncionario(2, 0);
+		} else { //Voltar atras
+			resetOption();
+			return menuGerirFuncionarios();
+		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuGerirFuncionarios();
+		break;
+	default:
+		break;
+	}
+	return menuAddFuncionario();
 }
+/**
+ * Confirm hiring an employee menu. Shows the condominium funds and number of employees.
+ * The admin can confirm or not hiring an employee.
+ * @param specialty Type of employee to hire.
+ * @param menuOption Changes the highlighted option. 0 = Yes, 1 = No.
+ * @return A new menu.
+ */
+int Main::menuConfirmAddFuncionario(int specialty, int menuOption) {
+	displayLogo();
+	gotoxy(0, 8);
+
+	string especialidade;
+	if (specialty == 0) {
+		cout << "CONTRATAR FUNCIONARIO DE LIMPEZA\n" << endl;
+		especialidade = "Limpeza";
+	} else if (specialty == 1) {
+		cout << "CONTRATAR CANALIZADOR\n" << endl;
+		especialidade = "Canalizacao";
+	} else if (specialty == 2) {
+		cout << "CONTRATAR PINTOR\n" << endl;
+		especialidade = "Pintura";
+	}
+
+	cout << "Numero total de funcionarios no condominio = "
+			<< this->condominio.getFuncionarios().size() << endl;
+	if (specialty == 0)
+		cout << "Numero de funcionarios de limpeza actual = "
+				<< this->condominio.getNumFuncLimpeza() << endl;
+	else if (specialty == 1)
+		cout << "Numero de canalizadores actual = "
+				<< this->condominio.getNumFuncCanalizacao() << endl;
+	else if (specialty == 2)
+		cout << "Numero de pintores actual = "
+				<< this->condominio.getNumFuncPintura() << endl;
+
+	cout << "\nFundos do condominio = " << this->condominio.getFundos() << "$"
+			<< endl;
+	cout << "Preco inicial do funcionario = 1000$" << endl;
+	cout << "Salario mensal = 500$\n" << endl;
+
+	if (this->condominio.getFundos() < 1000) {
+		cout << "O condominio nao tem fundos para contratar o funcionario.\n"
+				<< endl;
+		pressEnterToContinue();
+		return menuAddFuncionario();
+	}
+
+	cout << "Tem a certeza que pretende contratar este funcionario?" << endl;
+	displayYesNo(menuOption);
+
+	int c = getch();
+	switch (c) {
+	case KEY_LEFT:
+		if (menuOption - 1 >= 0)
+			menuOption--;
+		break;
+	case KEY_RIGHT:
+		if (menuOption + 1 < 2)
+			menuOption++;
+		break;
+	case KEY_ENTER:
+		if (menuOption == 0) {
+			Funcionario f1 = Funcionario(especialidade);
+			this->condominio.addFuncionario(f1);
+			cout << "\nFuncionario contratado." << endl;
+			pressEnterToContinue();
+			return menuAddFuncionario();
+		} else if (menuOption == 1) {
+			return menuAddFuncionario();
+		}
+		break;
+	default:
+		break;
+	}
+	return menuConfirmAddFuncionario(specialty, menuOption);
+}
+/**
+ * Fire employee menu. The admin can choose an employee to fire.
+ * @return A new menu.
+ */
 int Main::menuFireFuncionario() {
 	displayLogo();
 
@@ -2821,6 +2953,12 @@ int Main::menuFireFuncionario() {
 	}
 	return menuFireFuncionario();
 }
+/**
+ * Confirm firing an employee menu. Shows the employee info and a confirmation menu.
+ * @param pos Position of the employee in condominium's the vector of employees.
+ * @param menuOption Changes the highlighted option. 0 = Yes, 1 = No.
+ * @return A new menu.
+ */
 int Main::menuDeleteFuncionario(int pos, int menuOption) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -2868,7 +3006,6 @@ int Main::menuGerirServicos() {
  * @retval TRUE Successfully imported data.
  * @retval FALSE Couldn't read from .txt file.
  */
-// Extracts data from condominio.txt to create condominio
 bool Main::importCondominio() {
 	ifstream myfile(pathCondominio);
 	string line = "";
@@ -2919,7 +3056,6 @@ bool Main::exportCondominio() {
  * @retval TRUE Successfully imported data.
  * @retval FALSE Couldn't read from .txt file.
  */
-// Extracts data from condominos.txt to create a vector of condominos
 bool Main::importCondominos() {
 	ifstream myfile(pathCondominos);
 	string line = "";
@@ -3018,6 +3154,8 @@ bool Main::importHabitacoes() {
 	int tipologia = 0;
 	int piso = 0;
 
+	int idServico = -1;
+
 	vector<Habitacao*> habitacoes;
 
 	if (myfile.is_open()) {
@@ -3045,9 +3183,11 @@ bool Main::importHabitacoes() {
 					piscina = false;
 				else
 					piscina = true;
+				getline(myfile, line);
+				idServico = atoi(line.c_str());
 
 				Vivenda* v1 = new Vivenda(morada, codigoPostal, nifProprietario,
-						pago, areaInterior, areaExterior, piscina);
+						pago, idServico, areaInterior, areaExterior, piscina);
 				habitacoes.push_back(v1);
 			} else if (tipo == "Apartamento") {
 				getline(myfile, line);
@@ -3056,8 +3196,10 @@ bool Main::importHabitacoes() {
 				areaInterior = atof(line.c_str());
 				getline(myfile, line);
 				piso = atoi(line.c_str());
+				getline(myfile, line);
+				idServico = atoi(line.c_str());
 				Apartamento* a1 = new Apartamento(morada, codigoPostal,
-						nifProprietario, pago, tipologia, areaInterior, piso);
+						nifProprietario, pago, idServico, tipologia, areaInterior, piso);
 				habitacoes.push_back(a1);
 			}
 			getline(myfile, line);
@@ -3105,11 +3247,13 @@ bool Main::exportHabitacoes() {
 					myfile << "0" << endl;
 				else
 					myfile << "1" << endl;
+				myfile << habitacoes[j]->getServico() << endl;
 				myfile << endl;
 			} else if (habitacoes[j]->getTipo() == "Apartamento") {
 				myfile << habitacoes[j]->getTipologia() << endl;
 				myfile << habitacoes[j]->getAreaInterior() << endl;
 				myfile << habitacoes[j]->getPiso() << endl;
+				myfile << habitacoes[j]->getServico() << endl;
 				myfile << endl;
 			}
 		}
@@ -3199,13 +3343,13 @@ int Main::exitFunction() {
 /*
  * Non-class functions
  */
+
 /**
- * Checks if string has a whitespace.
+ * Checks if string has one or more whitespaces.
  * @param s String to be checked.
  * @retval TRUE String has at least one whitespace.
  * @retval FALSE No whitespaces were found.
  */
-// Checks if string has at least one space
 bool hasWhitespace(string s) {
 	for (size_t i = 0; i < s.size(); i++) {
 		if (s[i] == ' ')
@@ -3219,7 +3363,6 @@ bool hasWhitespace(string s) {
  * @retval TRUE String is a positive integer.
  * @retval FALSE String isn't a positive integer.
  */
-// Checks if string is a positive integer
 bool isNumber(string s) {
 	string::const_iterator it = s.begin();
 	while (it != s.end() && std::isdigit(*it))

@@ -6,15 +6,7 @@ codigoPostal
 5
 100
 3
-
-Vivenda
-moradaQuinta
-codigoPostal
-
-000000000000
-200
-100
-1
+-1
 
 Apartamento
 Rua Dr Azeredo Perdigao Bloco 6C 3o Esquerdo
@@ -24,6 +16,7 @@ Rua Dr Azeredo Perdigao Bloco 6C 3o Esquerdo
 5
 100
 3
+-1
 
 Vivenda
 moradaSegunda
@@ -33,6 +26,7 @@ codigoPostal
 100
 50
 1
+-1
 
 Vivenda
 moradaTerceira
@@ -42,6 +36,7 @@ codigoPostal
 100
 50
 1
+-1
 
 Vivenda
 moradaQuarta
@@ -51,4 +46,25 @@ codigoPostal
 100
 50
 1
+-1
+
+Vivenda
+moradaQuinta
+codigoPostal
+
+000000000000
+200
+100
+1
+-1
+
+Apartamento
+asd
+asd
+123456789
+000000000000
+10
+100
+3
+-1
 

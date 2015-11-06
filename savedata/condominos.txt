@@ -4,6 +4,14 @@ admin
 Administrador
 123456789
 1000
+-60
+
+0
+cliente
+cliente
+Cliente
+987654321
+500
 0
 
 1
@@ -12,7 +20,7 @@ joao
 Joao Araujo
 263788210
 400
--150
+0
 
 0
 manel
@@ -20,13 +28,5 @@ manel
 Manuel
 363788210
 300
-0
-
-0
-cliente
-cliente
-Cliente
-987654321
-500
 0
 

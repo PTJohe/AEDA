@@ -65,6 +65,12 @@ public:
 	void sortFuncionarios(int sortOption);
 	bool addFuncionario(Funcionario funcionario);
 	bool eraseFuncionario(int pos);
+	int getNumFuncLimpeza();
+	int getLivresLimpeza();
+	int getNumFuncCanalizacao();
+	int getLivresCanalizacao();
+	int getNumFuncPintura();
+	int getLivresPintura();
 
 	//Funcoes Servico
 	bool addServico(Servico servico);

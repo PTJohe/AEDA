@@ -99,6 +99,7 @@ public:
 	int menuDisplayFuncionariosBy();
 	int menuDisplayAllFuncionarios();
 	int menuAddFuncionario();
+	int menuConfirmAddFuncionario(int specialty, int menuOption);
 	int menuFireFuncionario();
 	int menuDeleteFuncionario(int pos, int menuOption);
 

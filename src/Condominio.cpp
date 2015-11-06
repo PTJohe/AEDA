@@ -384,12 +384,19 @@ void Condominio::sortFuncionarios(int sortOption) {
  * @retval FALSE Condominium can't afford a new employee.
  */
 bool Condominio::addFuncionario(Funcionario funcionario) {
-	if (this->fundos > 500) {
+	if (this->fundos >= 1000) {
 		this->funcionarios.push_back(funcionario);
+		this->fundos -= 1000;
 		return true;
 	} else
 		return false;
 }
+/**
+ * Removes a given employee from the condominium and cancels the service being done or waiting to be done by that employee.
+ * @param pos Position of the employee in the condominium's vector of employees.
+ * @retval TRUE Employee successfully removed.
+ * @retval FALSE Invalid position.
+ */
 bool Condominio::eraseFuncionario(int pos) {
 	if (pos >= this->funcionarios.size())
 		return false;
@@ -407,6 +414,71 @@ bool Condominio::eraseFuncionario(int pos) {
 	}
 	this->funcionarios.erase(funcionarios.begin() + pos);
 }
+
+/**
+ * @return Number of cleaning employees hired by the condominium.
+ */
+int Condominio::getNumFuncLimpeza() {
+	int total = 0;
+	for (size_t i = 0; i < this->funcionarios.size(); i++)
+		if (funcionarios[i].getEspecialidade() == "Limpeza")
+			total++;
+	return total;
+}
+/**
+ * @return Number of cleaning employees available to do a service.
+ */
+int Condominio::getLivresLimpeza() {
+	int total = 0;
+	for (size_t i = 0; i < this->funcionarios.size(); i++)
+		if (funcionarios[i].getEspecialidade() == "Limpeza")
+			if (!funcionarios[i].getOcupado())
+				total++;
+	return total;
+}
+/**
+ * @return Number of plumbers hired by the condominium.
+ */
+int Condominio::getNumFuncCanalizacao() {
+	int total = 0;
+	for (size_t i = 0; i < this->funcionarios.size(); i++)
+		if (funcionarios[i].getEspecialidade() == "Canalizacao")
+			total++;
+	return total;
+}
+/**
+ * @return Number of plumbers available to do a service.
+ */
+int Condominio::getLivresCanalizacao() {
+	int total = 0;
+	for (size_t i = 0; i < this->funcionarios.size(); i++)
+		if (funcionarios[i].getEspecialidade() == "Canalizacao")
+			if (!funcionarios[i].getOcupado())
+				total++;
+	return total;
+}
+/**
+ * @return Number of painters hired by the condominium.
+ */
+int Condominio::getNumFuncPintura() {
+	int total = 0;
+	for (size_t i = 0; i < this->funcionarios.size(); i++)
+		if (funcionarios[i].getEspecialidade() == "Pintura")
+			total++;
+	return total;
+}
+/**
+ * @return Number of painters available to do a service.
+ */
+int Condominio::getLivresPintura() {
+	int total = 0;
+	for (size_t i = 0; i < this->funcionarios.size(); i++)
+		if (funcionarios[i].getEspecialidade() == "Pintura")
+			if (!funcionarios[i].getOcupado())
+				total++;
+	return total;
+}
+
 /**
  * Adds a given service to the condominium.
  * @param servico Service to be added.
@@ -450,6 +522,12 @@ bool Condominio::eraseServicoEmCurso(int id) {
 	}
 	return false;
 }
+/**
+ * Deletes a service from the condominium's vector of services waiting to be done.
+ * @param id Service ID
+ * @retval TRUE Service successfully deleted.
+ * @retval FALSE Invalid service ID.
+ */
 bool Condominio::eraseServicoEmEspera(int id) {
 	for (size_t i = 0; i < this->servicosEmEspera.size(); i++) {
 		if (this->servicosEmEspera[i].getID() == id) {

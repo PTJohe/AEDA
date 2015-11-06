@@ -21,6 +21,8 @@ public:
 	Habitacao(string morada, string codigoPostal, string NIFProprietario);
 	Habitacao(string morada, string codigoPostal, string NIFProprietario,
 			bool pago[12]);
+	Habitacao(string morada, string codigoPostal, string NIFProprietario,
+			bool pago[12], int idServico);
 	string getMorada() const;
 	string getCodigoPostal() const;
 	string getNIFProprietario() const;
@@ -66,6 +68,9 @@ public:
 	Vivenda(string morada, string codigoPostal, string NIFProprietario,
 			bool pago[12], float areaInterior, float areaExterior,
 			bool piscina);
+	Vivenda(string morada, string codigoPostal, string NIFProprietario,
+			bool pago[12], int idServico, float areaInterior,
+			float areaExterior, bool piscina);
 	float getAreaInterior() const;
 	float getAreaExterior() const;
 	bool getPiscina() const;
@@ -105,6 +110,9 @@ public:
 			int tipologia, float areaInterior, int piso);
 	Apartamento(string morada, string codigoPostal, string NIFProprietario,
 			bool pago[12], int tipologia, float areaInterior, int piso);
+	Apartamento(string morada, string codigoPostal, string NIFProprietario,
+			bool pago[12], int idServico, int tipologia, float areaInterior,
+			int piso);
 	int getTipologia() const;
 	float getAreaInterior() const;
 	int getPiso() const;
@@ -119,8 +127,12 @@ public:
 	bool getPiscina() const {
 		return false;
 	}
-	void setAreaExterior(float area) {return;}
-	void setPiscina(bool piscina) {return;}
+	void setAreaExterior(float area) {
+		return;
+	}
+	void setPiscina(bool piscina) {
+		return;
+	}
 
 	float calcRenda() const;
 	string getTipo() const;

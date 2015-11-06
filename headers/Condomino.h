@@ -31,6 +31,7 @@ public:
 	int getFundosMensais() const;
 	int getDivida() const;
 	vector<Habitacao *> getHabitacoes();
+	int getTotalRenda() const;
 
 	void sortHabitacoes();
 	void addHabitacao(Habitacao* h1, int currentMes);

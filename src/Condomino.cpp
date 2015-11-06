@@ -54,6 +54,12 @@ int Condomino::getDivida() const {
 vector<Habitacao *> Condomino::getHabitacoes() {
 	return habitacoes;
 }
+int Condomino::getTotalRenda() const{
+	int total = 0;
+	for(size_t i = 0; i < habitacoes.size(); i++)
+		total += habitacoes[i]->calcRenda();
+	return total;
+}
 
 void Condomino::setNomeUtilizador(string novoNomeUtilizador) {
 	this->nomeUtilizador = novoNomeUtilizador;
@@ -141,6 +147,8 @@ void Condomino::infoCondomino() const {
 	cout << this->nomeCivil << endl;
 	cout << "NIF: " << this->NIF << endl;
 	cout << "Numero de habitacoes: " << this->habitacoes.size() << endl;
+	if(!habitacoes.empty())
+		cout << "Renda total actual = " << this->getTotalRenda() << "$" << endl;
 	cout << "Fundos Mensais = " << this->fundosMensais << "$" << endl;
 	cout << "Divida = " << this->divida << "$" << "\n" << endl;
 }
