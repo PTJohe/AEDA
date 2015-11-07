@@ -36,6 +36,11 @@ vector<Habitacao*> Condominio::getHabitacoes() {
 vector<Funcionario> Condominio::getFuncionarios() {
 	return funcionarios;
 }
+/**
+ * Returns a pointer to an employee using its id.
+ * @param id Employee id.
+ * @return A pointer to the employee.
+ */
 Funcionario* Condominio::getFuncionario(int id) {
 	for (size_t i = 0; i < funcionarios.size(); i++) {
 		if (funcionarios[i].getID() == id)
@@ -163,14 +168,16 @@ int Condominio::eraseMorador(Condomino condomino) {
 }
 /**
  * Sorts houses according to a specified option.
- * @param sortOption 0 = Type, 1 = Rent, 2 = Owner's NIF.
+ * @param sortOption 0 = ID, 1 = Type, 2 = Rent, 3 = Owner's NIF.
  */
 void Condominio::sortHabitacoes(int sortOption) {
 	if (sortOption == 0)
-		sort(habitacoes.begin(), habitacoes.end(), compHabitacaoTipo);
+		sort(habitacoes.begin(), habitacoes.end(), compHabitacaoID);
 	else if (sortOption == 1)
-		sort(habitacoes.begin(), habitacoes.end(), compHabitacaoRenda);
+		sort(habitacoes.begin(), habitacoes.end(), compHabitacaoTipo);
 	else if (sortOption == 2)
+		sort(habitacoes.begin(), habitacoes.end(), compHabitacaoRenda);
+	else if (sortOption == 3)
 		sort(habitacoes.begin(), habitacoes.end(), compHabitacaoNIF);
 	updateHabitacoesCondominos();
 }
@@ -355,7 +362,7 @@ bool Condominio::saldarDivida(Condomino condomino) {
 		this->moradores[pos].setDivida(0);
 		for (size_t i = 0; i < this->moradores[pos].getHabitacoes().size();
 				i++) {
-			for (size_t j = 0; j <= this->currentMes; j++) {
+			for (int j = 0; j <= this->currentMes; j++) {
 				this->moradores[pos].getHabitacoes()[i]->setPago(j);
 			}
 		}
@@ -416,17 +423,17 @@ bool Condominio::addFuncionario(Funcionario funcionario) {
 bool Condominio::eraseFuncionario(int pos) {
 	if (pos >= this->funcionarios.size())
 		return false;
-	if (funcionarios[pos].getOcupado())
+	if (funcionarios[pos].isOcupado())
 		for (size_t i = 0; i < this->servicosEmCurso.size(); i++) {
 			if (this->servicosEmCurso[i].getIDFuncionario()
 					== this->funcionarios[pos].getID())
-				this->eraseServicoEmCurso(servicosEmCurso[i].getID());
+				this->eraseServico(i, 1);
 		}
 	else {
 		for (size_t j = 0; j < this->servicosEmEspera.size(); j++)
 			if (this->servicosEmEspera[j].getIDFuncionario()
 					== this->funcionarios[pos].getID())
-				this->eraseServicoEmEspera(servicosEmEspera[j].getID());
+				this->eraseServico(j, 2);
 	}
 	this->funcionarios.erase(funcionarios.begin() + pos);
 	return true;
@@ -449,7 +456,7 @@ int Condominio::getLivresLimpeza() {
 	int total = 0;
 	for (size_t i = 0; i < this->funcionarios.size(); i++)
 		if (funcionarios[i].getEspecialidade() == "Limpeza")
-			if (!funcionarios[i].getOcupado())
+			if (!funcionarios[i].isOcupado())
 				total++;
 	return total;
 }
@@ -470,7 +477,7 @@ int Condominio::getLivresCanalizacao() {
 	int total = 0;
 	for (size_t i = 0; i < this->funcionarios.size(); i++)
 		if (funcionarios[i].getEspecialidade() == "Canalizacao")
-			if (!funcionarios[i].getOcupado())
+			if (!funcionarios[i].isOcupado())
 				total++;
 	return total;
 }
@@ -491,11 +498,16 @@ int Condominio::getLivresPintura() {
 	int total = 0;
 	for (size_t i = 0; i < this->funcionarios.size(); i++)
 		if (funcionarios[i].getEspecialidade() == "Pintura")
-			if (!funcionarios[i].getOcupado())
+			if (!funcionarios[i].isOcupado())
 				total++;
 	return total;
 }
 
+/**
+ * Sorts the services according to a specified option.
+ * @param vectorServicos Vector of services to be sorted.
+ * @int sortOption 0 = ID, 1 = Type, 2 = Start Date, 3 = Requester's NIF.
+ */
 void Condominio::sortServicos(int vectorServicos, int sortOption) {
 	if (vectorServicos == 0) {
 		if (sortOption == 0)
@@ -537,67 +549,373 @@ void Condominio::sortServicos(int vectorServicos, int sortOption) {
 }
 /**
  * Adds a given service to the condominium.
+ * @param vectorServicos 1 = servicosEmCurso, 2 = servicosEmEspera.
+ * @param mes Current month.
  * @param servico Service to be added.
  * @retval TRUE Service successfully added.
- * @retval FALSE Service already exists or there aren't enough employees to do it.
  */
-bool Condominio::addServico(Servico servico) {
-	//if houver recursos, adiciona ao servicosEmCurso
-	//else adiciona servicosEmEspera
+bool Condominio::addServico(int vectorServicos, string mes, Servico servico) {
+	if (vectorServicos == 1) {
+		int idFuncionario = 0;
+		for (size_t i = 0; i < funcionarios.size(); i++) {
+			if (funcionarios[i].getEspecialidade()
+					== servico.getEspecialidade())
+				if (!funcionarios[i].isOcupado()) {
+					idFuncionario = funcionarios[i].getID();
+					funcionarios[i].setOcupado(true);
+				}
+		}
+		servico.iniciarServico(mes, idFuncionario);
+		servicosEmCurso.push_back(servico);
+	} else if (vectorServicos == 2) {
+		servicosEmEspera.push_back(servico);
+	}
 	return true;
 }
 /**
- * Deletes a service from the condominium's vector of services done.
- * @param pos Position of the service in the vector of services done.
+ * Deletes a service in the given vector from the condominium.
+ * @param pos Position of the service in the given vector.
+ * @param vectorServicos 0 = servicosTerminados, 1 = servicosEmCurso, 2 = servicosEmEspera.
  * @retval TRUE Service successfully deleted.
- * @retval FALSE Invalid position in the vector.
+ * @retval False Invalid position.
  */
-bool Condominio::eraseServicoTerminado(int pos) {
-	if (pos >= servicosTerminados.size())
+bool Condominio::eraseServico(int pos, int vectorServicos) {
+	if (vectorServicos == 0) { //Remover servico terminado
+		if (pos >= servicosTerminados.size())
+			return false;
+		servicosTerminados.erase(servicosTerminados.begin() + pos);
+		return true;
+	} else if (vectorServicos == 1) { //Cancelar servico em curso
+		for (size_t i = 0; i < this->servicosEmCurso.size(); i++) {
+			if (pos == i) {
+				for (size_t j = 0; j < this->habitacoes.size(); j++)
+					if (this->habitacoes[j]->getServico()
+							== servicosEmCurso[pos].getID()) {
+						this->habitacoes[j]->setServico(-1);
+						break;
+					}
+				this->servicosEmCurso.erase(servicosEmCurso.begin() + i);
+				return true;
+			}
+		}
 		return false;
-	servicosTerminados.erase(servicosTerminados.begin() + pos);
-	return true;
-}
-/**
- * Deletes a service from the condominium's vector of services being done.
- * @param id Service ID
- * @retval TRUE Service successfully deleted.
- * @retval FALSE Invalid service ID.
- */
-bool Condominio::eraseServicoEmCurso(int id) {
-	for (size_t i = 0; i < this->servicosEmCurso.size(); i++) {
-		if (this->servicosEmCurso[i].getID() == id) {
-			for (size_t j = 0; j < this->habitacoes.size(); j++)
-				if (this->habitacoes[j]->getServico() == id) {
-					this->habitacoes[j]->setServico(-1);
-					break;
-				}
-			this->servicosEmCurso.erase(servicosEmCurso.begin() + i);
-			return true;
+	} else if (vectorServicos == 2) { //Cancelar servico em espera
+		for (size_t i = 0; i < this->servicosEmEspera.size(); i++) {
+			if (pos == i) {
+				for (size_t j = 0; j < this->habitacoes.size(); j++)
+					if (this->habitacoes[j]->getServico()
+							== servicosEmEspera[pos].getID()) {
+						this->habitacoes[j]->setServico(-1);
+						break;
+					}
+				this->servicosEmEspera.erase(servicosEmEspera.begin() + i);
+				return true;
+			}
 		}
+		return false;
 	}
 	return false;
 }
 /**
- * Deletes a service from the condominium's vector of services waiting to be done.
- * @param id Service ID
- * @retval TRUE Service successfully deleted.
- * @retval FALSE Invalid service ID.
+ * Returns the minimum time a service of the specified type will be able to start.
+ * @param tipo Type of service
+ * @retval 0 Service can start immediately.
+ * @return Time in which a service will be able to start, in seconds since Epoch.
  */
-bool Condominio::eraseServicoEmEspera(int id) {
-	for (size_t i = 0; i < this->servicosEmEspera.size(); i++) {
-		if (this->servicosEmEspera[i].getID() == id) {
-			for (size_t j = 0; j < this->habitacoes.size(); j++)
-				if (this->habitacoes[j]->getServico() == id) {
-					this->habitacoes[j]->setServico(-1);
-					break;
+time_t Condominio::getDisponibilidadeServico(int tipo) {
+	time_t disponibilidade = 0;
+	if (tipo == 0) { //Limpeza
+		if (this->getLivresLimpeza() > 0)
+			return disponibilidade;
+		else {
+			for (size_t i = 0; i < this->servicosEmEspera.size(); i++) {
+				if (servicosEmEspera[i].getEspecialidade() == "Limpeza")
+					if (servicosEmEspera[i].getDataRequisitado()
+							> disponibilidade)
+						disponibilidade =
+								servicosEmEspera[i].getDataRequisitado()
+										+ (2 * 60);
+			}
+			if (disponibilidade == 0) {
+				for (size_t i = 0; i < this->servicosEmCurso.size(); i++) {
+					if (servicosEmCurso[i].getEspecialidade() == "Limpeza") {
+						if (disponibilidade == 0)
+							disponibilidade = servicosEmCurso[i].getDataFim();
+						else if (disponibilidade
+								> servicosEmCurso[i].getDataFim())
+							disponibilidade = servicosEmCurso[i].getDataFim();
+					}
 				}
-			this->servicosEmEspera.erase(servicosEmEspera.begin() + i);
-			return true;
+			}
+			return disponibilidade;
+		}
+	} else if (tipo == 1) { //Canalizacao
+		if (this->getLivresCanalizacao() > 0)
+			return disponibilidade;
+		else {
+			for (size_t i = 0; i < this->servicosEmEspera.size(); i++) {
+				if (servicosEmEspera[i].getEspecialidade() == "Canalizacao")
+					if (servicosEmEspera[i].getDataRequisitado()
+							> disponibilidade)
+						disponibilidade =
+								servicosEmEspera[i].getDataRequisitado()
+										+ (5 * 60);
+			}
+			if (disponibilidade == 0) {
+				for (size_t i = 0; i < this->servicosEmCurso.size(); i++) {
+					if (servicosEmCurso[i].getEspecialidade()
+							== "Canalizacao") {
+						if (disponibilidade == 0)
+							disponibilidade = servicosEmCurso[i].getDataFim();
+						else if (disponibilidade
+								> servicosEmCurso[i].getDataFim())
+							disponibilidade = servicosEmCurso[i].getDataFim();
+					}
+				}
+			}
+			return disponibilidade;
+		}
+	} else if (tipo == 2) { //Pintura
+		if (this->getLivresPintura() > 0)
+			return disponibilidade;
+		else {
+			for (size_t i = 0; i < this->servicosEmEspera.size(); i++) {
+				if (servicosEmEspera[i].getEspecialidade() == "Pintura")
+					if (servicosEmEspera[i].getDataRequisitado()
+							> disponibilidade)
+						disponibilidade =
+								servicosEmEspera[i].getDataRequisitado()
+										+ (10 * 60);
+			}
+			if (disponibilidade == 0) {
+				for (size_t i = 0; i < this->servicosEmCurso.size(); i++) {
+					if (servicosEmCurso[i].getEspecialidade() == "Pintura") {
+						if (disponibilidade == 0)
+							disponibilidade = servicosEmCurso[i].getDataFim();
+						else if (disponibilidade
+								> servicosEmCurso[i].getDataFim())
+							disponibilidade = servicosEmCurso[i].getDataFim();
+					}
+				}
+			}
+			return disponibilidade;
 		}
 	}
-	return false;
+	return 0;
 }
+
+/**
+ * Checks if any service ended and "frees" its employee. Starts a waiting service, if there is a free employee.
+ * @param mes Current month.
+ * @param currentUser Pointer to the current user. Used to check if at least one of the currentUser's services ended.
+ * @param servicosCurrentUser Number of services that ended of the current user.
+ * @retval TRUE At least one service ended.
+ * @retval FALSE No service ended.
+ */
+bool Condominio::updateServicos(string mes, Condomino* currentUser,
+		int &servicosCurrentUser) {
+	sortServicos(1, 2);
+
+	int servicosQueAcabaram = 0;
+
+	//Verifica se algum servico terminou e liberta o funcionario
+	for (size_t i = 0; i < servicosEmCurso.size(); i++) {
+		if (servicosEmCurso[i].getDataFim() < time(NULL)) {
+			for (size_t j = 0; j < funcionarios.size(); j++)
+				if (funcionarios[j].getID()
+						== servicosEmCurso[i].getIDFuncionario()) {
+					funcionarios[j].setOcupado(false);
+					funcionarios[j].addServicoEfectuado();
+					break;
+				}
+			for (size_t k = 0; k < habitacoes.size(); k++) {
+				if (habitacoes[k]->getServico() == servicosEmCurso[i].getID()) {
+					habitacoes[k]->setServico(-1);
+					break;
+				}
+			}
+			servicosTerminados.push_back(servicosEmCurso[i]);
+			servicosQueAcabaram++;
+			if (currentUser != NULL)
+				if (servicosEmCurso[i].getNIFcondomino()
+						== currentUser->getNIF())
+					servicosCurrentUser++;
+			servicosEmCurso.erase(servicosEmCurso.begin() + i);
+			if (!servicosEmCurso.empty())
+				i--;
+		}
+	}
+
+	int funcLimpeza = this->getLivresLimpeza();
+	int funcCanalizacao = this->getLivresCanalizacao();
+	int funcPintura = this->getLivresPintura();
+
+	if (funcLimpeza > 0 || funcCanalizacao > 0 || funcPintura > 0) {
+		for (size_t i = 0; i < servicosEmEspera.size(); i++) {
+			if (funcLimpeza > 0) {
+				if (servicosEmEspera[i].getEspecialidade() == "Limpeza") {
+					this->addServico(1, mes, servicosEmEspera[i]);
+					servicosEmEspera.erase(servicosEmEspera.begin() + i);
+					if (!servicosEmEspera.empty())
+						i--;
+					funcLimpeza--;
+				}
+			} else if (funcCanalizacao > 0) {
+				if (servicosEmEspera[i].getEspecialidade() == "Canalizacao") {
+					this->addServico(1, mes, servicosEmEspera[i]);
+					servicosEmEspera.erase(servicosEmEspera.begin() + i);
+					if (!servicosEmEspera.empty())
+						i--;
+					funcCanalizacao--;
+				}
+			} else if (funcPintura > 0) {
+				if (servicosEmEspera[i].getEspecialidade() == "Pintura") {
+					this->addServico(1, mes, servicosEmEspera[i]);
+					servicosEmEspera.erase(servicosEmEspera.begin() + i);
+					if (!servicosEmEspera.empty())
+						i--;
+					funcPintura--;
+				}
+			}
+		}
+	}
+
+	if (servicosQueAcabaram > 0)
+		return true;
+	else
+		return false;
+}
+/**
+ * Updates services at the end of the month. All services being done will end and
+ * all services waiting to be done will be done, unless there isn't any employee of their type hired by the condominium.
+ * @param mes Current month.
+ * @retval TRUE At least one service ended.
+ * @retval FALSE No service ended.
+ */
+bool Condominio::updateServicosFimMes(string mes) {
+	sortServicos(1, 2);
+	bool existemServicos = false;
+
+	if (!servicosEmCurso.empty())
+		existemServicos = true;
+
+//Termina todos os servicos em curso e liberta os funcionarios
+	for (size_t i = 0; i < servicosEmCurso.size(); i++) {
+		servicosTerminados.push_back(servicosEmCurso[i]);
+		for (size_t j = 0; j < funcionarios.size(); j++)
+			if (funcionarios[j].getID()
+					== servicosEmCurso[i].getIDFuncionario()) {
+				funcionarios[j].setOcupado(false);
+				funcionarios[j].addServicoEfectuado();
+			}
+		servicosEmCurso.erase(servicosEmCurso.begin() + i);
+		if (!servicosEmCurso.empty())
+			i--;
+	}
+
+//Inicia ao mesmo tempo tantos servicos de limpeza em espera como os funcionarios de limpeza existentes,
+//a partir dai, os servicos iniciam-se sequencialmente, um apos o outro
+	int funcLimpeza = this->getLivresLimpeza();
+	time_t prevDataLimpeza = 0;
+
+//Inicia ao mesmo tempo tantos servicos de canalizacao em espera como os canalizadores existentes,
+//a partir dai, os servicos iniciam-se sequencialmente, um apos o outro
+	int funcCanalizacao = this->getLivresCanalizacao();
+	time_t prevDataCanalizacao = 0;
+
+//Inicia ao mesmo tempo tantos servicos de pintura em espera como os pintores existentes,
+//a partir dai, os servicos iniciam-se sequencialmente, um apos o outro
+	int funcPintura = this->getLivresPintura();
+	time_t prevDataPintura = 0;
+
+//Inicia e termina todos os servicos em espera possiveis
+	for (size_t i = 0; i < servicosEmEspera.size(); i++) {
+		if (servicosEmEspera[i].getEspecialidade() == "Limpeza") {
+			//Se nao houver funcionarios de limpeza, o servico continua em espera no proximo mes
+			if (this->getNumFuncLimpeza() == 0)
+				continue;
+			//Procura um funcionario que possa fazer o servico
+			for (size_t j = 0; j < funcionarios.size(); j++) {
+				if (funcionarios[j].getEspecialidade() == "Limpeza") {
+					if (funcLimpeza > 0) {
+						funcLimpeza--;
+						servicosEmEspera[i].iniciarServico(mes,
+								funcionarios[j].getID());
+						if (funcLimpeza == 0)
+							prevDataLimpeza = servicosEmEspera[i].getDataFim();
+					} else if (funcLimpeza == 0) {
+						servicosEmEspera[i].iniciarServico(mes,
+								funcionarios[j].getID(), prevDataLimpeza);
+						prevDataLimpeza = servicosEmEspera[i].getDataFim();
+					}
+					servicosTerminados.push_back(servicosEmEspera[i]);
+					servicosEmEspera.erase(servicosEmEspera.begin() + i);
+					if (!servicosEmEspera.empty())
+						i--;
+					break;
+				}
+			}
+			continue;
+		}
+		if (servicosEmEspera[i].getEspecialidade() == "Canalizacao") {
+			//Se nao houve canalizadores, o servico continua em espera no proximo mes
+			if (this->getNumFuncCanalizacao() == 0)
+				continue;
+			//Procura um funcionario que possa fazer o servico
+			for (size_t j = 0; j < funcionarios.size(); j++) {
+				if (funcionarios[j].getEspecialidade() == "Canalizacao") {
+					if (funcCanalizacao > 0) {
+						funcCanalizacao--;
+						servicosEmEspera[i].iniciarServico(mes,
+								funcionarios[j].getID());
+						if (funcCanalizacao == 0)
+							prevDataCanalizacao =
+									servicosEmEspera[i].getDataFim();
+					} else if (funcCanalizacao == 0) {
+						servicosEmEspera[i].iniciarServico(mes,
+								funcionarios[j].getID(), prevDataCanalizacao);
+						prevDataCanalizacao = servicosEmEspera[i].getDataFim();
+					}
+					servicosTerminados.push_back(servicosEmEspera[i]);
+					servicosEmEspera.erase(servicosEmEspera.begin() + i);
+					if (!servicosEmEspera.empty())
+						i--;
+					break;
+				}
+			}
+			continue;
+		}
+		if (servicosEmEspera[i].getEspecialidade() == "Pintura") {
+			//Se nao houver pintores, o servico continua em espera no proximo mes
+			if (this->getNumFuncPintura() == 0)
+				continue;
+			//Procura um funcionario que possa fazer o servico
+			for (size_t j = 0; j < funcionarios.size(); j++) {
+				if (funcionarios[j].getEspecialidade() == "Pintura") {
+					if (funcPintura > 0) {
+						funcPintura--;
+						servicosEmEspera[i].iniciarServico(mes,
+								funcionarios[j].getID());
+						if (funcPintura == 0)
+							prevDataPintura = servicosEmEspera[i].getDataFim();
+					} else if (funcPintura == 0) {
+						servicosEmEspera[i].iniciarServico(mes,
+								funcionarios[j].getID(), prevDataPintura);
+						prevDataPintura = servicosEmEspera[i].getDataFim();
+					}
+					servicosTerminados.push_back(servicosEmEspera[i]);
+					servicosEmEspera.erase(servicosEmEspera.begin() + i);
+					if (!servicosEmEspera.empty())
+						i--;
+					break;
+				}
+			}
+			continue;
+		}
+	}
+	return existemServicos;
+}
+
 /**
  * Updates the month and gets the rent from every tenant.
  * @return Vector of tenants that didn't fully pay their rent.
@@ -618,9 +936,9 @@ vector<Condomino> Condominio::fimDoMes() {
 	}
 
 	for (size_t i = 0; i < moradores.size(); i++) {
-		//Fundos mensais que o condomino tem para pagar as rendas
+//Fundos mensais que o condomino tem para pagar as rendas
 		int fundosRestantes = moradores[i].getFundosMensais();
-		//Actualizar o pagamento da renda para cada habitacao que ele possuir
+//Actualizar o pagamento da renda para cada habitacao que ele possuir
 		for (size_t j = 0; j < moradores[i].getHabitacoes().size(); j++) {
 			if (fundosRestantes > 0) {
 				int diferenca = fundosRestantes
@@ -647,15 +965,15 @@ vector<Condomino> Condominio::fimDoMes() {
 				moradores[i].addDivida(
 						-moradores[i].getHabitacoes()[j]->calcRenda());
 		}
-		//Se ainda restarem fundos e o condomino tiver uma divida,
-		//ele usa esses fundos para saldar essa divida (total ou parcialmente)
+//Se ainda restarem fundos e o condomino tiver uma divida,
+//ele usa esses fundos para saldar essa divida (total ou parcialmente)
 		if (fundosRestantes > 0 && moradores[i].getDivida() < 0) {
 			int novaDivida = moradores[i].getDivida() + fundosRestantes;
 			if (novaDivida > 0)
 				novaDivida = 0;
 			moradores[i].setDivida(novaDivida);
 		}
-		//Se o condomino nao conseguiu pagar o mes, adiciona ao vector dos caloteiros que vai ser retornado
+//Se o condomino nao conseguiu pagar o mes, adiciona ao vector dos caloteiros que vai ser retornado
 		if (fundosRestantes < 0)
 			caloteiros.push_back(moradores[i]);
 	}
@@ -731,9 +1049,9 @@ bool compFuncionarioEspecialidade(Funcionario f1, Funcionario f2) {
  * @retval FALSE If the first employee is "equal or higher" than the second employee.
  */
 bool compFuncionarioOcupacao(Funcionario f1, Funcionario f2) {
-	if (f1.getOcupado() < f2.getOcupado())
+	if (f1.isOcupado() < f2.isOcupado())
 		return true;
-	else if (f1.getOcupado() > f2.getOcupado())
+	else if (f1.isOcupado() > f2.isOcupado())
 		return false;
 	else
 		return (f1.getID() < f2.getID());

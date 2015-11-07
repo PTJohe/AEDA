@@ -62,6 +62,7 @@ public:
 	void infoRenda() const;
 };
 
+bool compHabitacaoID(Habitacao* h1, Habitacao* h2);
 bool compHabitacaoTipo(Habitacao* h1, Habitacao* h2);
 bool compHabitacaoRenda(Habitacao* h1, Habitacao* h2);
 bool compHabitacaoNIF(Habitacao* h1, Habitacao* h2);

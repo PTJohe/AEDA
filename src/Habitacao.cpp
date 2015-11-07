@@ -4,7 +4,11 @@
  * Habitacao
  */
 
+static int nextId = 1;
+
 Habitacao::Habitacao(string morada, string codigoPostal) {
+	this->id = nextId;
+	nextId++;
 	this->morada = morada;
 	this->codigoPostal = codigoPostal;
 	this->NIFProprietario = "";
@@ -13,6 +17,8 @@ Habitacao::Habitacao(string morada, string codigoPostal) {
 }
 Habitacao::Habitacao(string morada, string codigoPostal,
 		string NIFProprietario) {
+	this->id = nextId;
+	nextId++;
 	this->morada = morada;
 	this->codigoPostal = codigoPostal;
 	this->NIFProprietario = NIFProprietario;
@@ -22,6 +28,8 @@ Habitacao::Habitacao(string morada, string codigoPostal,
 
 Habitacao::Habitacao(string morada, string codigoPostal, string NIFProprietario,
 		bool pago[12]) {
+	this->id = nextId;
+	nextId++;
 	this->morada = morada;
 	this->codigoPostal = codigoPostal;
 	this->NIFProprietario = NIFProprietario;
@@ -30,8 +38,10 @@ Habitacao::Habitacao(string morada, string codigoPostal, string NIFProprietario,
 	}
 	this->idServico = -1;
 }
-Habitacao::Habitacao(string morada, string codigoPostal, string NIFProprietario,
+Habitacao::Habitacao(int id, string morada, string codigoPostal, string NIFProprietario,
 		bool pago[12], int idServico) {
+	this->id = id;
+	nextId = id + 1;
 	this->morada = morada;
 	this->codigoPostal = codigoPostal;
 	this->NIFProprietario = NIFProprietario;
@@ -41,6 +51,9 @@ Habitacao::Habitacao(string morada, string codigoPostal, string NIFProprietario,
 	this->idServico = idServico;
 }
 
+int Habitacao::getID() const{
+	return id;
+}
 string Habitacao::getMorada() const {
 	return morada;
 }
@@ -83,6 +96,9 @@ void Habitacao::resetPago() {
 void Habitacao::setServico(int id) {
 	this->idServico = id;
 }
+void Habitacao::decID(){
+	nextId--;
+}
 
 /*
  * Vivenda
@@ -110,9 +126,9 @@ Vivenda::Vivenda(string morada, string codigoPostal, string proprietario,
 	this->areaExterior = areaExterior;
 	this->piscina = piscina;
 }
-Vivenda::Vivenda(string morada, string codigoPostal, string proprietario,
+Vivenda::Vivenda(int id, string morada, string codigoPostal, string proprietario,
 		bool pago[12], int idServico, float areaInterior, float areaExterior, bool piscina) :
-		Habitacao(morada, codigoPostal, proprietario, pago, idServico) {
+		Habitacao(id, morada, codigoPostal, proprietario, pago, idServico) {
 	this->areaInterior = areaInterior;
 	this->areaExterior = areaExterior;
 	this->piscina = piscina;
@@ -186,10 +202,10 @@ Apartamento::Apartamento(string morada, string codigoPostal,
 	this->areaInterior = areaInterior;
 	this->piso = piso;
 }
-Apartamento::Apartamento(string morada, string codigoPostal,
+Apartamento::Apartamento(int id, string morada, string codigoPostal,
 		string proprietario, bool pago[12], int idServico, int tipologia, float areaInterior,
 		int piso) :
-		Habitacao(morada, codigoPostal, proprietario, pago, idServico) {
+		Habitacao(id, morada, codigoPostal, proprietario, pago, idServico) {
 	this->tipologia = tipologia;
 	this->areaInterior = areaInterior;
 	this->piso = piso;

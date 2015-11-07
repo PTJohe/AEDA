@@ -1,18 +1,23 @@
 1
 Limpeza
+5
 
 2
 Canalizacao
+0
 
 3
 Pintura
+8
 
 4
 Limpeza
+1
 
 5
 Pintura
+2
 
 6
 Canalizacao
-
+4

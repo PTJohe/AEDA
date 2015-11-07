@@ -10,14 +10,19 @@ private:
 	int option;
 	Condominio condominio;
 	Condomino* currentUser;
+	bool notificacaoAdmin;
+	bool notificacaoUser;
 
 public:
 	Main() {
 		this->option = 0;
 		this->currentUser = NULL;
+		this->notificacaoAdmin = false;
+		this->notificacaoUser = false;
 	} //default constructor
 
 	void displayTime();
+	void verificaServicos();
 
 	void setMenus(vector<vector<string> > menu);
 	void setCurrentUser(Condomino condomino);
@@ -32,6 +37,7 @@ public:
 	bool displaySelectHabitacaoPossuida();
 	bool displaySelectFuncionario();
 	bool displaySelectServico(int vector);
+	bool displaySelectServicoRequisitado(vector<Servico> servicos);
 
 	bool validLogin(string utilizador, string password);
 	bool validRegister(string utilizador, string password);
@@ -51,6 +57,7 @@ public:
 	void displayHabitacaoInfo(int pos);
 	void displayFuncionarioInfo(int pos);
 	void displayServicoInfo(int pos, int vectorServicos);
+	void displayServicoRequisitadoInfo(vector<Servico> servicos, int pos);
 
 	bool fimDoMes();
 
@@ -76,8 +83,12 @@ public:
 	int menuAddHabitacao(Condomino condomino);
 	int menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1);
 
-	int menuRequisitarServico();
-
+	int menuServicosRequisitados();
+	int menuDisplayServicosRequisitadosBy(vector<Servico> servicos);
+	int menuDisplayServicosRequisitados(vector<Servico> servicos, bool cancelar);
+	int menuSelectHabitacaoServicoUtilizador(vector<Habitacao*> habitacoes);
+	int menuRequisitarServico(int pos, int tipo, int menuOption);
+	int menuCancelarServico(vector<Servico> servicos, int pos, int menuOption);
 
 	/*
 	 * Menu Administrador
@@ -114,9 +125,14 @@ public:
 	//Gerir Servicos
 	int menuGerirServicos();
 	int menuDisplayServicosBy(int vectorServicos);
-	int menuDisplayAllServicos(int vectorServicos);
+	int menuDisplayAllServicos(int vectorServicos, bool remover);
+	int menuSelectHabitacaoServico();
+	int menuSelectTipoServico(int pos, bool sameUser);
+	int menuAddServico(int pos, int tipo, int menuOption, bool sameUser);
+	int menuDeleteServico(int pos, int vectorServicos, int menuOption);
 
 	string convertTime(int mes, time_t time);
+	string convertTime(string mes, time_t time);
 
 	//Import & extract functions
 	bool importCondominio();

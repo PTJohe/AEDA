@@ -36,7 +36,6 @@ public:
 	void setFuncionarios(vector<Funcionario> funcionarios);
 	void setServicos(int vectorServicos, vector<Servico> servicos);
 
-
 	void sortMoradores(int sort);
 	int addMorador(Condomino condomino);
 	int eraseMorador(Condomino condomino);
@@ -46,7 +45,6 @@ public:
 	bool addHabitacao(Habitacao* h1);
 	bool eraseHabitacao(int pos);
 	bool eraseHabitacaoPossuida(Condomino condomino, int pos);
-
 
 	//Funcoes Condomino
 	bool setNomeUtilizador(Condomino condomino, string nomeUtilizador);
@@ -73,11 +71,12 @@ public:
 	int getLivresPintura();
 
 	//Funcoes Servico
-	void sortServicos(int vector, int sortOption);
-	bool addServico(Servico servico);
-	bool eraseServicoTerminado(int pos);
-	bool eraseServicoEmCurso(int id);
-	bool eraseServicoEmEspera(int id);
+	void sortServicos(int vectorServicos, int sortOption);
+	bool addServico(int vectorServicos, string mes, Servico servico);
+	bool eraseServico(int pos, int vectorServicos);
+	time_t getDisponibilidadeServico(int tipo);
+	bool updateServicos(string mes, Condomino* currentUser, int &servicosCurrentUser);
+	bool updateServicosFimMes(string mes);
 
 	vector<Condomino> fimDoMes();
 

@@ -9,14 +9,14 @@ private:
 	int id;
 	bool ocupado;
 	string especialidade;
-	int servicosEfectuados = 0;
+	int servicosEfectuados;
 
 public:
 	Funcionario(string especialidade);
-	Funcionario(string especialidade, int id);
+	Funcionario(string especialidade, int id, int servicosEfectuados);
 
 	int getID() const;
-	bool getOcupado() const;
+	bool isOcupado() const;
 	string getEspecialidade() const;
 	int getServicosEfectuados() const;
 

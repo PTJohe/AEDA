@@ -54,9 +54,9 @@ int Condomino::getDivida() const {
 vector<Habitacao *> Condomino::getHabitacoes() {
 	return habitacoes;
 }
-int Condomino::getTotalRenda() const{
+int Condomino::getTotalRenda() const {
 	int total = 0;
-	for(size_t i = 0; i < habitacoes.size(); i++)
+	for (size_t i = 0; i < habitacoes.size(); i++)
 		total += habitacoes[i]->calcRenda();
 	return total;
 }
@@ -147,7 +147,7 @@ void Condomino::infoCondomino() const {
 	cout << this->nomeCivil << endl;
 	cout << "NIF: " << this->NIF << endl;
 	cout << "Numero de habitacoes: " << this->habitacoes.size() << endl;
-	if(!habitacoes.empty())
+	if (!habitacoes.empty())
 		cout << "Renda total actual = " << this->getTotalRenda() << "$" << endl;
 	cout << "Fundos Mensais = " << this->fundosMensais << "$" << endl;
 	cout << "Divida = " << this->divida << "$" << "\n" << endl;
@@ -187,6 +187,11 @@ void Condomino::infoRenda() const {
 /*
  * Non-class functions
  */
+
+bool compHabitacaoID(Habitacao* h1, Habitacao* h2) {
+	return (h1->getID() < h2->getID());
+}
+
 bool compHabitacaoTipo(Habitacao* h1, Habitacao* h2) {
 	if (h1->getTipo() < h2->getTipo())
 		return true;
@@ -196,12 +201,8 @@ bool compHabitacaoTipo(Habitacao* h1, Habitacao* h2) {
 		return true;
 	else if (h1->getNIFProprietario() > h2->getNIFProprietario())
 		return false;
-	else if (h1->calcRenda() < h2->calcRenda())
-		return true;
-	else if (h1->calcRenda() > h2->calcRenda())
-		return false;
 	else
-		return (h1->getMorada() < h2->getMorada());
+		return (h1->getID() < h2->getID());
 }
 bool compHabitacaoRenda(Habitacao* h1, Habitacao* h2) {
 	if (h1->calcRenda() < h2->calcRenda())
@@ -213,17 +214,13 @@ bool compHabitacaoRenda(Habitacao* h1, Habitacao* h2) {
 	else if (h1->getNIFProprietario() > h2->getNIFProprietario())
 		return false;
 	else
-		return (h1->getMorada() < h2->getMorada());
+		return (h1->getID() < h2->getID());
 }
 bool compHabitacaoNIF(Habitacao* h1, Habitacao* h2) {
 	if (h1->getNIFProprietario() < h2->getNIFProprietario())
 		return true;
 	else if (h1->getNIFProprietario() > h2->getNIFProprietario())
 		return false;
-	else if (h1->calcRenda() < h2->calcRenda())
-		return true;
-	else if (h1->calcRenda() > h2->calcRenda())
-		return false;
 	else
-		return (h1->getMorada() < h2->getMorada());
+		return (h1->getID() < h2->getID());
 }

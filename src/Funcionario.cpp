@@ -15,18 +15,18 @@ Funcionario::Funcionario(string especialidade) {
 	nextId++;
 	this->servicosEfectuados = 0;
 }
-Funcionario::Funcionario(string especialidade, int id) {
+Funcionario::Funcionario(string especialidade, int id, int servicosEfectuados) {
 	this->especialidade = especialidade;
 	this->id = id;
 	this->ocupado = false;
 	nextId = id + 1;
-	this->servicosEfectuados = 0;
+	this->servicosEfectuados = servicosEfectuados;
 }
 
 int Funcionario::getID() const {
 	return id;
 }
-bool Funcionario::getOcupado() const {
+bool Funcionario::isOcupado() const {
 	return ocupado;
 }
 string Funcionario::getEspecialidade() const {

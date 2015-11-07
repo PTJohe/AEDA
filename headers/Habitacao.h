@@ -7,6 +7,7 @@ class Condomino;
 
 class Habitacao {
 protected:
+	int id;
 	string morada;
 	string codigoPostal;
 	string NIFProprietario;
@@ -21,8 +22,9 @@ public:
 	Habitacao(string morada, string codigoPostal, string NIFProprietario);
 	Habitacao(string morada, string codigoPostal, string NIFProprietario,
 			bool pago[12]);
-	Habitacao(string morada, string codigoPostal, string NIFProprietario,
+	Habitacao(int id, string morada, string codigoPostal, string NIFProprietario,
 			bool pago[12], int idServico);
+	int getID() const;
 	string getMorada() const;
 	string getCodigoPostal() const;
 	string getNIFProprietario() const;
@@ -36,6 +38,7 @@ public:
 	void setPago(int mes);
 	void resetPago();
 	void setServico(int id);
+	void decID();
 
 	virtual void setAreaInterior(float area) = 0;
 	virtual void setAreaExterior(float area) = 0;
@@ -68,7 +71,7 @@ public:
 	Vivenda(string morada, string codigoPostal, string NIFProprietario,
 			bool pago[12], float areaInterior, float areaExterior,
 			bool piscina);
-	Vivenda(string morada, string codigoPostal, string NIFProprietario,
+	Vivenda(int id, string morada, string codigoPostal, string NIFProprietario,
 			bool pago[12], int idServico, float areaInterior,
 			float areaExterior, bool piscina);
 	float getAreaInterior() const;
@@ -110,7 +113,7 @@ public:
 			int tipologia, float areaInterior, int piso);
 	Apartamento(string morada, string codigoPostal, string NIFProprietario,
 			bool pago[12], int tipologia, float areaInterior, int piso);
-	Apartamento(string morada, string codigoPostal, string NIFProprietario,
+	Apartamento(int id, string morada, string codigoPostal, string NIFProprietario,
 			bool pago[12], int idServico, int tipologia, float areaInterior,
 			int piso);
 	int getTipologia() const;

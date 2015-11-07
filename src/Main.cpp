@@ -24,6 +24,33 @@ void Main::displayTime() {
 	string time = currentTime();
 	gotoxy(50, 20);
 	cout << mesesAno[this->condominio.getMes()] << "\t" << time;
+
+	verificaServicos();
+
+	if (this->currentUser->isAdmin() && notificacaoAdmin) {
+		gotoxy(45, 6);
+		setcolor(YELLOW, BLACK);
+		cout << "AVISO:";
+		setcolor(WHITE, BLACK);
+		cout << " Terminou um servico.";
+	} else if (notificacaoUser) {
+		gotoxy(45, 6);
+		setcolor(YELLOW, BLACK);
+		cout << "AVISO:";
+		setcolor(WHITE, BLACK);
+		cout << " Terminou um servico.";
+	}
+}
+/**
+ * Checks if any service ended.
+ */
+void Main::verificaServicos() {
+	int servicosCurrentUser = 0;
+	if (this->condominio.updateServicos(mesesAno[this->condominio.getMes()],
+			this->currentUser, servicosCurrentUser))
+		notificacaoAdmin = true;
+	if (servicosCurrentUser > 0)
+		notificacaoUser = true;
 }
 
 /**
@@ -162,15 +189,17 @@ bool Main::displaySelectHabitacao(vector<Habitacao*> habitacoes) {
 		gotoxy(0, 14 + i);
 		if (i == option) {
 			setcolor(BLACK, LIGHTGREY);
-			cout << left << setw(12) << setfill(' ') << habitacoes[i]->getTipo()
-					<< " - " << habitacoes[i]->calcRenda() << "$" << left
-					<< setw(10) << setfill(' ') << " - "
+			cout << habitacoes[i]->getID() << "\t" << left << setw(12)
+					<< setfill(' ') << habitacoes[i]->getTipo() << " - "
+					<< habitacoes[i]->calcRenda() << "$" << left << setw(10)
+					<< setfill(' ') << " - "
 					<< habitacoes[i]->getNIFProprietario() << endl;
 			setcolor(WHITE, BLACK);
 		} else {
-			cout << left << setw(12) << setfill(' ') << habitacoes[i]->getTipo()
-					<< " - " << habitacoes[i]->calcRenda() << "$" << left
-					<< setw(10) << setfill(' ') << " - "
+			cout << habitacoes[i]->getID() << "\t" << left << setw(12)
+					<< setfill(' ') << habitacoes[i]->getTipo() << " - "
+					<< habitacoes[i]->calcRenda() << "$" << left << setw(10)
+					<< setfill(' ') << " - "
 					<< habitacoes[i]->getNIFProprietario() << endl;
 		}
 	}
@@ -192,7 +221,7 @@ bool Main::displaySelectFuncionario() {
 			cout << this->condominio.getFuncionarios()[i].getID() << "\t"
 					<< left << setw(16) << setfill(' ')
 					<< this->condominio.getFuncionarios()[i].getEspecialidade();
-			if (this->condominio.getFuncionarios()[i].getOcupado())
+			if (this->condominio.getFuncionarios()[i].isOcupado())
 				cout << "Ocupado" << "\t\t";
 			else
 				cout << "Livre" << "\t\t";
@@ -204,7 +233,7 @@ bool Main::displaySelectFuncionario() {
 			cout << this->condominio.getFuncionarios()[i].getID() << "\t"
 					<< left << setw(16) << setfill(' ')
 					<< this->condominio.getFuncionarios()[i].getEspecialidade();
-			if (this->condominio.getFuncionarios()[i].getOcupado())
+			if (this->condominio.getFuncionarios()[i].isOcupado())
 				cout << "Ocupado" << "\t\t";
 			else
 				cout << "Livre" << "\t\t";
@@ -236,11 +265,11 @@ bool Main::displaySelectServico(int vectorServicos) {
 					<< setfill(' ') << servicos[i].getEspecialidade();
 			if (servicos[i].getDataInicio() != 0) {
 				cout
-						<< convertTime(this->condominio.getMes(),
+						<< convertTime(servicos[i].getMesInicio(),
 								servicos[i].getDataInicio()) << "\t"
 						<< servicos[i].getIDFuncionario() << "\t\t";
 			} else
-				cout << "\t\t\t";
+				cout << "\t\t\t\t\t";
 			cout << servicos[i].getNIFcondomino() << endl;
 			setcolor(WHITE, BLACK);
 		} else {
@@ -248,11 +277,51 @@ bool Main::displaySelectServico(int vectorServicos) {
 					<< setfill(' ') << servicos[i].getEspecialidade();
 			if (servicos[i].getDataInicio() != 0) {
 				cout
-						<< convertTime(this->condominio.getMes(),
+						<< convertTime(servicos[i].getMesInicio(),
 								servicos[i].getDataInicio()) << "\t"
 						<< servicos[i].getIDFuncionario() << "\t\t";
 			} else
-				cout << "\t\t\t";
+				cout << "\t\t\t\t\t";
+			cout << servicos[i].getNIFcondomino() << endl;
+		}
+	}
+	return EXIT_SUCCESS;
+}
+/**
+ * Prints a Servico select screen from the current user's services.
+ * @param servicos Current user's services
+ * retval TRUE No error occurred.
+ * retval FALSE Invalid option.
+ */
+bool Main::displaySelectServicoRequisitado(vector<Servico> servicos) {
+	if (option >= servicos.size()) {
+		return EXIT_FAILURE;
+	}
+	for (size_t i = 0; i < servicos.size(); i++) {
+		gotoxy(0, 14 + i);
+		if (i == option) {
+			setcolor(BLACK, LIGHTGREY);
+			cout << servicos[i].getID() << "\t" << left << setw(16)
+					<< setfill(' ') << servicos[i].getEspecialidade();
+			if (servicos[i].getDataInicio() != 0) {
+				cout
+						<< convertTime(servicos[i].getMesInicio(),
+								servicos[i].getDataInicio()) << "\t"
+						<< servicos[i].getIDFuncionario() << "\t\t";
+			} else
+				cout << " " << "\t\t";
+			cout << servicos[i].getNIFcondomino() << endl;
+			setcolor(WHITE, BLACK);
+		} else {
+			cout << servicos[i].getID() << "\t" << left << setw(16)
+					<< setfill(' ') << servicos[i].getEspecialidade();
+			if (servicos[i].getDataInicio() != 0) {
+				cout
+						<< convertTime(servicos[i].getMesInicio(),
+								servicos[i].getDataInicio()) << "\t"
+						<< servicos[i].getIDFuncionario() << "\t\t";
+			} else
+				cout << " " << "\t\t";
 			cout << servicos[i].getNIFcondomino() << endl;
 		}
 	}
@@ -772,6 +841,7 @@ bool Main::editHabitacao(int editOption, Habitacao* h1) {
 			pressEnterToContinue();
 			return false;
 		}
+		v1->decID();
 		delete v1;
 		h1->setMorada(moradaNova);
 		cout << "\nMorada alterada." << endl;
@@ -993,7 +1063,7 @@ void Main::displayFuncionarioInfo(int pos) {
 	gotoxy(0, 8);
 	cout << "DADOS DO FUNCIONARIO\n" << endl;
 	this->condominio.getFuncionarios()[pos].info();
-	if (this->condominio.getFuncionarios()[pos].getOcupado()) {
+	if (this->condominio.getFuncionarios()[pos].isOcupado()) {
 		for (size_t i = 0; i < this->condominio.getServicos(1).size(); i++) {
 			if (this->condominio.getServicos(1)[i].getIDFuncionario()
 					== this->condominio.getFuncionarios()[pos].getID()) {
@@ -1002,13 +1072,6 @@ void Main::displayFuncionarioInfo(int pos) {
 				break;
 			}
 		}
-	}
-	if (this->condominio.getFuncionarios()[pos].getServicosEfectuados() > 0) {
-		cout << "\nServicos efectuados:\n" << endl;
-		for (size_t j = 0; j < this->condominio.getServicos(0).size(); j++)
-			if (this->condominio.getServicos(0)[j].getIDFuncionario()
-					== this->condominio.getFuncionarios()[pos].getID())
-				this->condominio.getServicos(0)[j].info();
 	}
 	pressEnterToContinue();
 }
@@ -1023,11 +1086,6 @@ void Main::displayServicoInfo(int pos, int vectorServicos) {
 	cout << "DADOS DO SERVICO\n" << endl;
 	this->condominio.getServicos(vectorServicos)[pos].info();
 
-	if (vectorServicos != 2)
-		cout << "ID do Funcionario = "
-				<< this->condominio.getServicos(vectorServicos)[pos].getIDFuncionario()
-				<< "\n" << endl;
-
 	cout << "Requisitado pelo condomino com o NIF "
 			<< this->condominio.getServicos(vectorServicos)[pos].getNIFcondomino()
 			<< "\n" << endl;
@@ -1035,6 +1093,33 @@ void Main::displayServicoInfo(int pos, int vectorServicos) {
 	for (size_t i = 0; i < this->condominio.getHabitacoes().size(); i++) {
 		if (this->condominio.getHabitacoes()[i]->getServico()
 				== this->condominio.getServicos(vectorServicos)[pos].getID()) {
+			cout << "HABITACAO" << endl;
+			cout << "Tipo: " << this->condominio.getHabitacoes()[i]->getTipo()
+					<< endl;
+			cout << "Morada: "
+					<< this->condominio.getHabitacoes()[i]->getMorada() << ", "
+					<< this->condominio.getHabitacoes()[i]->getCodigoPostal()
+					<< endl;
+			break;
+		}
+	}
+	pressEnterToContinue();
+}
+/**
+ * Displays info of a specified service from the current user's services.
+ * @param servicos Current user's vector of services.
+ * @param pos Position of the service in the current user's vector of services.
+ */
+void Main::displayServicoRequisitadoInfo(vector<Servico> servicos, int pos) {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "DADOS DO SERVICO\n" << endl;
+	servicos[pos].info();
+	cout << endl;
+
+	for (size_t i = 0; i < this->condominio.getHabitacoes().size(); i++) {
+		if (this->condominio.getHabitacoes()[i]->getServico()
+				== servicos[pos].getID()) {
 			cout << "HABITACAO" << endl;
 			cout << "Tipo: " << this->condominio.getHabitacoes()[i]->getTipo()
 					<< endl;
@@ -1056,6 +1141,11 @@ void Main::displayServicoInfo(int pos, int vectorServicos) {
 bool Main::fimDoMes() {
 	displayLogo();
 	gotoxy(30, 8);
+
+	if (this->condominio.updateServicosFimMes(
+			mesesAno[this->condominio.getMes()]))
+		notificacaoAdmin = true;
+
 	cout << "FIM DO MES\n" << endl;
 	cout << "Mes actual -> ";
 	setcolor(YELLOW, BLACK);
@@ -1092,7 +1182,7 @@ bool Main::fimDoMes() {
 }
 
 /*
- * Menu functions
+ * MENU FUNCTIONS
  */
 
 /**
@@ -1106,8 +1196,6 @@ int Main::menuInicial() {
 	cout << "MENU INICIAL\n" << endl;
 
 	displayMenuOptions(0);
-
-	displayTime();
 
 	int c = getch();
 	switch (c) {
@@ -1125,7 +1213,7 @@ int Main::menuInicial() {
 			return menuLogin();
 		} else if (option == 1) { //Menu Registo
 			resetOption();
-			menuRegisto();
+			return menuRegisto();
 		} else
 			//Sair
 			return EXIT_SUCCESS;
@@ -1164,11 +1252,10 @@ int Main::menuLogin() {
 		resetOption();
 		return menuInicial();
 	}
-	return EXIT_SUCCESS;
 }
 /**
  * Register screen. User needs to input their username, password, name and NIF to create a new account.
- * @retval EXIT_SUCCESS Initial menu.
+ * @return Initial menu.
  */
 int Main::menuRegisto() {
 	displayLogo();
@@ -1215,8 +1302,13 @@ int Main::menuRegisto() {
 	}
 	pressEnterToContinue();
 	resetOption();
-	return EXIT_SUCCESS;
+	return menuInicial();
 }
+
+/*
+ * USER MENU
+ */
+
 
 /**
  * User menu. The user has several options such as view or change their user info. Add a house, request service, etc.
@@ -1274,9 +1366,22 @@ int Main::menuUtilizador() {
 				resetOption();
 				return menuSelectOrNewHabitacao();
 			} else if (option == 6) { //Ver servicos requisitados
-
+				resetOption();
+				return menuServicosRequisitados();
 			} else if (option == 7) { //Requisitar servico
-
+				vector<Habitacao*> habitacoesSemServico;
+				for (size_t i = 0; i < this->condominio.getHabitacoes().size();
+						i++) {
+					if (this->condominio.getHabitacoes()[i]->getNIFProprietario()
+							== this->currentUser->getNIF())
+						if (this->condominio.getHabitacoes()[i]->getServico()
+								== -1)
+							habitacoesSemServico.push_back(
+									this->condominio.getHabitacoes()[i]);
+				}
+				resetOption();
+				return menuSelectHabitacaoServicoUtilizador(
+						habitacoesSemServico);
 			} else { //Sair
 				resetOption();
 				return menuInicial();
@@ -1297,7 +1402,8 @@ int Main::menuUtilizador() {
 				resetOption();
 				return menuSelectOrNewHabitacao();
 			} else if (option == 5) { //Ver servicos requisitados
-
+				resetOption();
+				return menuServicosRequisitados();
 			} else if (option == 6) { //Requisitar servico
 
 			} else { //Sair
@@ -1312,6 +1418,7 @@ int Main::menuUtilizador() {
 
 	return menuUtilizador();
 }
+
 /**
  * Change user account data menu. The user selects which info of their account data they want to change.
  * @return User menu.
@@ -1424,6 +1531,7 @@ int Main::menuEditDadosCondomino(Condomino &condomino) {
 	}
 	return menuEditDadosCondomino(condomino);
 }
+
 /**
  * Owned housing menu. The user selects if they want to view an owned house info, remove an owned house or view their rent status.
  * @return A new menu.
@@ -1496,7 +1604,7 @@ int Main::menuSelectHabitacoesPossuida(bool remover) {
 	else
 		cout << "[ENTER] Ver dados" << endl;
 	cout << "[ESC] Voltar atras\n" << endl;
-	cout << "Habitacao      Renda         Morada" << endl;
+	cout << "ID\tHabitacao      Renda         Morada" << endl;
 
 	if (this->currentUser->getHabitacoes().empty()) {
 		cout << "Nao possui habitacoes.\n" << endl;
@@ -1519,10 +1627,8 @@ int Main::menuSelectHabitacoesPossuida(bool remover) {
 	case KEY_ENTER:
 		if (!remover)
 			displayCurrentUserHabitacao(option);
-		else {
+		else
 			menuDeleteHabitacaoPossuida(option, 0);
-			resetOption();
-		}
 		break;
 	case KEY_ESC:
 		resetOption();
@@ -1857,6 +1963,8 @@ int Main::menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1) {
 					cout << "\nNao foi possivel adicionar a habitacao." << endl;
 					cout << "Ja existe uma habitacao com a mesma morada."
 							<< endl;
+					h1->decID();
+					delete h1;
 				}
 				pressEnterToContinue();
 				resetOption();
@@ -1871,7 +1979,10 @@ int Main::menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1) {
 			}
 		} else if (option == 1) {
 			resetOption();
-			if (h1->getNIFProprietario() == this->currentUser->getNIF())
+			string nifProp = h1->getNIFProprietario();
+			h1->decID();
+			delete h1;
+			if (nifProp == this->currentUser->getNIF())
 				return menuUtilizador();
 			else
 				return menuSelectOrVacantHabitacao();
@@ -1882,6 +1993,327 @@ int Main::menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1) {
 	}
 	return menuConfirmAddHabitacao(condomino, h1);
 }
+
+/**
+ * Requested services menu. The user can view a list of services they requested
+ * or cancel a service they requested that is still waiting to be done.
+ * @return A new menu.
+ */
+int Main::menuServicosRequisitados() {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "SERVICOS REQUISITADOS" << endl;
+	displayMenuOptions(21);
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[21].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) { //Ver lista dos servicos requisitados terminados
+			vector<Servico> servicos;
+			for (size_t i = 0; i < this->condominio.getServicos(0).size();
+					i++) {
+				if (this->condominio.getServicos(0)[i].getNIFcondomino()
+						== this->currentUser->getNIF())
+					servicos.push_back(this->condominio.getServicos(0)[i]);
+			}
+			return menuDisplayServicosRequisitadosBy(servicos);
+		} else if (option == 1) { //Ver lista dos servicos requisitados em curso
+			resetOption();
+			vector<Servico> servicos;
+			for (size_t i = 0; i < this->condominio.getServicos(1).size();
+					i++) {
+				if (this->condominio.getServicos(1)[i].getNIFcondomino()
+						== this->currentUser->getNIF())
+					servicos.push_back(this->condominio.getServicos(1)[i]);
+			}
+			return menuDisplayServicosRequisitadosBy(servicos);
+		} else if (option == 2) { //Ver lista dos servicos requisitados em espera
+			resetOption();
+			vector<Servico> servicos;
+			for (size_t i = 0; i < this->condominio.getServicos(2).size();
+					i++) {
+				if (this->condominio.getServicos(2)[i].getNIFcondomino()
+						== this->currentUser->getNIF())
+					servicos.push_back(this->condominio.getServicos(2)[i]);
+			}
+			return menuDisplayServicosRequisitadosBy(servicos);
+		} else if (option == 3) { //Cancelar servico em espera
+			resetOption();
+			vector<Servico> servicos;
+			for (size_t i = 0; i < this->condominio.getServicos(2).size();
+					i++) {
+				if (this->condominio.getServicos(2)[i].getNIFcondomino()
+						== this->currentUser->getNIF())
+					servicos.push_back(this->condominio.getServicos(2)[i]);
+			}
+			return menuDisplayServicosRequisitados(servicos, true);
+		} else if (option == 4) { //Voltar atras
+			resetOption();
+			return menuUtilizador();
+		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuUtilizador();
+		break;
+	default:
+		break;
+	}
+	return menuServicosRequisitados();
+}
+/**
+ * Display requested services by menu. The user can list the services they requested by ID, type and start date.
+ * @param servicos Current user's services.
+ * @return A new menu.
+ */
+int Main::menuDisplayServicosRequisitadosBy(vector<Servico> servicos) {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "ORDENAR POR" << endl;
+	displayMenuOptions(23);
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[23].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) { //Ordenar por ID
+			insertionSort(servicos);
+			return menuDisplayServicosRequisitados(servicos, false);
+		} else if (option == 1) { //Ordenar por tipo
+			resetOption();
+			sort(servicos.begin(), servicos.end(), compServicoTipo);
+			return menuDisplayServicosRequisitados(servicos, false);
+		} else if (option == 2) { //Ordenar por data de inicio
+			resetOption();
+			sort(servicos.begin(), servicos.end(), compServicoDataInicio);
+			return menuDisplayServicosRequisitados(servicos, false);
+		} else { //Voltar atras
+			resetOption();
+			return menuServicosRequisitados();
+		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuServicosRequisitados();
+		break;
+	default:
+		break;
+	}
+	return menuDisplayServicosRequisitadosBy(servicos);
+}
+/**
+ * Display requested services menu. The user can choose a service to view its info or to cancel.
+ * @param services Current user's services.
+ * @cancelar If true, selecting a service will cancel it, else, if false, selecting it will display its info.
+ * @return A new menu.
+ */
+int Main::menuDisplayServicosRequisitados(vector<Servico> servicos,
+		bool cancelar) {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+	gotoxy(30, 8);
+	cout << "SELECIONE O SERVICO:\n" << endl;
+
+	if (!cancelar) {
+		this->notificacaoUser = false;
+		this->notificacaoAdmin = false;
+		cout << "[ENTER] Ver dados" << endl;
+	} else
+		cout << "[ENTER] Cancelar" << endl;
+	cout << "[ESC] Voltar atras\n" << endl;
+	cout << "ID\tEspecialidade\tData Inicio\t\tID Funcionario\tNIF Condomino"
+			<< endl;
+	if (servicos.empty()) {
+		cout << "Nao existem servicos requisitados." << endl;
+		pressEnterToContinue();
+		return menuServicosRequisitados();
+	}
+	displaySelectServicoRequisitado(servicos);
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < servicos.size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (!cancelar) {
+			displayServicoRequisitadoInfo(servicos, option);
+		} else
+			return menuCancelarServico(servicos, option, 0);
+		break;
+	case KEY_ESC:
+		resetOption();
+		if (!cancelar)
+			return menuDisplayServicosRequisitadosBy(servicos);
+		else
+			return menuUtilizador();
+		break;
+	default:
+		break;
+	}
+	return menuDisplayServicosRequisitados(servicos, cancelar);
+}
+/**
+ * Select a house to do a service on menu. The user can choose one of his houses to do request a service.
+ * @param habitacoes Current user's houses.
+ * @return A new menu.
+ */
+int Main::menuSelectHabitacaoServicoUtilizador(vector<Habitacao*> habitacoes) {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "SELECIONE A HABITACAO:\n" << endl;
+	cout << "[ENTER] Requisitar servico" << endl;
+	cout << "[ESC] Voltar atras\n" << endl;
+	cout << "ID\tHabitacao      Renda         NIF Proprietario" << endl;
+
+	if (habitacoes.empty()) {
+		cout << "Nao possui habitacoes ou ja estao todas requisitadas." << endl;
+		pressEnterToContinue();
+		return menuUtilizador();
+	}
+
+	displaySelectHabitacao(habitacoes);
+
+	int pos = 0;
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < habitacoes.size())
+			option++;
+		break;
+	case KEY_ENTER:
+		pos = option;
+		resetOption();
+		for (size_t i = 0; this->condominio.getHabitacoes().size(); i++) {
+			if (habitacoes[pos]->getID()
+					== this->condominio.getHabitacoes()[i]->getID()) {
+				pos = i;
+				break;
+			}
+		}
+		return menuSelectTipoServico(pos, true);
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuUtilizador();
+		break;
+	default:
+		break;
+	}
+	return menuSelectHabitacaoServicoUtilizador(habitacoes);
+}
+/**
+ * Cancel service menu. The user can cancel a service they requested that hasn't yet started.
+ * @param servicos Current user's services.
+ * @param pos Position of the service in the current user's services.
+ * @param menuOption Changes the highlighted option. 0 = Yes, 1 = No.
+ * @return A new menu.
+ */
+int Main::menuCancelarServico(vector<Servico> servicos, int pos,
+		int menuOption) {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "DADOS DO SERVICO\n" << endl;
+	servicos[pos].info();
+
+	cout << "Tem a certeza que pretende cancelar este servico?" << endl;
+	displayYesNo(menuOption);
+
+	int c = getch();
+	switch (c) {
+	case KEY_LEFT:
+		if (menuOption - 1 >= 0)
+			menuOption--;
+		break;
+	case KEY_RIGHT:
+		if (menuOption + 1 < 2)
+			menuOption++;
+		break;
+	case KEY_ENTER:
+		if (menuOption == 0) {
+			int position = 0;
+			for (size_t i = 0; i < this->condominio.getServicos(2).size();
+					i++) {
+				if (servicos[pos].getID()
+						== this->condominio.getServicos(2)[i].getID()) {
+					position = i;
+					break;
+				}
+			}
+			this->condominio.eraseServico(position, 2);
+			cout << "\nServico cancelado." << endl;
+			if (this->option > 0)
+				option--;
+			pressEnterToContinue();
+			return menuServicosRequisitados();
+		} else if (menuOption == 1) {
+			return menuDisplayServicosRequisitados(servicos, true);
+		}
+		break;
+	default:
+		break;
+	}
+	return menuCancelarServico(servicos, pos, menuOption);
+}
+
+/*
+ * ADMIN MENU
+ */
 
 /**
  * Administrator menu. The admin is given several options, such as create, edit or remove users, houses, services or employees. The admin can also end the month.
@@ -2001,8 +2433,10 @@ int Main::menuGerirCondominos() {
 	}
 	return menuGerirCondominos();
 }
+
 /**
  * Display users by menu. The admin can list users by username, name or NIF.
+ * @return A new menu.
  */
 int Main::menuDisplayCondominosBy() {
 	displayLogo();
@@ -2358,6 +2792,7 @@ int Main::menuGerirHabitacoes() {
 	}
 	return menuGerirHabitacoes();
 }
+
 /**
  * Display houses by menu. The admin can list houses by type, rent or owner's NIF.
  * @return A new menu.
@@ -2388,17 +2823,20 @@ int Main::menuDisplayHabitacoesBy() {
 			option++;
 		break;
 	case KEY_ENTER:
-		if (option == 0) { //Ordenar por tipo
-			resetOption();
+		if (option == 0) { //Ordenar por ID
 			this->condominio.sortHabitacoes(0);
 			return menuDisplayAllHabitacoes();
-		} else if (option == 1) { //Ordenar por renda
+		} else if (option == 1) { //Ordenar por tipo
 			resetOption();
 			this->condominio.sortHabitacoes(1);
 			return menuDisplayAllHabitacoes();
-		} else if (option == 2) { //Ordenar por NIF proprietario
+		} else if (option == 2) { //Ordenar por renda
 			resetOption();
 			this->condominio.sortHabitacoes(2);
+			return menuDisplayAllHabitacoes();
+		} else if (option == 3) { //Ordenar por NIF do proprietario
+			resetOption();
+			this->condominio.sortHabitacoes(3);
 			return menuDisplayAllHabitacoes();
 		} else { //Voltar atras
 			resetOption();
@@ -2431,7 +2869,7 @@ int Main::menuDisplayAllHabitacoes() {
 	cout << "SELECIONE A HABITACAO:\n" << endl;
 	cout << "[ENTER] Ver dados" << endl;
 	cout << "[ESC] Voltar atras\n" << endl;
-	cout << "Habitacao      Renda         NIF Proprietario" << endl;
+	cout << "ID\tHabitacao      Renda         NIF Proprietario" << endl;
 
 	if (this->condominio.getHabitacoes().empty()) {
 		cout << "Nao existem habitacoes no condominio" << endl;
@@ -2482,7 +2920,7 @@ int Main::menuSelectHabitacao(bool remover) {
 	else
 		cout << "[ENTER] Editar" << endl;
 	cout << "[ESC] Voltar atras\n" << endl;
-	cout << "Habitacao      Renda         NIF Proprietario" << endl;
+	cout << "ID\tHabitacao      Renda         NIF Proprietario" << endl;
 	if (this->condominio.getHabitacoes().empty()) {
 		cout << "Nao existem habitacoes no condominio" << endl;
 		pressEnterToContinue();
@@ -2501,10 +2939,13 @@ int Main::menuSelectHabitacao(bool remover) {
 			option++;
 		break;
 	case KEY_ENTER:
-		if (remover)
+		if (remover) {
 			return menuDeleteHabitacao(option, 0);
-		else
-			return menuEditHabitacao(this->condominio.getHabitacoes()[option]);
+		} else {
+			int pos = option;
+			resetOption();
+			return menuEditHabitacao(this->condominio.getHabitacoes()[pos]);
+		}
 		break;
 	case KEY_ESC:
 		resetOption();
@@ -2556,7 +2997,7 @@ int Main::menuEditHabitacao(Habitacao* habitacao) {
 			return menuGerirHabitacoes();
 		} else {
 			editHabitacao(option, habitacao);
-			this->condominio.sortHabitacoes(2);
+			this->condominio.sortHabitacoes(3);
 		}
 		break;
 	case KEY_ESC:
@@ -2655,7 +3096,6 @@ int Main::menuSelectOrVacantHabitacao() {
 	default:
 		break;
 	}
-
 	return menuSelectOrVacantHabitacao();
 }
 /**
@@ -2709,6 +3149,7 @@ int Main::menuSelectOwnerHabitacao() {
 
 /**
  * Manage employees menu. The admin can list, hire or fire employees.
+ * @return A new menu.
  */
 int Main::menuGerirFuncionarios() {
 	displayLogo();
@@ -2790,7 +3231,6 @@ int Main::menuDisplayFuncionariosBy() {
 		break;
 	case KEY_ENTER:
 		if (option == 0) { //Ordenar por ID
-			resetOption();
 			this->condominio.sortFuncionarios(0);
 			return menuDisplayAllFuncionarios();
 		} else if (option == 1) { //Ordenar por especialidade
@@ -2927,7 +3367,7 @@ int Main::menuConfirmAddFuncionario(int specialty, int menuOption) {
 	displayLogo();
 	gotoxy(0, 8);
 
-	string especialidade;
+	string especialidade = "";
 	if (specialty == 0) {
 		cout << "CONTRATAR FUNCIONARIO DE LIMPEZA\n" << endl;
 		especialidade = "Limpeza";
@@ -3051,6 +3491,12 @@ int Main::menuDeleteFuncionario(int pos, int menuOption) {
 	cout << "DADOS DO FUNCIONARIO\n" << endl;
 	this->condominio.getFuncionarios()[pos].info();
 
+	if(condominio.getFuncionarios()[pos].isOcupado()){
+		cout << "Nao e possivel despedir este funcionario." << endl;
+		cout << "Este funcionario esta a fazer um servico.\n" << endl;
+		pressEnterToContinue();
+		return menuFireFuncionario();
+	}
 	cout << "Tem a certeza que pretende despedir este funcionario?" << endl;
 	displayYesNo(menuOption);
 
@@ -3082,6 +3528,10 @@ int Main::menuDeleteFuncionario(int pos, int menuOption) {
 	return menuDeleteFuncionario(pos, menuOption);
 }
 
+/**
+ * Manage services menu. The admin can list, request or remove a service.
+ * @return A new menu.
+ */
 int Main::menuGerirServicos() {
 	displayLogo();
 
@@ -3117,12 +3567,18 @@ int Main::menuGerirServicos() {
 			resetOption();
 			return menuDisplayServicosBy(2);
 		} else if (option == 3) { //Requisitar servico
-
-		} else if (option == 4) { //Cancelar servico
-
-		} else if (option == 5) { //Remover servico terminado
-
-		} else if (option == 6) { //Voltar atras
+			resetOption();
+			return menuSelectHabitacaoServico();
+		} else if (option == 4) { //Remover servico terminado
+			resetOption();
+			return menuDisplayAllServicos(0, true);
+		} else if (option == 5) { //Cancelar servico em curso
+			resetOption();
+			return menuDisplayAllServicos(1, true);
+		} else if (option == 6) { //Cancelar servico em espera
+			resetOption();
+			return menuDisplayAllServicos(2, true);
+		} else if (option == 7) { //Voltar atras
 			resetOption();
 			return menuAdministrador();
 		}
@@ -3136,6 +3592,12 @@ int Main::menuGerirServicos() {
 	}
 	return menuGerirServicos();
 }
+
+/**
+ * List services by menu. The admin can list the services by ID, type, start date and user that requested it.
+ * @param vectorServicos 0 = servicosTerminados, 1 = servicosEmCurso, 2 = servicosEmEspera
+ * @return A new menu.
+ */
 int Main::menuDisplayServicosBy(int vectorServicos) {
 	displayLogo();
 
@@ -3147,7 +3609,7 @@ int Main::menuDisplayServicosBy(int vectorServicos) {
 
 	gotoxy(30, 8);
 	cout << "ORDENAR POR" << endl;
-	displayMenuOptions(23);
+	displayMenuOptions(22);
 
 	displayTime();
 
@@ -3158,26 +3620,25 @@ int Main::menuDisplayServicosBy(int vectorServicos) {
 			option--;
 		break;
 	case KEY_DOWN:
-		if (option + 1 < menu[23].size())
+		if (option + 1 < menu[22].size())
 			option++;
 		break;
 	case KEY_ENTER:
 		if (option == 0) { //Ordenar por ID
-			resetOption();
 			this->condominio.sortServicos(vectorServicos, 0);
-			return menuDisplayAllServicos(vectorServicos);
+			return menuDisplayAllServicos(vectorServicos, false);
 		} else if (option == 1) { //Ordenar por tipo
 			resetOption();
 			this->condominio.sortServicos(vectorServicos, 1);
-			return menuDisplayAllServicos(vectorServicos);
+			return menuDisplayAllServicos(vectorServicos, false);
 		} else if (option == 2) { //Ordenar por data de inicio
 			resetOption();
 			this->condominio.sortServicos(vectorServicos, 2);
-			return menuDisplayAllServicos(vectorServicos);
+			return menuDisplayAllServicos(vectorServicos, false);
 		} else if (option == 3) { //Ordenar por condomino
 			resetOption();
 			this->condominio.sortServicos(vectorServicos, 3);
-			return menuDisplayAllServicos(vectorServicos);
+			return menuDisplayAllServicos(vectorServicos, false);
 		} else { //Voltar atras
 			resetOption();
 			return menuGerirServicos();
@@ -3192,7 +3653,13 @@ int Main::menuDisplayServicosBy(int vectorServicos) {
 	}
 	return menuDisplayServicosBy(vectorServicos);
 }
-int Main::menuDisplayAllServicos(int vectorServicos) {
+/**
+ * Displays all services menu. The admin can choose a service to view its info or to cancel.
+ * @param vectorServicos 0 = servicosTerminados, 1 = servicosEmCurso, 2 = servicosEmEspera.
+ * @param remover If true, selecting a service will remove it, else, if false, selecting it will view its info.
+ * @return A new menu.
+ */
+int Main::menuDisplayAllServicos(int vectorServicos, bool remover) {
 	displayLogo();
 
 	gotoxy(10, 6);
@@ -3201,9 +3668,19 @@ int Main::menuDisplayAllServicos(int vectorServicos) {
 	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
 	setcolor(WHITE, BLACK);
 
+	if (vectorServicos == 0) {
+		this->notificacaoAdmin = false;
+		this->notificacaoUser = false;
+	}
 	gotoxy(30, 8);
 	cout << "SELECIONE O SERVICO:\n" << endl;
-	cout << "[ENTER] Ver dados" << endl;
+	if (remover) {
+		if (vectorServicos == 0)
+			cout << "[ENTER] Remover" << endl;
+		else
+			cout << "[ENTER] Cancelar" << endl;
+	} else
+		cout << "[ENTER] Ver dados" << endl;
 	cout << "[ESC] Voltar atras\n" << endl;
 	cout << "ID\tEspecialidade\tData Inicio\t\tID Funcionario\tNIF Condomino"
 			<< endl;
@@ -3215,7 +3692,7 @@ int Main::menuDisplayAllServicos(int vectorServicos) {
 		else if (vectorServicos == 2)
 			cout << "Nao existem servicos em espera no condominio." << endl;
 		pressEnterToContinue();
-		return menuDisplayServicosBy(vectorServicos);
+		return menuGerirServicos();
 	}
 	displaySelectServico(vectorServicos);
 
@@ -3230,20 +3707,334 @@ int Main::menuDisplayAllServicos(int vectorServicos) {
 			option++;
 		break;
 	case KEY_ENTER:
-		displayServicoInfo(option, vectorServicos);
+		if (!remover)
+			displayServicoInfo(option, vectorServicos);
+		else
+			return menuDeleteServico(option, vectorServicos, 0);
 		break;
 	case KEY_ESC:
 		resetOption();
-		return menuDisplayServicosBy(vectorServicos);
+		if (!remover)
+			return menuDisplayServicosBy(vectorServicos);
+		else
+			return menuGerirServicos();
 		break;
 	default:
 		break;
 	}
-	return menuDisplayAllServicos(vectorServicos);
+	return menuDisplayAllServicos(vectorServicos, remover);
+}
+/**
+ * Choose a house to create a service menu. The admin can choose a house to request a service on.
+ * @return A new menu.
+ */
+int Main::menuSelectHabitacaoServico() {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "SELECIONE A HABITACAO:\n" << endl;
+	cout << "[ENTER] Requisitar servico" << endl;
+	cout << "[ESC] Voltar atras\n" << endl;
+	cout << "ID\tHabitacao      Renda         NIF Proprietario" << endl;
+
+	vector<Habitacao*> habitacoesSemServico;
+	for (size_t i = 0; i < this->condominio.getHabitacoes().size(); i++) {
+		if (this->condominio.getHabitacoes()[i]->hasProprietario())
+			if (this->condominio.getHabitacoes()[i]->getServico() == -1)
+				habitacoesSemServico.push_back(
+						this->condominio.getHabitacoes()[i]);
+	}
+	if (habitacoesSemServico.empty()) {
+		cout
+				<< "Nao existem habitacoes no condominio ou ja estao todas requisitadas."
+				<< endl;
+		pressEnterToContinue();
+		return menuGerirServicos();
+	}
+
+	displaySelectHabitacao(habitacoesSemServico);
+
+	int pos = 0;
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < habitacoesSemServico.size())
+			option++;
+		break;
+	case KEY_ENTER:
+		pos = option;
+		resetOption();
+		for (size_t i = 0; this->condominio.getHabitacoes().size(); i++) {
+			if (habitacoesSemServico[pos]->getID()
+					== this->condominio.getHabitacoes()[i]->getID()) {
+				pos = i;
+				break;
+			}
+		}
+		return menuSelectTipoServico(pos, false);
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuGerirServicos();
+		break;
+	default:
+		break;
+	}
+	return menuSelectHabitacaoServico();
+}
+/**
+ * Choose type of service menu. The user can choose if they want a cleaning, plumbing or painting service done.
+ * @param pos Position of the house in the condominium's vector of houses.
+ * @param sameUser If true, service is being requested by the current user, else, if false, it's being requested by an admin.
+ * @return A new menu.
+ */
+int Main::menuSelectTipoServico(int pos, bool sameUser) {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "REQUISITAR SERVICO DE" << endl;
+	displayMenuOptions(6);
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[6].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) { //Limpeza
+			return menuAddServico(pos, 0, 0, sameUser);
+		} else if (option == 1) { //Canalizacao
+			resetOption();
+			return menuAddServico(pos, 1, 0, sameUser);
+		} else if (option == 2) { //Pintura
+			resetOption();
+			return menuAddServico(pos, 2, 0, sameUser);
+		} else { //Voltar atras
+			resetOption();
+			if (sameUser)
+				return menuUtilizador();
+			else
+				return menuSelectHabitacaoServico();
+		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		if (sameUser)
+			return menuUtilizador();
+		else
+			return menuSelectHabitacaoServico();
+		break;
+	default:
+		break;
+	}
+	return menuSelectTipoServico(pos, sameUser);
+}
+/**
+ * Confirm adding a service menu. The user is prompted to confirm the service request.
+ * @param pos Position of the house in the condominium's vector of houses.
+ * @param menuOption Changes the highlighted option. 0 = Yes, 1 = No.
+ * @param sameUser If true, service is being requested by the current user, else, if false, it's being requested by an admin.
+ * @return A new menu.
+ */
+int Main::menuAddServico(int pos, int tipo, int menuOption, bool sameUser) {
+	displayLogo();
+	gotoxy(0, 8);
+
+	string especialidade = "";
+	time_t disponibilidade = 0;
+	string dataPrevista = "";
+
+	if (tipo == 0) {
+		cout << "REQUISITAR SERVICO DE LIMPEZA\n" << endl;
+		especialidade = "Limpeza";
+		cout << "Numero total de funcionarios de limpeza = "
+				<< this->condominio.getNumFuncLimpeza() << endl;
+		cout << "Numero de funcionarios de limpeza livres actual = "
+				<< this->condominio.getLivresLimpeza() << endl;
+		if (this->condominio.getNumFuncLimpeza() == 0) {
+			cout
+					<< "\nO condominio nao tem funcionarios para este tipo de servico.\n"
+					<< endl;
+			pressEnterToContinue();
+			return menuSelectTipoServico(pos, sameUser);
+		}
+		cout << "\nData prevista para o inicio do servico: ";
+		disponibilidade = this->condominio.getDisponibilidadeServico(0);
+		if (disponibilidade == 0)
+			dataPrevista = "Imediata";
+		else
+			dataPrevista = convertTime(this->condominio.getMes(),
+					disponibilidade);
+		cout << dataPrevista << endl;
+	} else if (tipo == 1) {
+		cout << "REQUISITAR CANALIZADOR\n" << endl;
+		especialidade = "Canalizacao";
+		cout << "Numero total de canalizadores = "
+				<< this->condominio.getNumFuncCanalizacao() << endl;
+		cout << "Numero de canalizadores livres actual = "
+				<< this->condominio.getLivresCanalizacao() << endl;
+		if (this->condominio.getNumFuncCanalizacao() == 0) {
+			cout
+					<< "\nO condominio nao tem funcionarios para este tipo de servico.\n"
+					<< endl;
+			pressEnterToContinue();
+			return menuSelectTipoServico(pos, sameUser);
+		}
+
+		cout << "\nData prevista para o inicio do servico: ";
+		disponibilidade = this->condominio.getDisponibilidadeServico(1);
+		if (disponibilidade == 0)
+			dataPrevista = "Imediata";
+		else
+			dataPrevista = convertTime(this->condominio.getMes(),
+					disponibilidade);
+		cout << dataPrevista << endl;
+
+	} else if (tipo == 2) {
+		cout << "REQUISITAR PINTOR\n" << endl;
+		especialidade = "Pintura";
+		cout << "Numero total de pintores = "
+				<< this->condominio.getNumFuncPintura() << endl;
+		cout << "Numero de pintores livres actual = "
+				<< this->condominio.getLivresPintura() << endl;
+		if (this->condominio.getNumFuncPintura() == 0) {
+			cout
+					<< "\nO condominio nao tem funcionarios para este tipo de servico.\n"
+					<< endl;
+			pressEnterToContinue();
+			return menuSelectTipoServico(pos, sameUser);
+		}
+		cout << "\nData prevista para o inicio do servico: ";
+		disponibilidade = this->condominio.getDisponibilidadeServico(2);
+		if (disponibilidade == 0)
+			dataPrevista = "Imediata";
+		else
+			dataPrevista = convertTime(this->condominio.getMes(),
+					disponibilidade);
+		cout << dataPrevista << endl;
+	}
+
+	cout << "Tem a certeza que pretende requisitar este servico?" << endl;
+	displayYesNo(menuOption);
+
+	int c = getch();
+	switch (c) {
+	case KEY_LEFT:
+		if (menuOption - 1 >= 0)
+			menuOption--;
+		break;
+	case KEY_RIGHT:
+		if (menuOption + 1 < 2)
+			menuOption++;
+		break;
+	case KEY_ENTER:
+		if (menuOption == 0) {
+			Servico s1 = Servico(especialidade,
+					this->condominio.getHabitacoes()[pos]->getNIFProprietario(),
+					mesesAno[this->condominio.getMes()], time(NULL));
+			this->condominio.getHabitacoes()[pos]->setServico(s1.getID());
+			if (dataPrevista == "Imediata")
+				condominio.addServico(1, mesesAno[this->condominio.getMes()],
+						s1);
+			else
+				condominio.addServico(2, mesesAno[this->condominio.getMes()],
+						s1);
+			cout << "\nServico requisitado." << endl;
+			resetOption();
+			pressEnterToContinue();
+			if (sameUser)
+				return menuUtilizador();
+			else
+				return menuSelectHabitacaoServico();
+		} else if (menuOption == 1) {
+			return menuSelectTipoServico(pos, sameUser);
+		}
+		break;
+	default:
+		break;
+	}
+	return menuAddServico(pos, tipo, menuOption, sameUser);
+}
+/**
+ * Remove service menu. The admin can choose to remove or cancel a service.
+ * @param pos Position of the service in the vector of services.
+ * @param vectorServicos 0 = servicosTerminados, 1 = servicosEmCurso, 2 = servicosEmEspera.
+ * @param menuOption Changes the highlighted option. 0 = Yes, 1 = No.
+ * @return
+ */
+int Main::menuDeleteServico(int pos, int vectorServicos, int menuOption) {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "DADOS DO SERVICO\n" << endl;
+	this->condominio.getServicos(vectorServicos)[pos].info();
+
+	if (vectorServicos == 0)
+		cout << "Tem a certeza que pretende remover este servico?" << endl;
+	else
+		cout << "Tem a certeza que pretende cancelar este servico?" << endl;
+	displayYesNo(menuOption);
+
+	int c = getch();
+	switch (c) {
+	case KEY_LEFT:
+		if (menuOption - 1 >= 0)
+			menuOption--;
+		break;
+	case KEY_RIGHT:
+		if (menuOption + 1 < 2)
+			menuOption++;
+		break;
+	case KEY_ENTER:
+		if (menuOption == 0) {
+			this->condominio.eraseServico(pos, vectorServicos);
+			if (vectorServicos == 0)
+				cout << "\nServico removido." << endl;
+			else
+				cout << "\nServico cancelado." << endl;
+			if (this->option > 0)
+				option--;
+			pressEnterToContinue();
+			return menuDisplayAllServicos(vectorServicos, true);
+		} else if (menuOption == 1) {
+			return menuDisplayAllServicos(vectorServicos, true);
+		}
+		break;
+	default:
+		break;
+	}
+	return menuDeleteServico(pos, vectorServicos, menuOption);
 }
 
+
+
 /**
- * Converts a given time to a string. Format is "currentMonth HH:mm:ss".
+ * Converts a given time to a string. Format is "month HH:mm:ss".
+ * @param mes Position of month in the vector of months.
+ * @param time Time to be converted.
  * @return A string with the converted time.
  */
 string Main::convertTime(int mes, time_t time) {
@@ -3255,6 +4046,22 @@ string Main::convertTime(int mes, time_t time) {
 	string convertedTime = mesesAno[mes] + " " + convert;
 	return convertedTime;
 }
+/**
+ * Converts a given time to a string. Format is "month HH:mm:ss".
+ * @param mes Month.
+ * @param time Time to be converted.
+ * @return A string with the converted time.
+ */
+string Main::convertTime(string mes, time_t time) {
+	struct tm tstruct;
+	char buf[80];
+	tstruct = *localtime(&time);
+	strftime(buf, sizeof(buf), "%H:%M:%S", &tstruct);
+	string convert(buf);
+	string convertedTime = mes + " " + convert;
+	return convertedTime;
+}
+
 /**
  * Imports condominium data from a .txt file. Updates condominium funds and current month.
  * @retval TRUE Successfully imported data.
@@ -3394,6 +4201,7 @@ bool Main::exportCondominos() {
 bool Main::importHabitacoes() {
 	ifstream myfile(pathHabitacoes);
 	string line = "";
+	int id = 0;
 	string tipo = "";
 	string morada = "";
 	string codigoPostal = "";
@@ -3414,7 +4222,8 @@ bool Main::importHabitacoes() {
 
 	if (myfile.is_open()) {
 		while (getline(myfile, line)) {
-			tipo = line;
+			id = atoi(line.c_str());
+			getline(myfile, tipo);
 			getline(myfile, morada);
 			getline(myfile, codigoPostal);
 			getline(myfile, nifProprietario);
@@ -3440,8 +4249,9 @@ bool Main::importHabitacoes() {
 				getline(myfile, line);
 				idServico = atoi(line.c_str());
 
-				Vivenda* v1 = new Vivenda(morada, codigoPostal, nifProprietario,
-						pago, idServico, areaInterior, areaExterior, piscina);
+				Vivenda* v1 = new Vivenda(id, morada, codigoPostal,
+						nifProprietario, pago, idServico, areaInterior,
+						areaExterior, piscina);
 				habitacoes.push_back(v1);
 			} else if (tipo == "Apartamento") {
 				getline(myfile, line);
@@ -3452,7 +4262,7 @@ bool Main::importHabitacoes() {
 				piso = atoi(line.c_str());
 				getline(myfile, line);
 				idServico = atoi(line.c_str());
-				Apartamento* a1 = new Apartamento(morada, codigoPostal,
+				Apartamento* a1 = new Apartamento(id, morada, codigoPostal,
 						nifProprietario, pago, idServico, tipologia,
 						areaInterior, piso);
 				habitacoes.push_back(a1);
@@ -3460,7 +4270,7 @@ bool Main::importHabitacoes() {
 			getline(myfile, line);
 		}
 		myfile.close();
-		sort(habitacoes.begin(), habitacoes.end(), compHabitacaoNIF);
+		sort(habitacoes.begin(), habitacoes.end(), compHabitacaoID);
 		this->condominio.setHabitacoes(habitacoes);
 		this->condominio.updateHabitacoesCondominos();
 		return true;
@@ -3484,6 +4294,7 @@ bool Main::exportHabitacoes() {
 		vector<Habitacao*> habitacoes = this->condominio.getHabitacoes();
 
 		for (size_t j = 0; j < habitacoes.size(); j++) {
+			myfile << habitacoes[j]->getID() << endl;
 			myfile << habitacoes[j]->getTipo() << endl;
 			myfile << habitacoes[j]->getMorada() << endl;
 			myfile << habitacoes[j]->getCodigoPostal() << endl;
@@ -3532,6 +4343,7 @@ bool Main::importFuncionarios() {
 	string line = "";
 	int id = 0;
 	string especialidade = "";
+	int servicosEfectuados = 0;
 
 	vector<Funcionario> funcionarios;
 
@@ -3539,7 +4351,9 @@ bool Main::importFuncionarios() {
 		while (getline(myfile, line)) {
 			id = atoi(line.c_str());
 			getline(myfile, especialidade);
-			Funcionario f1 = Funcionario(especialidade, id);
+			getline(myfile, line);
+			servicosEfectuados = atoi(line.c_str());
+			Funcionario f1 = Funcionario(especialidade, id, servicosEfectuados);
 			funcionarios.push_back(f1);
 
 			getline(myfile, line);
@@ -3570,6 +4384,7 @@ bool Main::exportFuncionarios() {
 		for (size_t i = 0; i < funcionarios.size(); i++) {
 			myfile << funcionarios[i].getID() << endl;
 			myfile << funcionarios[i].getEspecialidade() << endl;
+			myfile << funcionarios[i].getServicosEfectuados() << endl;
 			myfile << endl;
 		}
 		myfile.close();
@@ -3582,7 +4397,6 @@ bool Main::exportFuncionarios() {
 		return false;
 	}
 }
-
 /**
  * Imports service data from a .txt file. Updates condominium services.
  * @retval TRUE Successfully imported data.
@@ -3595,7 +4409,9 @@ bool Main::importServicos() {
 	string especialidade = "";
 	int vectorServicos = -1;
 	string NIF = "";
-	string mes = "";
+	string mesRequisitado = "";
+	time_t dataRequisitado = 0;
+	string mesInicio = "";
 	time_t dataInicio = 0;
 	int idFuncionario = 0;
 
@@ -3610,13 +4426,16 @@ bool Main::importServicos() {
 			getline(myfile, line);
 			vectorServicos = atoi(line.c_str());
 			getline(myfile, NIF);
-			getline(myfile, mes);
+			getline(myfile, mesRequisitado);
+			getline(myfile, line);
+			dataRequisitado = atol(line.c_str());
+			getline(myfile, mesInicio);
 			getline(myfile, line);
 			dataInicio = atol(line.c_str());
 			getline(myfile, line);
 			idFuncionario = atoi(line.c_str());
-			Servico s1 = Servico(id, especialidade, NIF, mes, dataInicio,
-					idFuncionario);
+			Servico s1 = Servico(id, especialidade, NIF, mesRequisitado,
+					dataRequisitado, mesInicio, dataInicio, idFuncionario);
 			if (this->condominio.getFuncionario(idFuncionario) != NULL)
 				this->condominio.getFuncionario(idFuncionario)->setOcupado(
 						true);
@@ -3662,7 +4481,9 @@ bool Main::exportServicos() {
 			myfile << servicosTerminados[i].getEspecialidade() << endl;
 			myfile << "0" << endl; //Indicador do vector de servicosTerminados
 			myfile << servicosTerminados[i].getNIFcondomino() << endl;
-			myfile << servicosTerminados[i].getMes() << endl;
+			myfile << servicosTerminados[i].getMesRequisitado() << endl;
+			myfile << servicosTerminados[i].getDataRequisitado() << endl;
+			myfile << servicosTerminados[i].getMesInicio() << endl;
 			myfile << servicosTerminados[i].getDataInicio() << endl;
 			myfile << servicosTerminados[i].getIDFuncionario();
 			myfile << endl;
@@ -3672,7 +4493,9 @@ bool Main::exportServicos() {
 			myfile << servicosEmCurso[i].getEspecialidade() << endl;
 			myfile << "1" << endl; //Indicador do vector de servicosEmCurso
 			myfile << servicosEmCurso[i].getNIFcondomino() << endl;
-			myfile << servicosEmCurso[i].getMes() << endl;
+			myfile << servicosTerminados[i].getMesRequisitado() << endl;
+			myfile << servicosTerminados[i].getDataRequisitado() << endl;
+			myfile << servicosEmCurso[i].getMesInicio() << endl;
 			myfile << servicosEmCurso[i].getDataInicio() << endl;
 			myfile << servicosEmCurso[i].getIDFuncionario();
 			myfile << endl;
@@ -3682,8 +4505,10 @@ bool Main::exportServicos() {
 			myfile << servicosEmEspera[i].getEspecialidade() << endl;
 			myfile << "2" << endl; //Indicador do vector de servicosEmEspera
 			myfile << servicosEmEspera[i].getNIFcondomino() << endl;
-			myfile << servicosEmEspera[i].getMes() << endl;
-			myfile << servicosEmEspera[i].getDataInicio() << endl;
+			myfile << servicosTerminados[i].getMesRequisitado() << endl;
+			myfile << servicosTerminados[i].getDataRequisitado() << endl;
+			myfile << endl;
+			myfile << endl;
 			myfile << servicosEmEspera[i].getIDFuncionario();
 			myfile << endl;
 		}
@@ -3849,7 +4674,7 @@ void createMenuOptions() {
 	menuOptions[1].push_back("Alterar dados de condomino");					//3
 	menuOptions[1].push_back("Ver habitacoes possuidas");					//4
 	menuOptions[1].push_back("Adicionar habitacao");						//5
-	menuOptions[1].push_back("Ver servicos requisitados");  				//6
+	menuOptions[1].push_back("Ver servicos requisitados");					//6
 	menuOptions[1].push_back("Requisitar um servico");						//7
 	menuOptions[1].push_back("Sair");										//8
 
@@ -3936,9 +4761,10 @@ void createMenuOptions() {
 	menuOptions[11].push_back("Ver lista de todos os servicos em curso");	//1
 	menuOptions[11].push_back("Ver lista de todos os servicos em espera");	//2
 	menuOptions[11].push_back("Requisitar servico");						//3
-	menuOptions[11].push_back("Cancelar servico");							//4
-	menuOptions[11].push_back("Remover servico terminado");					//5
-	menuOptions[11].push_back("Voltar atras");								//6
+	menuOptions[11].push_back("Remover servico terminado");					//4
+	menuOptions[11].push_back("Cancelar servico em curso");					//5
+	menuOptions[11].push_back("Cancelar servico em espera");				//6
+	menuOptions[11].push_back("Voltar atras");								//7
 
 	vector<string> menuDadosContaCondomino;
 	menuOptions.push_back(menuDadosContaCondomino);
@@ -3997,10 +4823,11 @@ void createMenuOptions() {
 	vector<string> menuDisplayHabitacoesBy;
 	menuOptions.push_back(menuDisplayHabitacoesBy);
 
-	menuOptions[18].push_back("Tipo");										//0
-	menuOptions[18].push_back("Renda");										//1
-	menuOptions[18].push_back("NIF Proprietario");							//2
-	menuOptions[18].push_back("Voltar atras");								//3
+	menuOptions[18].push_back("ID");										//0
+	menuOptions[18].push_back("Tipo");										//1
+	menuOptions[18].push_back("Renda");										//2
+	menuOptions[18].push_back("NIF Proprietario");							//3
+	menuOptions[18].push_back("Voltar atras");								//4
 
 	vector<string> menuDisplayFuncionariosBy;
 	menuOptions.push_back(menuDisplayFuncionariosBy);
@@ -4022,27 +4849,28 @@ void createMenuOptions() {
 	vector<string> menuServicosRequisitados;
 	menuOptions.push_back(menuServicosRequisitados);
 
-	menuOptions[21].push_back("Ver a lista dos servicos efectuados");		//0
+	menuOptions[21].push_back("Ver a lista dos servicos terminados");		//0
 	menuOptions[21].push_back("Ver a lista dos servicos em curso");			//1
 	menuOptions[21].push_back("Ver a lista dos servicos em espera");		//2
-	menuOptions[21].push_back("Cancelar servico");							//3
+	menuOptions[21].push_back("Cancelar servico em espera");				//3
 	menuOptions[21].push_back("Voltar atras");								//4
-
-	vector<string> menuCancelarServico;
-	menuOptions.push_back(menuCancelarServico);
-
-	menuOptions[22].push_back("Servico em Curso");							//0
-	menuOptions[22].push_back("Servico em Espera");							//1
-	menuOptions[22].push_back("Voltar atras");								//2
 
 	vector<string> menuDisplayServicosBy;
 	menuOptions.push_back(menuDisplayServicosBy);
 
+	menuOptions[22].push_back("ID");										//0
+	menuOptions[22].push_back("Tipo");										//1
+	menuOptions[22].push_back("Data de inicio");							//2
+	menuOptions[22].push_back("Condomino");									//3
+	menuOptions[22].push_back("Voltar atras");								//4
+
+	vector<string> menuDisplayServicosRequisitadosBy;
+	menuOptions.push_back(menuDisplayServicosRequisitadosBy);
+
 	menuOptions[23].push_back("ID");										//0
 	menuOptions[23].push_back("Tipo");										//1
 	menuOptions[23].push_back("Data de inicio");							//2
-	menuOptions[23].push_back("Condomino");									//3
-	menuOptions[23].push_back("Voltar atras");								//4
+	menuOptions[23].push_back("Voltar atras");								//3
 
 	menu = menuOptions;
 }
@@ -4067,6 +4895,6 @@ int main() {
 
 	main.menuInicial();
 
-	return 0;	//main.exitFunction();
+	return main.exitFunction();
 }
 
