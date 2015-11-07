@@ -36,24 +36,27 @@ vector<Habitacao*> Condominio::getHabitacoes() {
 vector<Funcionario> Condominio::getFuncionarios() {
 	return funcionarios;
 }
-/**
- * @return Vector of condominium's services done.
- */
-vector<Servico> Condominio::getServicosTerminados() {
-	return servicosTerminados;
+Funcionario* Condominio::getFuncionario(int id) {
+	for (size_t i = 0; i < funcionarios.size(); i++) {
+		if (funcionarios[i].getID() == id)
+			return &funcionarios[i];
+	}
+	return NULL;
 }
+
 /**
- * @return Vector of condominium's services being done.
+ * @param vectorServicos 0 = servicosTerminados, 1 = servicosEmCurso, 2 = servicosEmEspera
+ * @return Vector of condominium's services.
  */
-vector<Servico> Condominio::getServicosEmCurso() {
-	return servicosEmCurso;
+vector<Servico> Condominio::getServicos(int vectorServicos) {
+	if (vectorServicos == 0)
+		return servicosTerminados;
+	else if (vectorServicos == 1)
+		return servicosEmCurso;
+	else
+		return servicosEmEspera;
 }
-/**
- * @return Vector of condominium's services waiting to be done.
- */
-vector<Servico> Condominio::getServicosEmEspera() {
-	return servicosEmEspera;
-}
+
 /**
  * Sets the condominium funds.
  * @param fundos New amount of funds.
@@ -88,6 +91,19 @@ void Condominio::setHabitacoes(vector<Habitacao*> habitacoes) {
  */
 void Condominio::setFuncionarios(vector<Funcionario> funcionarios) {
 	this->funcionarios = funcionarios;
+}
+/**
+ * Sets the condominium's services.
+ * @param vectorServicos 0 = servicosTerminados, 1 = servicosEmCurso, 2 = ServicosEmEspera
+ * @param servicos New vector of services
+ */
+void Condominio::setServicos(int vectorServicos, vector<Servico> servicos) {
+	if (vectorServicos == 0)
+		this->servicosTerminados = servicos;
+	else if (vectorServicos == 1)
+		this->servicosEmCurso = servicos;
+	else if (vectorServicos == 2)
+		this->servicosEmEspera = servicos;
 }
 /**
  * Given a position in the tenants vector, returns a pointer to that tenant.
@@ -413,6 +429,7 @@ bool Condominio::eraseFuncionario(int pos) {
 				this->eraseServicoEmEspera(servicosEmEspera[j].getID());
 	}
 	this->funcionarios.erase(funcionarios.begin() + pos);
+	return true;
 }
 
 /**
@@ -479,6 +496,45 @@ int Condominio::getLivresPintura() {
 	return total;
 }
 
+void Condominio::sortServicos(int vectorServicos, int sortOption) {
+	if (vectorServicos == 0) {
+		if (sortOption == 0)
+			insertionSort(servicosTerminados);
+		else if (sortOption == 1)
+			sort(servicosTerminados.begin(), servicosTerminados.end(),
+					compServicoTipo);
+		else if (sortOption == 2)
+			sort(servicosTerminados.begin(), servicosTerminados.end(),
+					compServicoDataInicio);
+		else if (sortOption == 3)
+			sort(servicosTerminados.begin(), servicosTerminados.end(),
+					compServicoNIF);
+	} else if (vectorServicos == 1) {
+		if (sortOption == 0)
+			insertionSort(servicosEmCurso);
+		else if (sortOption == 1)
+			sort(servicosEmCurso.begin(), servicosEmCurso.end(),
+					compServicoTipo);
+		else if (sortOption == 2)
+			sort(servicosEmCurso.begin(), servicosEmCurso.end(),
+					compServicoDataInicio);
+		else if (sortOption == 3)
+			sort(servicosEmCurso.begin(), servicosEmCurso.end(),
+					compServicoNIF);
+	} else if (vectorServicos == 2) {
+		if (sortOption == 0)
+			insertionSort(servicosEmEspera);
+		else if (sortOption == 1)
+			sort(servicosEmEspera.begin(), servicosEmEspera.end(),
+					compServicoTipo);
+		else if (sortOption == 2)
+			sort(servicosEmEspera.begin(), servicosEmEspera.end(),
+					compServicoDataInicio);
+		else if (sortOption == 3)
+			sort(servicosEmEspera.begin(), servicosEmEspera.end(),
+					compServicoNIF);
+	}
+}
 /**
  * Adds a given service to the condominium.
  * @param servico Service to be added.
@@ -694,4 +750,43 @@ bool compFuncionarioServicos(Funcionario f1, Funcionario f2) {
 		return false;
 	else
 		return (f1.getID() < f2.getID());
+}
+/**
+ * Compares two services by the type of service for sorting purposes.
+ * @retval TRUE If first service is "lower" than the second service.
+ * @retval FALSE If the first service is "equal or higher" than the second service.
+ */
+bool compServicoTipo(Servico s1, Servico s2) {
+	if (s1.getEspecialidade() < s2.getEspecialidade())
+		return true;
+	else if (s1.getEspecialidade() > s2.getEspecialidade())
+		return false;
+	else
+		return (s1.getID() < s2.getID());
+}
+/**
+ * Compares two services by their start date for sorting purposes.
+ * @retval TRUE If first service is "lower" than the second service.
+ * @retval FALSE If the first service is "equal or higher" than the second service.
+ */
+bool compServicoDataInicio(Servico s1, Servico s2) {
+	if (difftime(s2.getDataInicio(), s1.getDataInicio()) > 0)
+		return true;
+	else if (difftime(s2.getDataInicio(), s1.getDataInicio()) < 0)
+		return false;
+	else
+		return (s1.getID() < s2.getID());
+}
+/**
+ * Compares two services by the NIF of the tenants who requested them for sorting purposes.
+ * @retval TRUE If first service is "lower" than the second service.
+ * @retval FALSE If the first service is "equal or higher" than the second service.
+ */
+bool compServicoNIF(Servico s1, Servico s2) {
+	if (s1.getNIFcondomino() < s2.getNIFcondomino())
+		return true;
+	else if (s1.getNIFcondomino() > s2.getNIFcondomino())
+		return false;
+	else
+		return (s1.getID() < s2.getID());
 }

@@ -26,15 +26,15 @@ public:
 	vector<Condomino> getMoradores();
 	vector<Habitacao*> getHabitacoes();
 	vector<Funcionario> getFuncionarios();
-	vector<Servico> getServicosTerminados();
-	vector<Servico> getServicosEmCurso();
-	vector<Servico> getServicosEmEspera();
+	Funcionario* getFuncionario(int id);
+	vector<Servico> getServicos(int vectorServicos);
 
 	void setFundos(long int fundos);
 	void setCurrentMes(int currentMes);
 	void setMoradores(vector<Condomino> moradores);
 	void setHabitacoes(vector<Habitacao*> habitacoes);
 	void setFuncionarios(vector<Funcionario> funcionarios);
+	void setServicos(int vectorServicos, vector<Servico> servicos);
 
 
 	void sortMoradores(int sort);
@@ -73,6 +73,7 @@ public:
 	int getLivresPintura();
 
 	//Funcoes Servico
+	void sortServicos(int vector, int sortOption);
 	bool addServico(Servico servico);
 	bool eraseServicoTerminado(int pos);
 	bool eraseServicoEmCurso(int id);
@@ -89,5 +90,8 @@ bool compCondominoNIF(Condomino c1, Condomino c2);
 bool compFuncionarioEspecialidade(Funcionario f1, Funcionario f2);
 bool compFuncionarioOcupacao(Funcionario f1, Funcionario f2);
 bool compFuncionarioServicos(Funcionario f1, Funcionario f2);
+bool compServicoTipo(Servico s1, Servico s2);
+bool compServicoDataInicio(Servico s1, Servico s2);
+bool compServicoNIF(Servico s1, Servico s2);
 
 #endif

@@ -120,6 +120,8 @@ bool Main::displayMenuOptions(int position) {
 
 /**
  * Prints a Condomino select screen.
+ * retval TRUE No error occurred.
+ * retval FALSE Invalid option.
  */
 bool Main::displaySelectCondomino() {
 	if (option >= this->condominio.getMoradores().size()) {
@@ -149,6 +151,8 @@ bool Main::displaySelectCondomino() {
 }
 /**
  * Prints a Habitacao select screen.
+ * retval TRUE No error occurred.
+ * retval FALSE Invalid option.
  */
 bool Main::displaySelectHabitacao(vector<Habitacao*> habitacoes) {
 	if (option >= habitacoes.size()) {
@@ -174,6 +178,8 @@ bool Main::displaySelectHabitacao(vector<Habitacao*> habitacoes) {
 }
 /**
  * Prints a Funcionario select screen.
+ * retval TRUE No error occurred.
+ * retval FALSE Invalid option.
  */
 bool Main::displaySelectFuncionario() {
 	if (option >= this->condominio.getFuncionarios().size()) {
@@ -209,6 +215,48 @@ bool Main::displaySelectFuncionario() {
 	}
 	return EXIT_SUCCESS;
 
+}
+/**
+ * Prints a Servico select screen.
+ * @param vectorServicos 0 = servicosTerminados, 1 = servicosEmCurso, 2 = servicosEmEspera
+ * retval TRUE No error occurred.
+ * retval FALSE Invalid option.
+ */
+bool Main::displaySelectServico(int vectorServicos) {
+	vector<Servico> servicos = this->condominio.getServicos(vectorServicos);
+
+	if (option >= servicos.size()) {
+		return EXIT_FAILURE;
+	}
+	for (size_t i = 0; i < servicos.size(); i++) {
+		gotoxy(0, 14 + i);
+		if (i == option) {
+			setcolor(BLACK, LIGHTGREY);
+			cout << servicos[i].getID() << "\t" << left << setw(16)
+					<< setfill(' ') << servicos[i].getEspecialidade();
+			if (servicos[i].getDataInicio() != 0) {
+				cout
+						<< convertTime(this->condominio.getMes(),
+								servicos[i].getDataInicio()) << "\t"
+						<< servicos[i].getIDFuncionario() << "\t\t";
+			} else
+				cout << "\t\t\t";
+			cout << servicos[i].getNIFcondomino() << endl;
+			setcolor(WHITE, BLACK);
+		} else {
+			cout << servicos[i].getID() << "\t" << left << setw(16)
+					<< setfill(' ') << servicos[i].getEspecialidade();
+			if (servicos[i].getDataInicio() != 0) {
+				cout
+						<< convertTime(this->condominio.getMes(),
+								servicos[i].getDataInicio()) << "\t"
+						<< servicos[i].getIDFuncionario() << "\t\t";
+			} else
+				cout << "\t\t\t";
+			cout << servicos[i].getNIFcondomino() << endl;
+		}
+	}
+	return EXIT_SUCCESS;
 }
 
 /*
@@ -846,6 +894,7 @@ bool Main::editHabitacao(int editOption, Habitacao* h1) {
 			}
 		}
 	}
+	return false;
 }
 
 /**
@@ -945,26 +994,60 @@ void Main::displayFuncionarioInfo(int pos) {
 	cout << "DADOS DO FUNCIONARIO\n" << endl;
 	this->condominio.getFuncionarios()[pos].info();
 	if (this->condominio.getFuncionarios()[pos].getOcupado()) {
-		for (size_t i = 0; i < this->condominio.getServicosEmCurso().size();
-				i++) {
-			if (this->condominio.getServicosEmCurso()[i].getIDFuncionario()
+		for (size_t i = 0; i < this->condominio.getServicos(1).size(); i++) {
+			if (this->condominio.getServicos(1)[i].getIDFuncionario()
 					== this->condominio.getFuncionarios()[pos].getID()) {
 				cout << "\nA efectuar:" << endl;
-				this->condominio.getServicosEmCurso()[i].info();
+				this->condominio.getServicos(1)[i].info();
 				break;
 			}
 		}
 	}
 	if (this->condominio.getFuncionarios()[pos].getServicosEfectuados() > 0) {
 		cout << "\nServicos efectuados:\n" << endl;
-		for (size_t j = 0; j < this->condominio.getServicosTerminados().size();
-				j++)
-			if (this->condominio.getServicosTerminados()[j].getIDFuncionario()
+		for (size_t j = 0; j < this->condominio.getServicos(0).size(); j++)
+			if (this->condominio.getServicos(0)[j].getIDFuncionario()
 					== this->condominio.getFuncionarios()[pos].getID())
-				this->condominio.getServicosTerminados()[j].info();
+				this->condominio.getServicos(0)[j].info();
 	}
 	pressEnterToContinue();
 }
+/**
+ * Displays info of a specified service.
+ * @param Pos Position of the service in the vector of services.
+ * @param vectorServicos 0 = servicosTerminados, 1 = servicosEmCurso, 2 = servicosEmEspera
+ */
+void Main::displayServicoInfo(int pos, int vectorServicos) {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "DADOS DO SERVICO\n" << endl;
+	this->condominio.getServicos(vectorServicos)[pos].info();
+
+	if (vectorServicos != 2)
+		cout << "ID do Funcionario = "
+				<< this->condominio.getServicos(vectorServicos)[pos].getIDFuncionario()
+				<< "\n" << endl;
+
+	cout << "Requisitado pelo condomino com o NIF "
+			<< this->condominio.getServicos(vectorServicos)[pos].getNIFcondomino()
+			<< "\n" << endl;
+
+	for (size_t i = 0; i < this->condominio.getHabitacoes().size(); i++) {
+		if (this->condominio.getHabitacoes()[i]->getServico()
+				== this->condominio.getServicos(vectorServicos)[pos].getID()) {
+			cout << "HABITACAO" << endl;
+			cout << "Tipo: " << this->condominio.getHabitacoes()[i]->getTipo()
+					<< endl;
+			cout << "Morada: "
+					<< this->condominio.getHabitacoes()[i]->getMorada() << ", "
+					<< this->condominio.getHabitacoes()[i]->getCodigoPostal()
+					<< endl;
+			break;
+		}
+	}
+	pressEnterToContinue();
+}
+
 /**
  * Displays end month info.
  * @retval TRUE Every tenant paid their rent.
@@ -1839,6 +1922,9 @@ int Main::menuAdministrador() {
 		} else if (option == 2) { //Gerir funcionarios
 			resetOption();
 			return menuGerirFuncionarios();
+		} else if (option == 3) { //Gerir servicos
+			resetOption();
+			return menuGerirServicos();
 		} else if (option == 4) { //Fim do Mes
 			fimDoMes();
 		} else {
@@ -2996,11 +3082,179 @@ int Main::menuDeleteFuncionario(int pos, int menuOption) {
 	return menuDeleteFuncionario(pos, menuOption);
 }
 
-//TODO menuGerirServicos()
 int Main::menuGerirServicos() {
-	return EXIT_FAILURE;
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "GERIR SERVICOS" << endl;
+	displayMenuOptions(11);
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[11].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) //Ver lista de todos os servicos terminados
+			return menuDisplayServicosBy(0);
+		else if (option == 1) { //Ver lista de todos os servicos em curso
+			resetOption();
+			return menuDisplayServicosBy(1);
+		} else if (option == 2) { //Ver lista de todos os servicos em espera
+			resetOption();
+			return menuDisplayServicosBy(2);
+		} else if (option == 3) { //Requisitar servico
+
+		} else if (option == 4) { //Cancelar servico
+
+		} else if (option == 5) { //Remover servico terminado
+
+		} else if (option == 6) { //Voltar atras
+			resetOption();
+			return menuAdministrador();
+		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuAdministrador();
+		break;
+	default:
+		break;
+	}
+	return menuGerirServicos();
+}
+int Main::menuDisplayServicosBy(int vectorServicos) {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "ORDENAR POR" << endl;
+	displayMenuOptions(23);
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[23].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) { //Ordenar por ID
+			resetOption();
+			this->condominio.sortServicos(vectorServicos, 0);
+			return menuDisplayAllServicos(vectorServicos);
+		} else if (option == 1) { //Ordenar por tipo
+			resetOption();
+			this->condominio.sortServicos(vectorServicos, 1);
+			return menuDisplayAllServicos(vectorServicos);
+		} else if (option == 2) { //Ordenar por data de inicio
+			resetOption();
+			this->condominio.sortServicos(vectorServicos, 2);
+			return menuDisplayAllServicos(vectorServicos);
+		} else if (option == 3) { //Ordenar por condomino
+			resetOption();
+			this->condominio.sortServicos(vectorServicos, 3);
+			return menuDisplayAllServicos(vectorServicos);
+		} else { //Voltar atras
+			resetOption();
+			return menuGerirServicos();
+		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuGerirServicos();
+		break;
+	default:
+		break;
+	}
+	return menuDisplayServicosBy(vectorServicos);
+}
+int Main::menuDisplayAllServicos(int vectorServicos) {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "SELECIONE O SERVICO:\n" << endl;
+	cout << "[ENTER] Ver dados" << endl;
+	cout << "[ESC] Voltar atras\n" << endl;
+	cout << "ID\tEspecialidade\tData Inicio\t\tID Funcionario\tNIF Condomino"
+			<< endl;
+	if (this->condominio.getServicos(vectorServicos).empty()) {
+		if (vectorServicos == 0)
+			cout << "Nao existem servicos terminados no condominio." << endl;
+		else if (vectorServicos == 1)
+			cout << "Nao existem servicos em curso no condominio." << endl;
+		else if (vectorServicos == 2)
+			cout << "Nao existem servicos em espera no condominio." << endl;
+		pressEnterToContinue();
+		return menuDisplayServicosBy(vectorServicos);
+	}
+	displaySelectServico(vectorServicos);
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < this->condominio.getServicos(vectorServicos).size())
+			option++;
+		break;
+	case KEY_ENTER:
+		displayServicoInfo(option, vectorServicos);
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuDisplayServicosBy(vectorServicos);
+		break;
+	default:
+		break;
+	}
+	return menuDisplayAllServicos(vectorServicos);
 }
 
+/**
+ * Converts a given time to a string. Format is "currentMonth HH:mm:ss".
+ * @return A string with the converted time.
+ */
+string Main::convertTime(int mes, time_t time) {
+	struct tm tstruct;
+	char buf[80];
+	tstruct = *localtime(&time);
+	strftime(buf, sizeof(buf), "%H:%M:%S", &tstruct);
+	string convert(buf);
+	string convertedTime = mesesAno[mes] + " " + convert;
+	return convertedTime;
+}
 /**
  * Imports condominium data from a .txt file. Updates condominium funds and current month.
  * @retval TRUE Successfully imported data.
@@ -3099,7 +3353,7 @@ bool Main::importCondominos() {
 
 }
 /**
- * Exports user data to a .txt file. Exports condominum users.
+ * Exports user data to a .txt file. Exports condominium users.
  * @retval TRUE Successfully exported data.
  * @retval FALSE Couldn't write to .txt file.
  */
@@ -3199,7 +3453,8 @@ bool Main::importHabitacoes() {
 				getline(myfile, line);
 				idServico = atoi(line.c_str());
 				Apartamento* a1 = new Apartamento(morada, codigoPostal,
-						nifProprietario, pago, idServico, tipologia, areaInterior, piso);
+						nifProprietario, pago, idServico, tipologia,
+						areaInterior, piso);
 				habitacoes.push_back(a1);
 			}
 			getline(myfile, line);
@@ -3218,7 +3473,7 @@ bool Main::importHabitacoes() {
 	}
 }
 /**
- * Exports house data to a .txt file. Exports condominum houses.
+ * Exports house data to a .txt file. Exports condominium houses.
  * @retval TRUE Successfully exported data.
  * @retval FALSE Couldn't write to .txt file.
  */
@@ -3302,7 +3557,7 @@ bool Main::importFuncionarios() {
 	}
 }
 /**
- * Exports employee data to a .txt file. Exports condominum employees.
+ * Exports employee data to a .txt file. Exports condominium employees.
  * @retval TRUE Successfully exported data.
  * @retval FALSE Couldn't write to .txt file.
  */
@@ -3323,6 +3578,121 @@ bool Main::exportFuncionarios() {
 		displayLogo();
 		cout
 				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro de funcionarios.\n";
+		pressEnterToContinue();
+		return false;
+	}
+}
+
+/**
+ * Imports service data from a .txt file. Updates condominium services.
+ * @retval TRUE Successfully imported data.
+ * @retval FALSE Couldn't read from .txt file.
+ */
+bool Main::importServicos() {
+	ifstream myfile(pathServicos);
+	string line = "";
+	int id = 0;
+	string especialidade = "";
+	int vectorServicos = -1;
+	string NIF = "";
+	string mes = "";
+	time_t dataInicio = 0;
+	int idFuncionario = 0;
+
+	vector<Servico> servicosTerminados;
+	vector<Servico> servicosEmCurso;
+	vector<Servico> servicosEmEspera;
+
+	if (myfile.is_open()) {
+		while (getline(myfile, line)) {
+			id = atoi(line.c_str());
+			getline(myfile, especialidade);
+			getline(myfile, line);
+			vectorServicos = atoi(line.c_str());
+			getline(myfile, NIF);
+			getline(myfile, mes);
+			getline(myfile, line);
+			dataInicio = atol(line.c_str());
+			getline(myfile, line);
+			idFuncionario = atoi(line.c_str());
+			Servico s1 = Servico(id, especialidade, NIF, mes, dataInicio,
+					idFuncionario);
+			if (this->condominio.getFuncionario(idFuncionario) != NULL)
+				this->condominio.getFuncionario(idFuncionario)->setOcupado(
+						true);
+			if (vectorServicos == 0)
+				servicosTerminados.push_back(s1);
+			else if (vectorServicos == 1)
+				servicosEmCurso.push_back(s1);
+			else if (vectorServicos == 2)
+				servicosEmEspera.push_back(s1);
+			getline(myfile, line);
+		}
+		myfile.close();
+		insertionSort(servicosTerminados);
+		insertionSort(servicosEmCurso);
+		insertionSort(servicosEmEspera);
+		this->condominio.setServicos(0, servicosTerminados);
+		this->condominio.setServicos(1, servicosEmCurso);
+		this->condominio.setServicos(2, servicosEmEspera);
+		return true;
+	} else {
+		displayLogo();
+		cout
+				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro de servicos.\n";
+		pressEnterToContinue();
+		return false;
+	}
+}
+/**
+ * Exports service data to a .txt file. Exports condominium services.
+ * @retval TRUE Successfully exported data.
+ * @retval FALSE Couldn't write to .txt file.
+ */
+bool Main::exportServicos() {
+	ofstream myfile(pathServicos, ios::trunc);
+
+	if (myfile.is_open()) {
+		vector<Servico> servicosTerminados = this->condominio.getServicos(0);
+		vector<Servico> servicosEmCurso = this->condominio.getServicos(1);
+		vector<Servico> servicosEmEspera = this->condominio.getServicos(2);
+
+		for (size_t i = 0; i < servicosTerminados.size(); i++) {
+			myfile << servicosTerminados[i].getID() << endl;
+			myfile << servicosTerminados[i].getEspecialidade() << endl;
+			myfile << "0" << endl; //Indicador do vector de servicosTerminados
+			myfile << servicosTerminados[i].getNIFcondomino() << endl;
+			myfile << servicosTerminados[i].getMes() << endl;
+			myfile << servicosTerminados[i].getDataInicio() << endl;
+			myfile << servicosTerminados[i].getIDFuncionario();
+			myfile << endl;
+		}
+		for (size_t i = 0; i < servicosEmCurso.size(); i++) {
+			myfile << servicosEmCurso[i].getID() << endl;
+			myfile << servicosEmCurso[i].getEspecialidade() << endl;
+			myfile << "1" << endl; //Indicador do vector de servicosEmCurso
+			myfile << servicosEmCurso[i].getNIFcondomino() << endl;
+			myfile << servicosEmCurso[i].getMes() << endl;
+			myfile << servicosEmCurso[i].getDataInicio() << endl;
+			myfile << servicosEmCurso[i].getIDFuncionario();
+			myfile << endl;
+		}
+		for (size_t i = 0; i < servicosEmEspera.size(); i++) {
+			myfile << servicosEmEspera[i].getID() << endl;
+			myfile << servicosEmEspera[i].getEspecialidade() << endl;
+			myfile << "2" << endl; //Indicador do vector de servicosEmEspera
+			myfile << servicosEmEspera[i].getNIFcondomino() << endl;
+			myfile << servicosEmEspera[i].getMes() << endl;
+			myfile << servicosEmEspera[i].getDataInicio() << endl;
+			myfile << servicosEmEspera[i].getIDFuncionario();
+			myfile << endl;
+		}
+		myfile.close();
+		return true;
+	} else {
+		displayLogo();
+		cout
+				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro de servicos.\n";
 		pressEnterToContinue();
 		return false;
 	}
@@ -3420,7 +3790,7 @@ void displayLogo() {
 	}
 }
 /**
- * Get current time, format is HH:mm:ss
+ * Get current time, format is "HH:mm:ss".
  * @return A string with the time.
  */
 string currentTime() {
@@ -3428,7 +3798,6 @@ string currentTime() {
 	struct tm tstruct;
 	char buf[80];
 	tstruct = *localtime(&now);
-//strftime(buf, sizeof(buf), "%Y-%m-%d %H:%M:%S", &tstruct);
 	strftime(buf, sizeof(buf), "%H:%M:%S", &tstruct);
 	return buf;
 }
@@ -3563,11 +3932,13 @@ void createMenuOptions() {
 
 	vector<string> menuGerirServicos;
 	menuOptions.push_back(menuGerirServicos);
-	menuOptions[11].push_back("Ver lista de todos os servicos efectuados");	//0
+	menuOptions[11].push_back("Ver lista de todos os servicos terminados");	//0
 	menuOptions[11].push_back("Ver lista de todos os servicos em curso");	//1
 	menuOptions[11].push_back("Ver lista de todos os servicos em espera");	//2
-	menuOptions[11].push_back("Cancelar servico");							//3
-	menuOptions[11].push_back("Voltar atras");								//4
+	menuOptions[11].push_back("Requisitar servico");						//3
+	menuOptions[11].push_back("Cancelar servico");							//4
+	menuOptions[11].push_back("Remover servico terminado");					//5
+	menuOptions[11].push_back("Voltar atras");								//6
 
 	vector<string> menuDadosContaCondomino;
 	menuOptions.push_back(menuDadosContaCondomino);
@@ -3664,6 +4035,15 @@ void createMenuOptions() {
 	menuOptions[22].push_back("Servico em Espera");							//1
 	menuOptions[22].push_back("Voltar atras");								//2
 
+	vector<string> menuDisplayServicosBy;
+	menuOptions.push_back(menuDisplayServicosBy);
+
+	menuOptions[23].push_back("ID");										//0
+	menuOptions[23].push_back("Tipo");										//1
+	menuOptions[23].push_back("Data de inicio");							//2
+	menuOptions[23].push_back("Condomino");									//3
+	menuOptions[23].push_back("Voltar atras");								//4
+
 	menu = menuOptions;
 }
 
@@ -3683,9 +4063,10 @@ int main() {
 	main.importCondominos();
 	main.importHabitacoes();
 	main.importFuncionarios();
+	main.importServicos();
 
 	main.menuInicial();
 
-	return main.exitFunction();
+	return 0;	//main.exitFunction();
 }
 

@@ -31,7 +31,7 @@ public:
 	bool displaySelectHabitacao(vector<Habitacao*> habitacoes);
 	bool displaySelectHabitacaoPossuida();
 	bool displaySelectFuncionario();
-	bool displaySelectServico(); //TODO displaySelectServico()
+	bool displaySelectServico(int vector);
 
 	bool validLogin(string utilizador, string password);
 	bool validRegister(string utilizador, string password);
@@ -50,6 +50,7 @@ public:
 	void displayCondominoInfo(int pos);
 	void displayHabitacaoInfo(int pos);
 	void displayFuncionarioInfo(int pos);
+	void displayServicoInfo(int pos, int vectorServicos);
 
 	bool fimDoMes();
 
@@ -59,7 +60,9 @@ public:
 	int menuLogin();
 	int menuRegisto();
 
-	//Menu Utilizador
+	/*
+	 * Menu Utilizador
+	 */
 	int menuUtilizador();
 
 	int menuEditDadosConta(Condomino &condomino);
@@ -76,9 +79,12 @@ public:
 	int menuRequisitarServico();
 
 
-	//Menu Administrador
+	/*
+	 * Menu Administrador
+	 */
 	int menuAdministrador();
 
+	//Gerir Condominos
 	int menuGerirCondominos();
 	int menuDisplayCondominosBy();
 	int menuDisplayAllCondominos();
@@ -86,6 +92,7 @@ public:
 	int menuEditCondomino(Condomino &condomino);
 	int menuDeleteCondomino(Condomino &condomino, int menuOption);
 
+	//Gerir Habitacoes
 	int menuGerirHabitacoes();
 	int menuDisplayHabitacoesBy();
 	int menuDisplayAllHabitacoes();
@@ -95,6 +102,7 @@ public:
 	int menuSelectOwnerHabitacao();
 	int menuDeleteHabitacao(int pos, int menuOption);
 
+	//Gerir Funcionarios
 	int menuGerirFuncionarios();
 	int menuDisplayFuncionariosBy();
 	int menuDisplayAllFuncionarios();
@@ -103,9 +111,12 @@ public:
 	int menuFireFuncionario();
 	int menuDeleteFuncionario(int pos, int menuOption);
 
-	int menuGerirServicos(); //TODO menuGerirServicos()
+	//Gerir Servicos
+	int menuGerirServicos();
+	int menuDisplayServicosBy(int vectorServicos);
+	int menuDisplayAllServicos(int vectorServicos);
 
-
+	string convertTime(int mes, time_t time);
 
 	//Import & extract functions
 	bool importCondominio();
@@ -119,6 +130,9 @@ public:
 
 	bool importFuncionarios();
 	bool exportFuncionarios();
+
+	bool importServicos();
+	bool exportServicos();
 
 	int exitFunction();
 
