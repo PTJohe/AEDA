@@ -4,7 +4,7 @@ admin
 Administrador
 123456789
 1000
--60
+0
 
 0
 cliente
@@ -19,14 +19,22 @@ joao
 joao
 Joao Araujo
 263788210
-400
+700
 0
 
 0
 manel
 manel
-Manuel
+Manel
+192837465
+400
+0
+
+1
+simao
+simao
+Simao Lucio
 363788210
-300
+700
 0
 

@@ -81,11 +81,12 @@ public:
 	int menuSelectOrNewHabitacao();
 	int menuSelectHabitacaoAdd(vector<Habitacao*> habitacoes);
 	int menuAddHabitacao(Condomino condomino);
-	int menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1);
+	int menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1, bool nova);
 
 	int menuServicosRequisitados();
 	int menuDisplayServicosRequisitadosBy(vector<Servico> servicos);
-	int menuDisplayServicosRequisitados(vector<Servico> servicos, bool cancelar);
+	int menuDisplayServicosRequisitados(vector<Servico> servicos,
+			bool cancelar);
 	int menuSelectHabitacaoServicoUtilizador(vector<Habitacao*> habitacoes);
 	int menuRequisitarServico(int pos, int tipo, int menuOption);
 	int menuCancelarServico(vector<Servico> servicos, int pos, int menuOption);
@@ -154,6 +155,62 @@ public:
 
 };
 
+/*
+ * Exceptions
+ */
+class DadosInvalidos {
+public:
+public:
+	friend ostream& operator<<(ostream& out, const DadosInvalidos &e) {
+		out << "\nDados invalidos." << endl;
+		return out;
+	}
+};
+class NomeUtilizadorInvalido {
+public:
+	friend ostream& operator<<(ostream& out, const NomeUtilizadorInvalido &e) {
+		out
+				<< "O nome de utilizador tem que conter entre 1 a 20 caracteres inclusive."
+				<< endl;
+		return out;
+	}
+};
+class PasswordInvalida {
+public:
+	friend ostream& operator<<(ostream& out, const PasswordInvalida &e) {
+		out << "A password tem que conter entre 5 a 20 caracteres inclusive."
+				<< endl;
+		return out;
+	}
+};
+class UtilizadorPasswordEspacos {
+public:
+	friend ostream& operator<<(ostream& out,
+			const UtilizadorPasswordEspacos &e) {
+		out << "O nome de utilizador e password nao podem conter espacos."
+				<< endl;
+		return out;
+	}
+};
+class NomeUtilizadorIndisponivel {
+	string nomeUtilizador;
+public:
+	NomeUtilizadorIndisponivel(string nomeUtilizador){
+		this->nomeUtilizador = nomeUtilizador;
+	}
+	string getNomeUtilizador() const{
+		return nomeUtilizador;
+	}
+	friend ostream& operator<<(ostream& out,
+			const NomeUtilizadorIndisponivel &e) {
+		out << "O nome de utilizador \"" << e.getNomeUtilizador() << "\" nao esta disponivel." << endl;
+		return out;
+	}
+};
+
+/*
+ * Non-class functions
+ */
 bool hasWhitespace(string s);
 bool isNumber(string s);
 bool isName(string s);

@@ -339,9 +339,9 @@ bool Main::validLogin(string utilizador, string password) {
 	Condomino c1 = Condomino(utilizador, password);
 	int pos = sequentialSearch(this->condominio.getMoradores(), c1);
 	if (pos == -1)
-		return false;
+		throw DadosInvalidos();
 	if (this->condominio.getMoradores()[pos].getPassword() != password)
-		return false;
+		throw DadosInvalidos();
 	setCurrentUser(c1);
 	return true;
 }
@@ -354,28 +354,20 @@ bool Main::validLogin(string utilizador, string password) {
  */
 bool Main::validRegister(string utilizador, string password) {
 	if (utilizador.size() < 1 || utilizador.size() > 20) {
-		cout
-				<< "\nO nome de utilizador tem que conter entre 1 a 20 caracteres inclusive."
-				<< endl;
-		return false;
+		throw NomeUtilizadorInvalido();
 	}
 	if (password.size() < 5 || password.size() > 20) {
-		cout << "\nA password tem que conter entre 5 a 20 caracteres inclusive."
-				<< endl;
-		return false;
+		throw PasswordInvalida();
 	}
 	if (hasWhitespace(utilizador) || hasWhitespace(password)) {
-		cout << "\nO nome de utilizador e password nao podem conter espacos."
-				<< endl;
-		return false;
+		throw UtilizadorPasswordEspacos();
 	}
 	Condomino c1 = Condomino(utilizador, password);
 	int pos = sequentialSearch(this->condominio.getMoradores(), c1);
 	if (pos == -1)
 		return true;
 	else {
-		cout << "\nO nome de utilizador nao esta disponivel." << endl;
-		return false;
+		throw NomeUtilizadorIndisponivel(utilizador);
 	}
 }
 /**
@@ -1023,9 +1015,14 @@ void Main::displayCondominoInfo(int pos) {
 	gotoxy(0, 8);
 	cout << "DADOS DO CONDOMINO\n" << endl;
 	cout << "Nome Utilizador: "
-			<< this->condominio.getMoradores()[pos].getNomeUtilizador() << endl
-			<< endl;
-	cout << "Nome Civil: ";
+			<< this->condominio.getMoradores()[pos].getNomeUtilizador() << endl;
+	cout << "Estado da conta: ";
+	if (this->condominio.getMoradores()[pos].isAdmin())
+		cout << "ADMIN" << endl;
+	else
+		cout << "Conta Normal" << endl;
+
+	cout << "\nNome Civil: ";
 	this->condominio.getMoradores()[pos].infoCondomino();
 	cout << endl;
 	pressEnterToContinue();
@@ -1243,15 +1240,14 @@ int Main::menuLogin() {
 	cout << "Password: ";
 	getline(cin, password);
 
-	if (validLogin(utilizador, password)) {
-		resetOption();
-		return menuUtilizador();
-	} else {
-		cout << "\nDados invalidos\n";
+	try {
+		validLogin(utilizador, password);
+	} catch (DadosInvalidos &except) {
+		cout << except << endl;
 		pressEnterToContinue();
-		resetOption();
 		return menuInicial();
 	}
+	return menuUtilizador();
 }
 /**
  * Register screen. User needs to input their username, password, name and NIF to create a new account.
@@ -1273,33 +1269,59 @@ int Main::menuRegisto() {
 	cout << "Password: ";
 	getline(cin, password);
 
-	if (validRegister(utilizador, password)) {
-		do {
-			cout << "Nome Civil: ";
-			getline(cin, nomeCivil);
-			if (!isName(nomeCivil))
-				cout << "Introduza um nome valido.\n" << endl;
-		} while (!isName(nomeCivil));
-		do {
-			cout << "NIF: ";
-			getline(cin, NIF);
-			if ((NIF.size() != 9) && (!isNumber(NIF))) {
-				cout << "Introduza um NIF valido.\n" << endl;
-			}
-		} while ((NIF.size() != 9) && (!isNumber(NIF)));
-		Condomino c1 = Condomino(utilizador, password, nomeCivil, NIF);
-		int pos = this->condominio.addMorador(c1);
-		if (pos != -1)
-			cout << "\nConta criada com sucesso!" << endl;
-		else {
-			cout << "\nNao foi possivel criar uma conta." << endl;
-			cout
-					<< "Ja existe um condomino com o mesmo nome de utilizador e/ou NIF."
-					<< endl;
-		}
-	} else {
+	try {
+		validRegister(utilizador, password);
+	} catch (NomeUtilizadorInvalido &except) {
 		cout << "\nNao foi possivel criar uma conta." << endl;
+		cout << except << endl;
+		pressEnterToContinue();
+		resetOption();
+		return menuInicial();
+	} catch (PasswordInvalida &except) {
+		cout << "\nNao foi possivel criar uma conta." << endl;
+		cout << except << endl;
+		pressEnterToContinue();
+		resetOption();
+		return menuInicial();
+	} catch (UtilizadorPasswordEspacos &except) {
+		cout << "\nNao foi possivel criar uma conta." << endl;
+		cout << except << endl;
+		pressEnterToContinue();
+		resetOption();
+		return menuInicial();
+	} catch (NomeUtilizadorIndisponivel &except) {
+		cout << "\nNao foi possivel criar uma conta." << endl;
+		cout << except << endl;
+		pressEnterToContinue();
+		resetOption();
+		return menuInicial();
 	}
+
+	cout << "\nIntroduza os seus dados de condomino:\n" << endl;
+	do {
+		cout << "Nome Civil: ";
+		getline(cin, nomeCivil);
+		if (!isName(nomeCivil))
+			cout << "Introduza um nome valido.\n" << endl;
+	} while (!isName(nomeCivil));
+	do {
+		cout << "NIF: ";
+		getline(cin, NIF);
+		if ((NIF.size() != 9) && (!isNumber(NIF)))
+			cout << "Introduza um NIF valido.\n" << endl;
+	} while ((NIF.size() != 9) && (!isNumber(NIF)));
+
+	Condomino c1 = Condomino(utilizador, password, nomeCivil, NIF);
+	try {
+		this->condominio.addMorador(c1);
+	} catch (CondominoDuplicado &except) {
+		cout << "\nNao foi possivel criar uma conta." << endl;
+		cout << except << endl;
+		pressEnterToContinue();
+		resetOption();
+		return menuInicial();
+	}
+	cout << "\nConta criada com sucesso!" << endl;
 	pressEnterToContinue();
 	resetOption();
 	return menuInicial();
@@ -1308,7 +1330,6 @@ int Main::menuRegisto() {
 /*
  * USER MENU
  */
-
 
 /**
  * User menu. The user has several options such as view or change their user info. Add a house, request service, etc.
@@ -1727,8 +1748,12 @@ int Main::menuSelectOrNewHabitacao() {
 			return menuAddHabitacao(*currentUser);
 		} else { //Voltar atras
 			resetOption();
-			return menuHabitacoesPossuidas();
+			return menuUtilizador();
 		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuUtilizador();
 		break;
 	default:
 		break;
@@ -1778,7 +1803,8 @@ int Main::menuSelectHabitacaoAdd(vector<Habitacao*> habitacoes) {
 	case KEY_ENTER:
 		pos = option;
 		resetOption();
-		return menuConfirmAddHabitacao(*this->currentUser, habitacoes[pos]);
+		return menuConfirmAddHabitacao(*this->currentUser, habitacoes[pos],
+				false);
 		break;
 	case KEY_ESC:
 		resetOption();
@@ -1864,7 +1890,7 @@ int Main::menuAddHabitacao(Condomino condomino) {
 
 			Vivenda* v1 = new Vivenda(morada, codigoPostal, condomino.getNIF(),
 					areaInterior, areaExterior, piscina);
-			return menuConfirmAddHabitacao(condomino, v1);
+			return menuConfirmAddHabitacao(condomino, v1, true);
 
 		} else if (option == 1) {
 			cout << "Morada: ";
@@ -1903,7 +1929,7 @@ int Main::menuAddHabitacao(Condomino condomino) {
 			Apartamento* a1 = new Apartamento(morada, codigoPostal,
 					condomino.getNIF(), tipologia, areaInterior, piso);
 
-			return menuConfirmAddHabitacao(condomino, a1);
+			return menuConfirmAddHabitacao(condomino, a1, true);
 		}
 		break;
 	default:
@@ -1917,7 +1943,8 @@ int Main::menuAddHabitacao(Condomino condomino) {
  *	@param h1 Pointer to the house being added.
  *	@return A new menu.
  */
-int Main::menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1) {
+int Main::menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1,
+		bool nova) {
 	displayLogo();
 	gotoxy(0, 8);
 	cout << "DADOS DA HABITACAO\n" << endl;
@@ -1951,47 +1978,59 @@ int Main::menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1) {
 			option++;
 		break;
 	case KEY_ENTER:
-		if (option == 0) {
-			int pos = sequentialSearch(this->condominio.getMoradores(),
-					condomino);
-			if (h1->hasProprietario()) {
-				if (this->condominio.addHabitacao(h1)) {
-					this->condominio.getCondomino(pos)->addHabitacao(h1,
-							this->condominio.getMes());
-					cout << "\nHabitacao adicionada." << endl;
+		if (nova) {
+			if (option == 0) {
+				if (h1->hasProprietario()) {
+					if (this->condominio.addHabitacao(h1)) {
+						cout << "\nHabitacao adicionada." << endl;
+					} else {
+						cout << "\nNao foi possivel adicionar a habitacao."
+								<< endl;
+						cout << "Ja existe uma habitacao com a mesma morada."
+								<< endl;
+						h1->decID();
+						delete h1;
+					}
+					pressEnterToContinue();
+					resetOption();
+					return menuUtilizador();
 				} else {
-					cout << "\nNao foi possivel adicionar a habitacao." << endl;
-					cout << "Ja existe uma habitacao com a mesma morada."
-							<< endl;
-					h1->decID();
-					delete h1;
+					this->condominio.addHabitacao(h1);
+					cout << "\nHabitacao adicionada." << endl;
+					pressEnterToContinue();
+					resetOption();
+					return menuUtilizador();
 				}
-				pressEnterToContinue();
+			} else if (option == 1) {
 				resetOption();
-				return menuUtilizador();
-			} else {
-				this->condominio.getCondomino(pos)->addHabitacao(h1,
-						this->condominio.getMes());
+				string nifProp = h1->getNIFProprietario();
+				h1->decID();
+				delete h1;
+				if (nifProp == this->currentUser->getNIF())
+					return menuUtilizador();
+				else
+					return menuSelectOrVacantHabitacao();
+			}
+		} else {
+			if (option == 0) {
+				h1->setProprietario(condomino.getNIF());
+				for (size_t i = 0; i <= condominio.getMes(); i++)
+					h1->setPago(i);
 				cout << "\nHabitacao adicionada." << endl;
 				pressEnterToContinue();
+				this->condominio.sortHabitacoes(3);
 				resetOption();
 				return menuUtilizador();
+			} else if (option == 1) {
+				resetOption();
+				return menuSelectOrNewHabitacao();
 			}
-		} else if (option == 1) {
-			resetOption();
-			string nifProp = h1->getNIFProprietario();
-			h1->decID();
-			delete h1;
-			if (nifProp == this->currentUser->getNIF())
-				return menuUtilizador();
-			else
-				return menuSelectOrVacantHabitacao();
 		}
 		break;
 	default:
 		break;
 	}
-	return menuConfirmAddHabitacao(condomino, h1);
+	return menuConfirmAddHabitacao(condomino, h1, nova);
 }
 
 /**
@@ -3468,7 +3507,7 @@ int Main::menuFireFuncionario() {
 			option++;
 		break;
 	case KEY_ENTER:
-		menuDeleteFuncionario(option, 0);
+		return menuDeleteFuncionario(option, 0);
 		break;
 	case KEY_ESC:
 		resetOption();
@@ -3491,7 +3530,7 @@ int Main::menuDeleteFuncionario(int pos, int menuOption) {
 	cout << "DADOS DO FUNCIONARIO\n" << endl;
 	this->condominio.getFuncionarios()[pos].info();
 
-	if(condominio.getFuncionarios()[pos].isOcupado()){
+	if (condominio.getFuncionarios()[pos].isOcupado()) {
 		cout << "Nao e possivel despedir este funcionario." << endl;
 		cout << "Este funcionario esta a fazer um servico.\n" << endl;
 		pressEnterToContinue();
@@ -4029,8 +4068,6 @@ int Main::menuDeleteServico(int pos, int vectorServicos, int menuOption) {
 	return menuDeleteServico(pos, vectorServicos, menuOption);
 }
 
-
-
 /**
  * Converts a given time to a string. Format is "month HH:mm:ss".
  * @param mes Position of month in the vector of months.
@@ -4292,6 +4329,7 @@ bool Main::exportHabitacoes() {
 
 	if (myfile.is_open()) {
 		vector<Habitacao*> habitacoes = this->condominio.getHabitacoes();
+		sort(habitacoes.begin(), habitacoes.end(), compHabitacaoID);
 
 		for (size_t j = 0; j < habitacoes.size(); j++) {
 			myfile << habitacoes[j]->getID() << endl;
@@ -4380,6 +4418,7 @@ bool Main::exportFuncionarios() {
 
 	if (myfile.is_open()) {
 		vector<Funcionario> funcionarios = this->condominio.getFuncionarios();
+		insertionSort(funcionarios);
 
 		for (size_t i = 0; i < funcionarios.size(); i++) {
 			myfile << funcionarios[i].getID() << endl;
@@ -4436,14 +4475,15 @@ bool Main::importServicos() {
 			idFuncionario = atoi(line.c_str());
 			Servico s1 = Servico(id, especialidade, NIF, mesRequisitado,
 					dataRequisitado, mesInicio, dataInicio, idFuncionario);
-			if (this->condominio.getFuncionario(idFuncionario) != NULL)
-				this->condominio.getFuncionario(idFuncionario)->setOcupado(
-						true);
+
 			if (vectorServicos == 0)
 				servicosTerminados.push_back(s1);
-			else if (vectorServicos == 1)
+			else if (vectorServicos == 1) {
+				if (this->condominio.getFuncionario(idFuncionario) != NULL)
+					this->condominio.getFuncionario(idFuncionario)->setOcupado(
+							true);
 				servicosEmCurso.push_back(s1);
-			else if (vectorServicos == 2)
+			} else if (vectorServicos == 2)
 				servicosEmEspera.push_back(s1);
 			getline(myfile, line);
 		}
@@ -4473,8 +4513,13 @@ bool Main::exportServicos() {
 
 	if (myfile.is_open()) {
 		vector<Servico> servicosTerminados = this->condominio.getServicos(0);
+		insertionSort(servicosTerminados);
+
 		vector<Servico> servicosEmCurso = this->condominio.getServicos(1);
+		insertionSort(servicosEmCurso);
+
 		vector<Servico> servicosEmEspera = this->condominio.getServicos(2);
+		insertionSort(servicosEmEspera);
 
 		for (size_t i = 0; i < servicosTerminados.size(); i++) {
 			myfile << servicosTerminados[i].getID() << endl;
@@ -4485,7 +4530,7 @@ bool Main::exportServicos() {
 			myfile << servicosTerminados[i].getDataRequisitado() << endl;
 			myfile << servicosTerminados[i].getMesInicio() << endl;
 			myfile << servicosTerminados[i].getDataInicio() << endl;
-			myfile << servicosTerminados[i].getIDFuncionario();
+			myfile << servicosTerminados[i].getIDFuncionario() << endl;
 			myfile << endl;
 		}
 		for (size_t i = 0; i < servicosEmCurso.size(); i++) {
@@ -4493,11 +4538,11 @@ bool Main::exportServicos() {
 			myfile << servicosEmCurso[i].getEspecialidade() << endl;
 			myfile << "1" << endl; //Indicador do vector de servicosEmCurso
 			myfile << servicosEmCurso[i].getNIFcondomino() << endl;
-			myfile << servicosTerminados[i].getMesRequisitado() << endl;
-			myfile << servicosTerminados[i].getDataRequisitado() << endl;
+			myfile << servicosEmCurso[i].getMesRequisitado() << endl;
+			myfile << servicosEmCurso[i].getDataRequisitado() << endl;
 			myfile << servicosEmCurso[i].getMesInicio() << endl;
 			myfile << servicosEmCurso[i].getDataInicio() << endl;
-			myfile << servicosEmCurso[i].getIDFuncionario();
+			myfile << servicosEmCurso[i].getIDFuncionario() << endl;
 			myfile << endl;
 		}
 		for (size_t i = 0; i < servicosEmEspera.size(); i++) {
@@ -4505,11 +4550,11 @@ bool Main::exportServicos() {
 			myfile << servicosEmEspera[i].getEspecialidade() << endl;
 			myfile << "2" << endl; //Indicador do vector de servicosEmEspera
 			myfile << servicosEmEspera[i].getNIFcondomino() << endl;
-			myfile << servicosTerminados[i].getMesRequisitado() << endl;
-			myfile << servicosTerminados[i].getDataRequisitado() << endl;
+			myfile << servicosEmEspera[i].getMesRequisitado() << endl;
+			myfile << servicosEmEspera[i].getDataRequisitado() << endl;
 			myfile << endl;
 			myfile << endl;
-			myfile << servicosEmEspera[i].getIDFuncionario();
+			myfile << endl;
 			myfile << endl;
 		}
 		myfile.close();
@@ -4529,7 +4574,8 @@ bool Main::exportServicos() {
  */
 int Main::exitFunction() {
 	if (!this->exportCondominio() || !this->exportCondominos()
-			|| !this->exportHabitacoes() || !this->exportFuncionarios())
+			|| !this->exportHabitacoes() || !this->exportFuncionarios()
+			|| !this->exportServicos())
 		return EXIT_FAILURE;
 	else
 		return EXIT_SUCCESS;

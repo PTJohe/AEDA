@@ -1,7 +1,11 @@
 #include "../headers/Servico.h"
 
 static int nextId = 1;
-
+/**
+ * Constructor used to create a service waiting to be done.
+ * @param especialidade Type of service, can be either cleaning, plumbing or painting.
+ * @param NIFcondomino NIF of the tenant that requested the service.
+ */
 Servico::Servico(string especialidade, string NIFcondomino,
 		string mesRequisitado, time_t dataRequisitado) {
 	this->id = nextId;
@@ -24,6 +28,15 @@ Servico::Servico(string especialidade, string NIFcondomino,
 	this->dataFim = 0;
 
 }
+/**
+ * Constructor used to create a service that is immediately being done.
+ * @param especialidade Type of service, can be either cleaning, plumbing or painting.
+ * @param NIFcondomino NIF of the tenant that requested the service.
+ * @param mesRequisitado Month when the service was requested.
+ * @param dataRequisitado Time when the service was requested.
+ * @param mesActual Current month.
+ * @param idFuncionario Employee that is going to do the service.
+ */
 Servico::Servico(string especialidade, string NIFcondomino,
 		string mesRequisitado, time_t dataRequisitado, string mesActual,
 		int idFuncionario) {
@@ -46,11 +59,22 @@ Servico::Servico(string especialidade, string NIFcondomino,
 
 	this->dataFim = dataInicio + duracao;
 }
+/**
+ * Complete constructor. Only used to import service data.
+ * @param especialidade Type of service, can be either cleaning, plumbing or painting.
+ * @param NIFcondomino NIF of the tenant that requested the service.
+ * @param mesRequisitado Month when the service was requested.
+ * @param dataRequisitado Time when the service was requested.
+ * @param mesInicio Month when the service started.
+ * @param dataInicio Time when the service started.
+ * @param idFuncionario Employee that is going to do the service.
+ */
 Servico::Servico(int id, string especialidade, string NIFcondomino,
 		string mesRequisitado, time_t dataRequisitado, string mesInicio,
 		time_t dataInicio, int idFuncionario) {
 	this->id = id;
-	nextId = id + 1;
+	if (id + 1 > nextId)
+		nextId = id + 1;
 	this->especialidade = especialidade;
 	this->NIFcondomino = NIFcondomino;
 	this->mesRequisitado = mesRequisitado;
@@ -72,64 +96,126 @@ Servico::Servico(int id, string especialidade, string NIFcondomino,
 		this->dataFim = dataInicio + duracao;
 }
 
+/**
+ * @return Type of service, can be either cleaning, plumbing or painting.
+ */
 string Servico::getEspecialidade() const {
 	return especialidade;
 }
+/**
+ * @return Service ID.
+ */
 int Servico::getID() const {
 	return id;
 }
-
+/**
+ * @return Month when the service was requested.
+ */
 string Servico::getMesRequisitado() const {
 	return mesRequisitado;
 }
+/**
+ * @return Time when the service was requested.
+ */
 time_t Servico::getDataRequisitado() const {
 	return dataRequisitado;
 }
+/**
+ * @return Month when the service started.
+ */
 string Servico::getMesInicio() const {
 	return mesInicio;
 }
+/**
+ * @return Time when the service started.
+ */
 time_t Servico::getDataInicio() const {
 	return dataInicio;
 }
+/**
+ * @return Service duration.
+ */
 float Servico::getDuracao() const {
 	return duracao;
 }
+/**
+ * @return Time when the service is going to end.
+ */
 time_t Servico::getDataFim() const {
 	return dataFim;
 }
+/**
+ * @return ID of the employee that did or is doing the service.
+ */
 int Servico::getIDFuncionario() const {
 	return idFuncionario;
 }
+/**
+ * @return NIF of the tenant that requested the service.
+ */
 string Servico::getNIFcondomino() const {
 	return NIFcondomino;
 }
 
+/**
+ * Sets the type of service.
+ * @param especialidade Type of service, can be either cleaning, plumbing or painting.
+ */
 void Servico::setEspecialidade(string especialidade) {
 	this->especialidade = especialidade;
 }
+/**
+ * Sets the service duration.
+ * @param duracao Time the service is going to take.
+ */
 void Servico::setDuracao(float duracao) {
 	this->duracao = duracao;
 }
+/**
+ * Sets an employee to do the service.
+ * @param idFuncionario Employee ID.
+ */
 void Servico::setIDFuncionario(int idFuncionario) {
 	this->idFuncionario = idFuncionario;
 }
 
+/**
+ * Starts the service.
+ * @param mes Month when the service started.
+ * @param idFuncionario Employee ID.
+ */
 void Servico::iniciarServico(string mes, int idFuncionario) {
 	this->idFuncionario = idFuncionario;
 	this->mesInicio = mes;
 	this->dataInicio = time(NULL);
 	this->dataFim = dataInicio + duracao;
 }
+/**
+ * Starts the service.
+ * @param mes Month when the service started.
+ * @param idFuncionario Employee ID.
+ * @param dataInicio Time when the service started.
+ */
 void Servico::iniciarServico(string mes, int idFuncionario, time_t dataInicio) {
 	this->idFuncionario = idFuncionario;
 	this->mesInicio = mes;
 	this->dataInicio = dataInicio;
 	this->dataFim = dataInicio + duracao;
 }
+
+/**
+ * Compares two services by their id, for sorting purposes.
+ * @param s1 Service to be compared to.
+ * @retval TRUE Service has a lower id than s1.
+ * @retval FALSE Service has an higher id than s1.
+ */
 bool Servico::operator<(const Servico s1) const {
 	return this->id < s1.id;
 }
 
+/**
+ * Displays service info.
+ */
 void Servico::info() const {
 	cout << "ID = " << this->id << endl;
 	cout << "Tipo: " << this->especialidade << endl;

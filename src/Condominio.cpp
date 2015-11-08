@@ -1,4 +1,5 @@
 #include "../headers/Condominio.h"
+
 /**
  * Default constructor.
  */
@@ -119,6 +120,7 @@ Condomino* Condominio::getCondomino(int pos) {
 	Condomino* p = &moradores[pos];
 	return p;
 }
+
 /*
  * Sorts the tenants according to a specified option.
  * @param sortOption 0 = Username, 1 = Name, 2 = NIF.
@@ -144,7 +146,7 @@ int Condominio::addMorador(Condomino condomino) {
 		pos = sequentialSearch(this->moradores, condomino);
 		return pos;
 	} else
-		return -1;
+		throw CondominoDuplicado();
 }
 /**
  * Removes a tenant from the condominium.
@@ -166,6 +168,7 @@ int Condominio::eraseMorador(Condomino condomino) {
 	} else
 		return -1;
 }
+
 /**
  * Sorts houses according to a specified option.
  * @param sortOption 0 = ID, 1 = Type, 2 = Rent, 3 = Owner's NIF.
@@ -212,7 +215,10 @@ bool Condominio::addHabitacao(Habitacao* habitacao) {
 	}
 	if (pos == -1) {
 		this->habitacoes.push_back(habitacao);
-		sortHabitacoes(2);
+		if (habitacao->getNIFProprietario() != "")
+			for (size_t i = 0; i <= currentMes; i++)
+				habitacao->setPago(i);
+		sortHabitacoes(3);
 		return true;
 	} else
 		return false;
@@ -303,6 +309,7 @@ bool Condominio::setAdmin(Condomino condomino, bool admin) {
 	this->moradores[pos].setAdmin(admin);
 	return true;
 }
+
 /**
  * Sets a new name for the given tenant.
  * @param condomino Tenant whose name is being changed.
@@ -369,6 +376,7 @@ bool Condominio::saldarDivida(Condomino condomino) {
 		return true;
 	}
 }
+
 /**
  * Updates the vector of house pointers for every user in the condominium. This function never fails.
  * @retval TRUE Pointers successfully updated.
@@ -385,6 +393,7 @@ bool Condominio::updateHabitacoesCondominos() {
 	}
 	return true;
 }
+
 /**
  * Sorts employees according to a specified option.
  * @param sortOption 0 = ID, 1 = Specialty, 2 = Occupation status.
@@ -563,6 +572,7 @@ bool Condominio::addServico(int vectorServicos, string mes, Servico servico) {
 				if (!funcionarios[i].isOcupado()) {
 					idFuncionario = funcionarios[i].getID();
 					funcionarios[i].setOcupado(true);
+					break;
 				}
 		}
 		servico.iniciarServico(mes, idFuncionario);
@@ -586,6 +596,11 @@ bool Condominio::eraseServico(int pos, int vectorServicos) {
 		servicosTerminados.erase(servicosTerminados.begin() + pos);
 		return true;
 	} else if (vectorServicos == 1) { //Cancelar servico em curso
+		for (size_t i = 0; i < this->funcionarios.size(); i++) {
+			if (funcionarios[i].getID()
+					== servicosEmCurso[pos].getIDFuncionario())
+				funcionarios[i].setOcupado(false);
+		}
 		for (size_t i = 0; i < this->servicosEmCurso.size(); i++) {
 			if (pos == i) {
 				for (size_t j = 0; j < this->habitacoes.size(); j++)
@@ -936,9 +951,9 @@ vector<Condomino> Condominio::fimDoMes() {
 	}
 
 	for (size_t i = 0; i < moradores.size(); i++) {
-//Fundos mensais que o condomino tem para pagar as rendas
+		//Fundos mensais que o condomino tem para pagar as rendas
 		int fundosRestantes = moradores[i].getFundosMensais();
-//Actualizar o pagamento da renda para cada habitacao que ele possuir
+		//Actualizar o pagamento da renda para cada habitacao que ele possuir
 		for (size_t j = 0; j < moradores[i].getHabitacoes().size(); j++) {
 			if (fundosRestantes > 0) {
 				int diferenca = fundosRestantes
@@ -965,20 +980,20 @@ vector<Condomino> Condominio::fimDoMes() {
 				moradores[i].addDivida(
 						-moradores[i].getHabitacoes()[j]->calcRenda());
 		}
-//Se ainda restarem fundos e o condomino tiver uma divida,
-//ele usa esses fundos para saldar essa divida (total ou parcialmente)
+		//Se ainda restarem fundos e o condomino tiver uma divida,
+		//ele usa esses fundos para saldar essa divida (total ou parcialmente)
 		if (fundosRestantes > 0 && moradores[i].getDivida() < 0) {
 			int novaDivida = moradores[i].getDivida() + fundosRestantes;
 			if (novaDivida > 0)
 				novaDivida = 0;
 			moradores[i].setDivida(novaDivida);
 		}
-//Se o condomino nao conseguiu pagar o mes, adiciona ao vector dos caloteiros que vai ser retornado
+		//Se o condomino nao conseguiu pagar o mes, adiciona ao vector dos caloteiros que vai ser retornado
 		if (fundosRestantes < 0)
 			caloteiros.push_back(moradores[i]);
 	}
 
-//Actualiza o pagamento aos funcionarios
+	//Actualiza o pagamento aos funcionarios
 	fundos -= this->funcionarios.size() * 500;
 
 	return caloteiros;

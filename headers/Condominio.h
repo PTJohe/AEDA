@@ -75,7 +75,8 @@ public:
 	bool addServico(int vectorServicos, string mes, Servico servico);
 	bool eraseServico(int pos, int vectorServicos);
 	time_t getDisponibilidadeServico(int tipo);
-	bool updateServicos(string mes, Condomino* currentUser, int &servicosCurrentUser);
+	bool updateServicos(string mes, Condomino* currentUser,
+			int &servicosCurrentUser);
 	bool updateServicosFimMes(string mes);
 
 	vector<Condomino> fimDoMes();
@@ -84,6 +85,21 @@ public:
 	void infoHabitacoes() const;
 };
 
+/*
+ * Exceptions
+ */
+class CondominoDuplicado {
+public:
+	friend ostream& operator<<(ostream& out, const CondominoDuplicado &e) {
+		out << "Ja existe um condomino com o mesmo NIF."
+				<< endl;
+		return out;
+	}
+};
+
+/*
+ * Non-class functions
+ */
 bool compCondominoNomeCivil(Condomino c1, Condomino c2);
 bool compCondominoNIF(Condomino c1, Condomino c2);
 bool compFuncionarioEspecialidade(Funcionario f1, Funcionario f2);

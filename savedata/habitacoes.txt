@@ -1,7 +1,7 @@
 1
 Apartamento
 moradaPrimeira
-codigoPostal
+codigoPostal1
 
 000000000000
 5
@@ -13,8 +13,8 @@ codigoPostal
 Apartamento
 Rua Dr Azeredo Perdigao Bloco 6C 3o Esquerdo
 3500-092 Viseu
-123456789
-100000000000
+263788210
+111111111111
 5
 100
 3
@@ -23,9 +23,9 @@ Rua Dr Azeredo Perdigao Bloco 6C 3o Esquerdo
 3
 Vivenda
 moradaSegunda
-codigoPostal
+codigoPostal2
 123456789
-100000000000
+111111111111
 100
 50
 1
@@ -34,20 +34,20 @@ codigoPostal
 4
 Vivenda
 moradaTerceira
-codigoPostal
+codigoPostal3
 263788210
-100000000000
+111111111111
 100
 50
 1
-1
+-1
 
 5
 Vivenda
 moradaQuarta
-codigoPostal
+codigoPostal4
 987654321
-100000000000
+111111111111
 100
 50
 1
@@ -56,9 +56,9 @@ codigoPostal
 6
 Vivenda
 moradaQuinta
-codigoPostal
-
-000000000000
+codigoPostal5
+192837465
+111111111110
 200
 100
 1
@@ -66,12 +66,45 @@ codigoPostal
 
 7
 Apartamento
-asd
-asd
+moradaSexta
+codigoPostal6
 123456789
-000000000000
+111111111111
 10
 100
 3
+-1
+
+8
+Vivenda
+moradaSetima
+codigoPostal7
+363788210
+111111111110
+150
+200
+1
+-1
+
+9
+Apartamento
+moradaOitava
+codigoPostal8
+
+000000000000
+2
+50
+2
+-1
+
+10
+Apartamento
+moradaNona
+codigoPostal9
+363788210
+111111111110
+4
+100
+5
 -1
 
