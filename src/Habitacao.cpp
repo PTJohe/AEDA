@@ -41,7 +41,7 @@ Habitacao::Habitacao(string morada, string codigoPostal,
  * @param morada House address.
  * @param codigoPostal House postal code.
  * @param NIFProprietario Owner's NIF.
- * @param pago[12] Paid rent for each month.
+ * @param pago Paid rent for each month.
  */
 Habitacao::Habitacao(string morada, string codigoPostal, string NIFProprietario,
 		bool pago[12]) {
@@ -61,8 +61,8 @@ Habitacao::Habitacao(string morada, string codigoPostal, string NIFProprietario,
  * @param morada House address.
  * @param codigoPostal House postal code.
  * @param NIFProprietario Owner's NIF.
- * @param pago[12] Paid rent for each month.
- * @param idService Service ID (-1 = No service).
+ * @param pago Paid rent for each month.
+ * @param idServico Service ID (-1 = No service).
  */
 Habitacao::Habitacao(int id, string morada, string codigoPostal,
 		string NIFProprietario, bool pago[12], int idServico) {
@@ -217,7 +217,7 @@ Vivenda::Vivenda(string morada, string codigoPostal, string proprietario,
  * @param morada House address.
  * @param codigoPostal House postal code.
  * @param proprietario Owners' NIF.
- * @param pago[12] Rent for each month.
+ * @param pago Rent for each month.
  * @param areaInterior Interior area.
  * @param areaExterior Exterior area.
  * @param piscina True if house has a swimming pool, false otherwise.
@@ -235,7 +235,7 @@ Vivenda::Vivenda(string morada, string codigoPostal, string proprietario,
  * @param morada House address.
  * @param codigoPostal House postal code.
  * @param proprietario Owners' NIF.
- * @param pago[12] Rent for each month.
+ * @param pago Rent for each month.
  * @param idServico Service ID (-1 = No service).
  * @param areaInterior Interior area.
  * @param areaExterior Exterior area.
@@ -364,7 +364,7 @@ Apartamento::Apartamento(string morada, string codigoPostal,
  * @param morada House address.
  * @param codigoPostal House postal code.
  * @param proprietario Owner's NIF.
- * @param pago[12] Paid rent for each month.
+ * @param pago Paid rent for each month.
  * @param tipologia Number of rooms.
  * @param areaInterior Interior area.
  * @param piso Floor.
@@ -382,9 +382,9 @@ Apartamento::Apartamento(string morada, string codigoPostal,
  * @param id Apartment ID.
  * @param morada House address.
  * @param codigoPostal House postal code.
- * @param NIFProprietario Owner's NIF.
- * @param pago[12] Paid rent for each month.
- * @param idService Service ID (-1 = No service).
+ * @param proprietario Owner's NIF.
+ * @param pago Paid rent for each month.
+ * @param idServico Service ID (-1 = No service).
  * @param tipologia Number of rooms.
  * @param areaInterior Interior area.
  * @param piso Floor.

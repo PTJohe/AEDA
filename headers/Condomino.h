@@ -52,10 +52,6 @@ public:
 	bool operator==(const Condomino c1) const;
 	bool operator<(const Condomino c1) const;
 
-	void requisitarLimpeza(); //TODO requisitarLimpeza()
-	void requisitarCanalizacao(); //TODO requisitarCanalizacao()
-	void requisitarPintura(); //TODO requisitarPintura()
-
 	void infoConta() const;
 	void infoCondomino() const;
 	void infoHabitacoes() const;

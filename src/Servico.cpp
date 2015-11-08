@@ -5,6 +5,8 @@ static int nextId = 1;
  * Constructor used to create a service waiting to be done.
  * @param especialidade Type of service, can be either cleaning, plumbing or painting.
  * @param NIFcondomino NIF of the tenant that requested the service.
+ * @param mesRequisitado Month when it was requested.
+ * @param dataRequisitado Time when it was requested.
  */
 Servico::Servico(string especialidade, string NIFcondomino,
 		string mesRequisitado, time_t dataRequisitado) {
@@ -61,6 +63,7 @@ Servico::Servico(string especialidade, string NIFcondomino,
 }
 /**
  * Complete constructor. Only used to import service data.
+ * @param id Service ID.
  * @param especialidade Type of service, can be either cleaning, plumbing or painting.
  * @param NIFcondomino NIF of the tenant that requested the service.
  * @param mesRequisitado Month when the service was requested.

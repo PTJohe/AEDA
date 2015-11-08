@@ -204,7 +204,7 @@ void Condomino::addHabitacao(Habitacao* h1, int currentMes) {
  */
 bool Condomino::eraseHabitacao(int pos) {
 	if (pos != -1) {
-		delete habitacoes[pos];
+		habitacoes[pos]->setProprietario("");
 		habitacoes.erase(habitacoes.begin() + pos);
 		return true;
 	} else

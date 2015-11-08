@@ -328,12 +328,12 @@ bool Main::displaySelectServicoRequisitado(vector<Servico> servicos) {
 	return EXIT_SUCCESS;
 }
 
-/*
+/**
  * Checks if the user trying to log in exists and, if so, updates currentUser.
  * @param utilizador Name of the user.
  * @param password Password of the user.
  * @retval TRUE Successful login.
- * @retval FALSE Invalid login.
+ * @throws DadosInvalidos Username and password don't match an existing account.
  */
 bool Main::validLogin(string utilizador, string password) {
 	Condomino c1 = Condomino(utilizador, password);
@@ -350,7 +350,10 @@ bool Main::validLogin(string utilizador, string password) {
  * @param utilizador Name of the new user.
  * @param password Password of the new user.
  * @retval TRUE Valid register.
- * @retval FALSE Either user already exists or the parameters were invalid.
+ * @throws NomeUtilizadorInvalido Invalid username
+ * @throws PasswordInvalida Invalid password.
+ * @throws UtilizadorPasswordEspacos Either the username or password have whitespaces.
+ * @throws NomeUtilizadorIndisponivel Username is already in use.
  */
 bool Main::validRegister(string utilizador, string password) {
 	if (utilizador.size() < 1 || utilizador.size() > 20) {
@@ -812,6 +815,7 @@ bool Main::editDadosCondominoAdmin(int editOption, Condomino &condomino) {
 /**
  * Receives user input to change housing data specified by editOption.
  * @param editOption 0 = Address, 1 = Postal Code, 2 = Living area.  If it's a house -> 3 = Exterior area, 4 = Swimming pool, else if it's an apartment -> 3 = Number of rooms, 4 = Floor.
+ * @param h1 Pointer to the house being edited.
  * @retval TRUE Successfully changed housing data.
  * @retval FALSE Housing data wasn't changed.
  */
@@ -1074,7 +1078,7 @@ void Main::displayFuncionarioInfo(int pos) {
 }
 /**
  * Displays info of a specified service.
- * @param Pos Position of the service in the vector of services.
+ * @param pos Position of the service in the vector of services.
  * @param vectorServicos 0 = servicosTerminados, 1 = servicosEmCurso, 2 = servicosEmEspera
  */
 void Main::displayServicoInfo(int pos, int vectorServicos) {
@@ -1941,6 +1945,7 @@ int Main::menuAddHabitacao(Condomino condomino) {
  * Confirm adding a new house menu. The user is given the info of the house they're about to own and is given a prompt to confirm that addition.
  *	@param condomino User to whom the house is added.
  *	@param h1 Pointer to the house being added.
+ *	@param nova If true, the house being added isn't yet part of the condiminum. If false, user selected an empty house to add.
  *	@return A new menu.
  */
 int Main::menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1,
@@ -2175,8 +2180,8 @@ int Main::menuDisplayServicosRequisitadosBy(vector<Servico> servicos) {
 }
 /**
  * Display requested services menu. The user can choose a service to view its info or to cancel.
- * @param services Current user's services.
- * @cancelar If true, selecting a service will cancel it, else, if false, selecting it will display its info.
+ * @param servicos Current user's services.
+ * @param cancelar If true, selecting a service will cancel it, else, if false, selecting it will display its info.
  * @return A new menu.
  */
 int Main::menuDisplayServicosRequisitados(vector<Servico> servicos,
@@ -3060,7 +3065,12 @@ int Main::menuDeleteHabitacao(int pos, int menuOption) {
 	cout << "Tipo: ";
 	this->condominio.getHabitacoes()[pos]->info();
 
-	cout << "Tem a certeza que pretende remover esta habitacao?" << endl;
+	bool owned = false;
+	if (this->condominio.getHabitacoes()[pos]->hasProprietario()) {
+		cout << "Tem a certeza que pretende libertar esta habitacao?" << endl;
+		owned = true;
+	} else
+		cout << "Tem a certeza que pretende remover esta habitacao?" << endl;
 	displayYesNo(menuOption);
 
 	int c = getch();
@@ -3076,8 +3086,11 @@ int Main::menuDeleteHabitacao(int pos, int menuOption) {
 	case KEY_ENTER:
 		if (menuOption == 0) {
 			this->condominio.eraseHabitacao(pos);
-			cout << "\nHabitacao removida." << endl;
-			if (this->option > 0)
+			if (owned)
+				cout << "\nHabitacao libertada." << endl;
+			else
+				cout << "\nHabitacao removida." << endl;
+			if (!owned && this->option > 0)
 				option--;
 			pressEnterToContinue();
 			return menuSelectHabitacao(true);
@@ -3895,6 +3908,7 @@ int Main::menuSelectTipoServico(int pos, bool sameUser) {
 /**
  * Confirm adding a service menu. The user is prompted to confirm the service request.
  * @param pos Position of the house in the condominium's vector of houses.
+ * @param tipo Type of service: 0 = cleaning, 1 = plumbing, 2 = painting.
  * @param menuOption Changes the highlighted option. 0 = Yes, 1 = No.
  * @param sameUser If true, service is being requested by the current user, else, if false, it's being requested by an admin.
  * @return A new menu.

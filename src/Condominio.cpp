@@ -137,6 +137,7 @@ void Condominio::sortMoradores(int sortOption) {
  * Adds a tenant to the condominium.
  * @param condomino Tenant to be added.
  * @return Position of the new tenant in the vector of tenants. Position = -1 if tenant to be added is already in the vector.
+ * @throws CondominoDuplicado There is already a tenant with the same username of NIF in the condominium.
  */
 int Condominio::addMorador(Condomino condomino) {
 	int pos = sequentialSearch(this->moradores, condomino);
@@ -227,25 +228,24 @@ bool Condominio::addHabitacao(Habitacao* habitacao) {
  * Removes a house from a given user.
  * @param condomino User whose house is being removed.
  * @param pos Position of the house in the owner's vector of owned houses.
+ * @retval TRUE House successfully deleted.
+ * @retval FALSE Tenant doesn't own the house to be removed.
  */
 bool Condominio::eraseHabitacaoPossuida(Condomino condomino, int pos) {
 	int pos1 = sequentialSearch(this->moradores, condomino);
 	if (pos1 == -1) {
 		return false;
 	} else {
-		Habitacao* h1 = moradores[pos1].getHabitacoes()[pos];
-		int pos2 = this->findHabitacao(this->habitacoes, h1);
-		if (pos2 != -1)
-			this->habitacoes.erase(habitacoes.begin() + pos2);
-
 		bool success = moradores[pos1].eraseHabitacao(pos);
-		sortHabitacoes(2);
+		sortHabitacoes(3);
 		return success;
 	}
 }
 /**
- * Removes a house from the condominium.
+ * Removes a house from the condominium if empty, makes it empty if owned by a tenant.
  * @param pos Position of the house in the condominium's vector of houses.
+ * @retval TRUE House successfully deleted.
+ * @retval FALSE House doesn't exist.
  */
 bool Condominio::eraseHabitacao(int pos) {
 	Condomino c1 = Condomino("nome", "password", "nomeCivil",
@@ -259,7 +259,6 @@ bool Condominio::eraseHabitacao(int pos) {
 	} else {
 		int pos2 = this->findHabitacao(moradores[pos1].getHabitacoes(),
 				habitacoes[pos]);
-		habitacoes.erase(habitacoes.begin() + pos);
 		return this->moradores[pos1].eraseHabitacao(pos2);
 	}
 }
@@ -515,7 +514,7 @@ int Condominio::getLivresPintura() {
 /**
  * Sorts the services according to a specified option.
  * @param vectorServicos Vector of services to be sorted.
- * @int sortOption 0 = ID, 1 = Type, 2 = Start Date, 3 = Requester's NIF.
+ * @param sortOption 0 = ID, 1 = Type, 2 = Start Date, 3 = Requester's NIF.
  */
 void Condominio::sortServicos(int vectorServicos, int sortOption) {
 	if (vectorServicos == 0) {
