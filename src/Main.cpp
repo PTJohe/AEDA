@@ -1430,7 +1430,19 @@ int Main::menuUtilizador() {
 				resetOption();
 				return menuServicosRequisitados();
 			} else if (option == 6) { //Requisitar servico
-
+				vector<Habitacao*> habitacoesSemServico;
+				for (size_t i = 0; i < this->condominio.getHabitacoes().size();
+						i++) {
+					if (this->condominio.getHabitacoes()[i]->getNIFProprietario()
+							== this->currentUser->getNIF())
+						if (this->condominio.getHabitacoes()[i]->getServico()
+								== -1)
+							habitacoesSemServico.push_back(
+									this->condominio.getHabitacoes()[i]);
+				}
+				resetOption();
+				return menuSelectHabitacaoServicoUtilizador(
+						habitacoesSemServico);
 			} else { //Sair
 				resetOption();
 				return menuInicial();
@@ -2197,8 +2209,10 @@ int Main::menuDisplayServicosRequisitados(vector<Servico> servicos,
 	cout << "SELECIONE O SERVICO:\n" << endl;
 
 	if (!cancelar) {
-		this->notificacaoUser = false;
-		this->notificacaoAdmin = false;
+		if (notificacaoUser == true) {
+			this->notificacaoUser = false;
+			this->notificacaoAdmin = false;
+		}
 		cout << "[ENTER] Ver dados" << endl;
 	} else
 		cout << "[ENTER] Cancelar" << endl;
