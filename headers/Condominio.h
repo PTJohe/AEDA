@@ -17,17 +17,31 @@ private:
 	vector<Servico> servicosEmEspera;
 	int currentMes;
 
+	//Segunda parte
+	int id;
+	string designacao;
+	Posicao localizacao;
+
 public:
 	Condominio();
+	Condominio(string designacao, Posicao localizacao);
+	Condominio(int id, long int fundos, int currentMes, string designacao,
+			Posicao localizacao);
 
+	int getID() const;
 	long int getFundos() const;
 	int getMes() const;
+	string getDesignacao() const;
+	Posicao getLocalizacao() const;
 	Condomino* getCondomino(int pos);
 	vector<Condomino> getMoradores();
 	vector<Habitacao*> getHabitacoes();
 	vector<Funcionario> getFuncionarios();
 	Funcionario* getFuncionario(int id);
 	vector<Servico> getServicos(int vectorServicos);
+	int getNumHabitacoes() const;
+	int getNumVivendas() const;
+	int getNumMoradores() const;
 
 	void setFundos(long int fundos);
 	void setCurrentMes(int currentMes);
@@ -35,6 +49,11 @@ public:
 	void setHabitacoes(vector<Habitacao*> habitacoes);
 	void setFuncionarios(vector<Funcionario> funcionarios);
 	void setServicos(int vectorServicos, vector<Servico> servicos);
+
+	bool operator <(const Condominio &c1) const;
+	bool operator ==(const Condominio &c1) const;
+
+	friend ostream& operator<<(ostream& os, Condominio &c1);
 
 	void sortMoradores(int sort);
 	int addMorador(Condomino condomino);
@@ -83,6 +102,7 @@ public:
 
 	void infoMoradores() const;
 	void infoHabitacoes() const;
+
 };
 
 /*
@@ -91,8 +111,7 @@ public:
 class CondominoDuplicado {
 public:
 	friend ostream& operator<<(ostream& out, const CondominoDuplicado &e) {
-		out << "Ja existe um condomino com o mesmo NIF."
-				<< endl;
+		out << "Ja existe um condomino com o mesmo NIF." << endl;
 		return out;
 	}
 };

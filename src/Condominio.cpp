@@ -1,11 +1,56 @@
 #include "../headers/Condominio.h"
 
+static int nextId = 1;
+
 /**
  * Default constructor.
  */
 Condominio::Condominio() {
+	this->id = nextId;
+	nextId++;
 	this->fundos = 5000;
 	this->currentMes = 0;
+}
+
+/**
+ * Constructor of a new condominium.
+ * @param designacao Name of the condominium
+ * @param localizacao Address and coordinates of the condominium
+ */
+Condominio::Condominio(string designacao, Posicao localizacao) {
+	this->id = nextId;
+	nextId++;
+	this->fundos = 5000;
+	this->currentMes = 0;
+
+	this->designacao = designacao;
+	this->localizacao = localizacao;
+}
+
+/**
+ * Complete constructor. This is only used to import condominium data.
+ * @param id Condominium ID
+ * @param fundos Funds available for the condominium
+ * @param currentMes Current month to use in rent
+ * @param designacao Name of the condominium
+ * @param localizacao Address and coordinates of the condominium
+ */
+Condominio::Condominio(int id, long int fundos, int currentMes,
+		string designacao, Posicao localizacao) {
+	this->id = id;
+	nextId = id + 1;
+	this->fundos = fundos;
+	this->currentMes = currentMes;
+
+	this->designacao = designacao;
+	this->localizacao = localizacao;
+}
+
+/**
+ * @return Condominium ID.
+ */
+int Condominio::getID() const {
+	return id;
 }
 /**
  * @return Condominium funds.
@@ -18,6 +63,27 @@ long int Condominio::getFundos() const {
  */
 int Condominio::getMes() const {
 	return currentMes;
+}
+/**
+ * @return Name.
+ */
+string Condominio::getDesignacao() const {
+	return designacao;
+}
+/**
+ * @return Location and coordinates.
+ */
+Posicao Condominio::getLocalizacao() const {
+	return localizacao;
+}
+/**
+ * Given a position in the tenants vector, returns a pointer to that tenant.
+ * @param pos Position in the tenants vector.
+ * @return Pointer to the specified tenant.
+ */
+Condomino* Condominio::getCondomino(int pos) {
+	Condomino* p = &moradores[pos];
+	return p;
 }
 /**
  * @return Vector of condominium's tenants.
@@ -61,6 +127,31 @@ vector<Servico> Condominio::getServicos(int vectorServicos) {
 		return servicosEmCurso;
 	else
 		return servicosEmEspera;
+}
+
+/**
+ * @return Number of properties in the condominium.
+ */
+int Condominio::getNumHabitacoes() const {
+	return habitacoes.size();
+}
+
+/**
+ * @return Number of properties with the type "house" in the condominium.
+ */
+int Condominio::getNumVivendas() const {
+	int soma = 0;
+	for (size_t i = 0; i < habitacoes.size(); i++) {
+		if (habitacoes[i]->getTipo() == "Vivenda")
+			soma++;
+	}
+	return soma;
+}
+/**
+ * @return Number of tenants in the condominium.
+ */
+int Condominio::getNumMoradores() const {
+	return moradores.size();
 }
 
 /**
@@ -112,15 +203,44 @@ void Condominio::setServicos(int vectorServicos, vector<Servico> servicos) {
 		this->servicosEmEspera = servicos;
 }
 /**
- * Given a position in the tenants vector, returns a pointer to that tenant.
- * @param pos Position in the tenants vector.
- * @return Pointer to the specified tenant.
+ * Compares two condominiums by the number of properties and/or houses.
+ * @param c1 Condominium to be compared.
+ * @retval TRUE Condominium has more properties than c1.
+ * @retval FALSE Condominum has less properties than c1.
  */
-Condomino* Condominio::getCondomino(int pos) {
-	Condomino* p = &moradores[pos];
-	return p;
+bool Condominio::operator <(const Condominio &c1) const {
+	if (this->getNumHabitacoes() < c1.getNumHabitacoes())
+		return true;
+	else if (this->getNumHabitacoes() > c1.getNumHabitacoes())
+		return false;
+	else if (this->getNumVivendas() < c1.getNumVivendas())
+		return true;
+	else if (this->getNumVivendas() > c1.getNumVivendas())
+		return false;
+	else
+		return this->getID() < c1.getID();
+}
+/**
+ * Compares two condominiums by their ID.
+ * @param c1 Tenant to be compared.
+ * @retval TRUE Equal ID
+ * @retval FALSE Condominiums are different.
+ */
+bool Condominio::operator ==(const Condominio &c1) const {
+	return this->getID() == c1.getID();
 }
 
+ostream& operator<<(ostream& os, Condominio &c1) {
+	os << c1.getID() << endl;
+	os << c1.getFundos() << endl;
+	os << c1.getMes() << endl;
+	os << c1.getDesignacao() << endl;
+	os << c1.getLocalizacao().cidade << endl;
+	os << c1.getLocalizacao().x << endl;
+	os << c1.getLocalizacao().y << endl;
+	os << endl;
+	return os;
+}
 /*
  * Sorts the tenants according to a specified option.
  * @param sortOption 0 = Username, 1 = Name, 2 = NIF.
@@ -732,7 +852,7 @@ bool Condominio::updateServicos(string mes, Condomino* currentUser,
 
 	int servicosQueAcabaram = 0;
 
-	//Verifica se algum servico terminou e liberta o funcionario
+//Verifica se algum servico terminou e liberta o funcionario
 	for (size_t i = 0; i < servicosEmCurso.size(); i++) {
 		if (servicosEmCurso[i].getDataFim() < time(NULL)) {
 			for (size_t j = 0; j < funcionarios.size(); j++)
@@ -992,7 +1112,7 @@ vector<Condomino> Condominio::fimDoMes() {
 			caloteiros.push_back(moradores[i]);
 	}
 
-	//Actualiza o pagamento aos funcionarios
+//Actualiza o pagamento aos funcionarios
 	fundos -= this->funcionarios.size() * 500;
 
 	return caloteiros;

@@ -8,10 +8,13 @@ class Main {
 private:
 	vector<vector<string> > menu;
 	int option;
-	Condominio condominio;
+	Condominio* condominio;
 	Condomino* currentUser;
 	bool notificacaoAdmin;
 	bool notificacaoUser;
+
+	//Segunda parte
+	BST<Condominio> condominios;
 
 public:
 	Main() {
@@ -136,22 +139,25 @@ public:
 	string convertTime(string mes, time_t time);
 
 	//Import & extract functions
-	bool importCondominio();
-	bool exportCondominio();
+	bool importCondominios();
+	bool exportCondominios();
 
-	bool importCondominos();
-	bool exportCondominos();
+	bool importCondominos(Condominio &cond);
+	bool exportCondominos(Condominio &cond);
 
-	bool importHabitacoes();
-	bool exportHabitacoes();
+	bool importHabitacoes(Condominio &cond);
+	bool exportHabitacoes(Condominio &cond);
 
-	bool importFuncionarios();
-	bool exportFuncionarios();
+	bool importFuncionarios(Condominio &cond);
+	bool exportFuncionarios(Condominio &cond);
 
-	bool importServicos();
-	bool exportServicos();
+	bool importServicos(Condominio &cond);
+	bool exportServicos(Condominio &cond);
 
 	int exitFunction();
+
+	//Segunda Parte
+	int menuGestaoCondominios();
 
 };
 
@@ -195,15 +201,16 @@ public:
 class NomeUtilizadorIndisponivel {
 	string nomeUtilizador;
 public:
-	NomeUtilizadorIndisponivel(string nomeUtilizador){
+	NomeUtilizadorIndisponivel(string nomeUtilizador) {
 		this->nomeUtilizador = nomeUtilizador;
 	}
-	string getNomeUtilizador() const{
+	string getNomeUtilizador() const {
 		return nomeUtilizador;
 	}
 	friend ostream& operator<<(ostream& out,
 			const NomeUtilizadorIndisponivel &e) {
-		out << "O nome de utilizador \"" << e.getNomeUtilizador() << "\" nao esta disponivel." << endl;
+		out << "O nome de utilizador \"" << e.getNomeUtilizador()
+				<< "\" nao esta disponivel." << endl;
 		return out;
 	}
 };

@@ -4,11 +4,11 @@
 #include "../headers/Utils.h"
 
 #define pathLogo "../savedata/logo.txt"
-#define pathCondominio "../savedata/condominio.txt"
-#define pathCondominos "../savedata/condominos.txt"
-#define pathHabitacoes "../savedata/habitacoes.txt"
-#define pathFuncionarios "../savedata/funcionarios.txt"
-#define pathServicos "../savedata/servicos.txt"
+#define pathCondominios "../savedata/condominios.txt"
+#define pathCondominos "../savedata/condominos"
+#define pathHabitacoes "../savedata/habitacoes"
+#define pathFuncionarios "../savedata/funcionarios"
+#define pathServicos "../savedata/servicos"
 
 vector<string> mesesAno;
 vector<vector<string> > menu;
@@ -23,7 +23,7 @@ vector<vector<string> > menu;
 void Main::displayTime() {
 	string time = currentTime();
 	gotoxy(50, 20);
-	cout << mesesAno[this->condominio.getMes()] << "\t" << time;
+	cout << mesesAno[this->condominio->getMes()] << "\t" << time;
 
 	verificaServicos();
 
@@ -46,7 +46,7 @@ void Main::displayTime() {
  */
 void Main::verificaServicos() {
 	int servicosCurrentUser = 0;
-	if (this->condominio.updateServicos(mesesAno[this->condominio.getMes()],
+	if (this->condominio->updateServicos(mesesAno[this->condominio->getMes()],
 			this->currentUser, servicosCurrentUser))
 		notificacaoAdmin = true;
 	if (servicosCurrentUser > 0)
@@ -65,11 +65,11 @@ void Main::setMenus(vector<vector<string> > menu) {
  * @param condomino Copy of a condomino to be searched in the users menu and set as currentUser.
  */
 void Main::setCurrentUser(Condomino condomino) {
-	int pos = sequentialSearch(this->condominio.getMoradores(), condomino);
+	int pos = sequentialSearch(this->condominio->getMoradores(), condomino);
 	if (pos == -1) {
 		this->currentUser = NULL;
 	} else
-		this->currentUser = this->condominio.getCondomino(pos);
+		this->currentUser = this->condominio->getCondomino(pos);
 }
 
 /**
@@ -151,27 +151,27 @@ bool Main::displayMenuOptions(int position) {
  * retval FALSE Invalid option.
  */
 bool Main::displaySelectCondomino() {
-	if (option >= this->condominio.getMoradores().size()) {
+	if (option >= this->condominio->getMoradores().size()) {
 		return EXIT_FAILURE;
 	}
-	for (size_t i = 0; i < this->condominio.getMoradores().size(); i++) {
+	for (size_t i = 0; i < this->condominio->getMoradores().size(); i++) {
 		gotoxy(0, 14 + i);
 		if (i == option) {
 			setcolor(BLACK, LIGHTGREY);
 			cout << left << setw(10) << setfill(' ')
-					<< this->condominio.getMoradores()[i].getNomeUtilizador()
+					<< this->condominio->getMoradores()[i].getNomeUtilizador()
 					<< " - " << left << setw(20) << setfill(' ')
-					<< this->condominio.getMoradores()[i].getNomeCivil() << left
-					<< setw(10) << setfill(' ') << " - "
-					<< this->condominio.getMoradores()[i].getNIF() << endl;
+					<< this->condominio->getMoradores()[i].getNomeCivil()
+					<< left << setw(10) << setfill(' ') << " - "
+					<< this->condominio->getMoradores()[i].getNIF() << endl;
 			setcolor(WHITE, BLACK);
 		} else {
 			cout << left << setw(10) << setfill(' ')
-					<< this->condominio.getMoradores()[i].getNomeUtilizador()
+					<< this->condominio->getMoradores()[i].getNomeUtilizador()
 					<< " - " << left << setw(20) << setfill(' ')
-					<< this->condominio.getMoradores()[i].getNomeCivil() << left
-					<< setw(10) << setfill(' ') << " - "
-					<< this->condominio.getMoradores()[i].getNIF() << endl;
+					<< this->condominio->getMoradores()[i].getNomeCivil()
+					<< left << setw(10) << setfill(' ') << " - "
+					<< this->condominio->getMoradores()[i].getNIF() << endl;
 		}
 	}
 	return EXIT_SUCCESS;
@@ -211,34 +211,34 @@ bool Main::displaySelectHabitacao(vector<Habitacao*> habitacoes) {
  * retval FALSE Invalid option.
  */
 bool Main::displaySelectFuncionario() {
-	if (option >= this->condominio.getFuncionarios().size()) {
+	if (option >= this->condominio->getFuncionarios().size()) {
 		return EXIT_FAILURE;
 	}
-	for (size_t i = 0; i < this->condominio.getFuncionarios().size(); i++) {
+	for (size_t i = 0; i < this->condominio->getFuncionarios().size(); i++) {
 		gotoxy(0, 14 + i);
 		if (i == option) {
 			setcolor(BLACK, LIGHTGREY);
-			cout << this->condominio.getFuncionarios()[i].getID() << "\t"
+			cout << this->condominio->getFuncionarios()[i].getID() << "\t"
 					<< left << setw(16) << setfill(' ')
-					<< this->condominio.getFuncionarios()[i].getEspecialidade();
-			if (this->condominio.getFuncionarios()[i].isOcupado())
+					<< this->condominio->getFuncionarios()[i].getEspecialidade();
+			if (this->condominio->getFuncionarios()[i].isOcupado())
 				cout << "Ocupado" << "\t\t";
 			else
 				cout << "Livre" << "\t\t";
 			cout
-					<< this->condominio.getFuncionarios()[i].getServicosEfectuados()
+					<< this->condominio->getFuncionarios()[i].getServicosEfectuados()
 					<< endl;
 			setcolor(WHITE, BLACK);
 		} else {
-			cout << this->condominio.getFuncionarios()[i].getID() << "\t"
+			cout << this->condominio->getFuncionarios()[i].getID() << "\t"
 					<< left << setw(16) << setfill(' ')
-					<< this->condominio.getFuncionarios()[i].getEspecialidade();
-			if (this->condominio.getFuncionarios()[i].isOcupado())
+					<< this->condominio->getFuncionarios()[i].getEspecialidade();
+			if (this->condominio->getFuncionarios()[i].isOcupado())
 				cout << "Ocupado" << "\t\t";
 			else
 				cout << "Livre" << "\t\t";
 			cout
-					<< this->condominio.getFuncionarios()[i].getServicosEfectuados()
+					<< this->condominio->getFuncionarios()[i].getServicosEfectuados()
 					<< endl;
 		}
 	}
@@ -252,7 +252,7 @@ bool Main::displaySelectFuncionario() {
  * retval FALSE Invalid option.
  */
 bool Main::displaySelectServico(int vectorServicos) {
-	vector<Servico> servicos = this->condominio.getServicos(vectorServicos);
+	vector<Servico> servicos = this->condominio->getServicos(vectorServicos);
 
 	if (option >= servicos.size()) {
 		return EXIT_FAILURE;
@@ -337,10 +337,10 @@ bool Main::displaySelectServicoRequisitado(vector<Servico> servicos) {
  */
 bool Main::validLogin(string utilizador, string password) {
 	Condomino c1 = Condomino(utilizador, password);
-	int pos = sequentialSearch(this->condominio.getMoradores(), c1);
+	int pos = sequentialSearch(this->condominio->getMoradores(), c1);
 	if (pos == -1)
 		throw DadosInvalidos();
-	if (this->condominio.getMoradores()[pos].getPassword() != password)
+	if (this->condominio->getMoradores()[pos].getPassword() != password)
 		throw DadosInvalidos();
 	setCurrentUser(c1);
 	return true;
@@ -366,7 +366,7 @@ bool Main::validRegister(string utilizador, string password) {
 		throw UtilizadorPasswordEspacos();
 	}
 	Condomino c1 = Condomino(utilizador, password);
-	int pos = sequentialSearch(this->condominio.getMoradores(), c1);
+	int pos = sequentialSearch(this->condominio->getMoradores(), c1);
 	if (pos == -1)
 		return true;
 	else {
@@ -409,9 +409,9 @@ bool Main::editDadosConta(int editOption) {
 
 			Condomino c1 = Condomino(this->currentUser->getNomeUtilizador(),
 					this->currentUser->getPassword());
-			this->condominio.sortMoradores(0);
-			int pos = sequentialSearch(this->condominio.getMoradores(), c1);
-			this->currentUser = &this->condominio.getMoradores()[pos];
+			this->condominio->sortMoradores(0);
+			int pos = sequentialSearch(this->condominio->getMoradores(), c1);
+			this->currentUser = &this->condominio->getMoradores()[pos];
 
 			cout << "\nNome de utilizador alterado." << endl;
 			pressEnterToContinue();
@@ -473,12 +473,12 @@ bool Main::editDadosContaAdmin(int editOption, Condomino &condomino) {
 			return false;
 		}
 		if (validRegister(utilizadorNovo, condomino.getPassword())) {
-			this->condominio.setNomeUtilizador(condomino, utilizadorNovo);
+			this->condominio->setNomeUtilizador(condomino, utilizadorNovo);
 			condomino.setNomeUtilizador(utilizadorNovo);
 
 			Condomino c1 = Condomino(this->currentUser->getNomeUtilizador(),
 					this->currentUser->getPassword());
-			this->condominio.sortMoradores(0);
+			this->condominio->sortMoradores(0);
 			this->setCurrentUser(c1);
 
 			cout << "\nNome de utilizador alterado." << endl;
@@ -501,7 +501,7 @@ bool Main::editDadosContaAdmin(int editOption, Condomino &condomino) {
 			return false;
 		}
 		if (validRegister(condomino.getNomeUtilizador(), passwordNova)) {
-			this->condominio.setPassword(condomino, passwordNova);
+			this->condominio->setPassword(condomino, passwordNova);
 			cout << "\nPassword alterada." << endl;
 			pressEnterToContinue();
 			return true;
@@ -545,11 +545,11 @@ bool Main::editDadosContaAdmin(int editOption, Condomino &condomino) {
 		case KEY_ENTER:
 			if (option == 0) {
 				if (condomino.isAdmin()) {
-					this->condominio.setAdmin(condomino, false);
+					this->condominio->setAdmin(condomino, false);
 					cout << "\nO condomino deixou de ser administrador."
 							<< endl;
 				} else {
-					this->condominio.setAdmin(condomino, true);
+					this->condominio->setAdmin(condomino, true);
 					cout << "\nO condomino passou a ser administrador." << endl;
 				}
 				pressEnterToContinue();
@@ -614,7 +614,7 @@ bool Main::editDadosCondomino(int editOption) {
 			return false;
 		}
 		Condomino c1 = Condomino("nome", nifNovo);
-		int pos1 = sequentialSearch(this->condominio.getMoradores(), c1);
+		int pos1 = sequentialSearch(this->condominio->getMoradores(), c1);
 		if (pos1 != -1) {
 			cout << "\nNao foi possivel alterar o NIF." << endl;
 			cout << "O NIF ja pertence a outro condomino." << endl;
@@ -671,7 +671,7 @@ bool Main::editDadosCondomino(int editOption) {
 			break;
 		case KEY_ENTER:
 			if (option == 0) {
-				this->condominio.saldarDivida(*this->currentUser);
+				this->condominio->saldarDivida(*this->currentUser);
 				cout << "\nDivida saldada." << endl;
 				resetOption();
 				pressEnterToContinue();
@@ -715,7 +715,7 @@ bool Main::editDadosCondominoAdmin(int editOption, Condomino &condomino) {
 			pressEnterToContinue();
 			return false;
 		}
-		this->condominio.setNomeCivil(condomino, nomeNovo);
+		this->condominio->setNomeCivil(condomino, nomeNovo);
 		cout << "\nNome civil alterado." << endl;
 		pressEnterToContinue();
 		return true;
@@ -735,14 +735,14 @@ bool Main::editDadosCondominoAdmin(int editOption, Condomino &condomino) {
 			return false;
 		}
 		Condomino c1 = Condomino("nome", nifNovo);
-		int pos1 = sequentialSearch(this->condominio.getMoradores(), c1);
+		int pos1 = sequentialSearch(this->condominio->getMoradores(), c1);
 		if (pos1 != -1) {
 			cout << "\nNao foi possivel alterar o NIF." << endl;
 			cout << "O NIF ja pertence a outro condomino." << endl;
 			pressEnterToContinue();
 			return false;
 		}
-		this->condominio.setNIF(condomino, nifNovo);
+		this->condominio->setNIF(condomino, nifNovo);
 		cout << "\nNIF alterado." << endl;
 		pressEnterToContinue();
 		return true;
@@ -762,7 +762,7 @@ bool Main::editDadosCondominoAdmin(int editOption, Condomino &condomino) {
 			return false;
 		}
 		long int fundosMensais = atoi(novosFundos.c_str());
-		this->condominio.setFundosMensais(condomino, fundosMensais);
+		this->condominio->setFundosMensais(condomino, fundosMensais);
 		cout << "\nFundos Mensais alterados." << endl;
 		pressEnterToContinue();
 		return true;
@@ -791,7 +791,7 @@ bool Main::editDadosCondominoAdmin(int editOption, Condomino &condomino) {
 			break;
 		case KEY_ENTER:
 			if (option == 0) {
-				this->condominio.saldarDivida(condomino);
+				this->condominio->saldarDivida(condomino);
 				cout << "\nDivida saldada." << endl;
 				resetOption();
 				pressEnterToContinue();
@@ -830,8 +830,8 @@ bool Main::editHabitacao(int editOption, Habitacao* h1) {
 		cout << "Introduza a nova morada: ";
 		getline(cin, moradaNova);
 		Vivenda* v1 = new Vivenda(moradaNova, "", 0, 0, false);
-		if (this->condominio.findHabitacao(this->condominio.getHabitacoes(), v1)
-				!= -1) {
+		if (this->condominio->findHabitacao(this->condominio->getHabitacoes(),
+				v1) != -1) {
 			cout << "\nNao foi possivel alterar a morada." << endl;
 			cout << "Ja existe outra habitacao com a mesma morada." << endl;
 			pressEnterToContinue();
@@ -1004,7 +1004,7 @@ void Main::displayCurrentUserRenda() {
 	gotoxy(0, 8);
 	cout << "Mes actual -> ";
 	setcolor(YELLOW, BLACK);
-	cout << mesesAno[this->condominio.getMes()] << endl << endl;
+	cout << mesesAno[this->condominio->getMes()] << endl << endl;
 	setcolor(WHITE, BLACK);
 	this->currentUser->infoRenda();
 	cout << endl;
@@ -1019,15 +1019,16 @@ void Main::displayCondominoInfo(int pos) {
 	gotoxy(0, 8);
 	cout << "DADOS DO CONDOMINO\n" << endl;
 	cout << "Nome Utilizador: "
-			<< this->condominio.getMoradores()[pos].getNomeUtilizador() << endl;
+			<< this->condominio->getMoradores()[pos].getNomeUtilizador()
+			<< endl;
 	cout << "Estado da conta: ";
-	if (this->condominio.getMoradores()[pos].isAdmin())
+	if (this->condominio->getMoradores()[pos].isAdmin())
 		cout << "ADMIN" << endl;
 	else
 		cout << "Conta Normal" << endl;
 
 	cout << "\nNome Civil: ";
-	this->condominio.getMoradores()[pos].infoCondomino();
+	this->condominio->getMoradores()[pos].infoCondomino();
 	cout << endl;
 	pressEnterToContinue();
 }
@@ -1040,17 +1041,18 @@ void Main::displayHabitacaoInfo(int pos) {
 	gotoxy(0, 8);
 	cout << "DADOS DA HABITACAO" << endl;
 	cout << "Tipo: ";
-	this->condominio.getHabitacoes()[pos]->info();
+	this->condominio->getHabitacoes()[pos]->info();
 
-	if (this->condominio.getHabitacoes()[pos]->hasProprietario()) {
+	if (this->condominio->getHabitacoes()[pos]->hasProprietario()) {
 		Condomino c1 = Condomino("nome", "password", "nomeCivil",
-				this->condominio.getHabitacoes()[pos]->getNIFProprietario());
-		int pos2 = sequentialSearch(this->condominio.getMoradores(), c1);
+				this->condominio->getHabitacoes()[pos]->getNIFProprietario());
+		int pos2 = sequentialSearch(this->condominio->getMoradores(), c1);
 
 		cout << "PROPRIETARIO" << endl;
-		cout << "Nome: " << this->condominio.getMoradores()[pos2].getNomeCivil()
+		cout << "Nome: "
+				<< this->condominio->getMoradores()[pos2].getNomeCivil()
 				<< endl;
-		cout << "NIF: " << this->condominio.getMoradores()[pos2].getNIF()
+		cout << "NIF: " << this->condominio->getMoradores()[pos2].getNIF()
 				<< endl;
 	}
 	pressEnterToContinue();
@@ -1063,13 +1065,13 @@ void Main::displayFuncionarioInfo(int pos) {
 	displayLogo();
 	gotoxy(0, 8);
 	cout << "DADOS DO FUNCIONARIO\n" << endl;
-	this->condominio.getFuncionarios()[pos].info();
-	if (this->condominio.getFuncionarios()[pos].isOcupado()) {
-		for (size_t i = 0; i < this->condominio.getServicos(1).size(); i++) {
-			if (this->condominio.getServicos(1)[i].getIDFuncionario()
-					== this->condominio.getFuncionarios()[pos].getID()) {
+	this->condominio->getFuncionarios()[pos].info();
+	if (this->condominio->getFuncionarios()[pos].isOcupado()) {
+		for (size_t i = 0; i < this->condominio->getServicos(1).size(); i++) {
+			if (this->condominio->getServicos(1)[i].getIDFuncionario()
+					== this->condominio->getFuncionarios()[pos].getID()) {
 				cout << "\nA efectuar:" << endl;
-				this->condominio.getServicos(1)[i].info();
+				this->condominio->getServicos(1)[i].info();
 				break;
 			}
 		}
@@ -1085,21 +1087,21 @@ void Main::displayServicoInfo(int pos, int vectorServicos) {
 	displayLogo();
 	gotoxy(0, 8);
 	cout << "DADOS DO SERVICO\n" << endl;
-	this->condominio.getServicos(vectorServicos)[pos].info();
+	this->condominio->getServicos(vectorServicos)[pos].info();
 
 	cout << "Requisitado pelo condomino com o NIF "
-			<< this->condominio.getServicos(vectorServicos)[pos].getNIFcondomino()
+			<< this->condominio->getServicos(vectorServicos)[pos].getNIFcondomino()
 			<< "\n" << endl;
 
-	for (size_t i = 0; i < this->condominio.getHabitacoes().size(); i++) {
-		if (this->condominio.getHabitacoes()[i]->getServico()
-				== this->condominio.getServicos(vectorServicos)[pos].getID()) {
+	for (size_t i = 0; i < this->condominio->getHabitacoes().size(); i++) {
+		if (this->condominio->getHabitacoes()[i]->getServico()
+				== this->condominio->getServicos(vectorServicos)[pos].getID()) {
 			cout << "HABITACAO" << endl;
-			cout << "Tipo: " << this->condominio.getHabitacoes()[i]->getTipo()
+			cout << "Tipo: " << this->condominio->getHabitacoes()[i]->getTipo()
 					<< endl;
 			cout << "Morada: "
-					<< this->condominio.getHabitacoes()[i]->getMorada() << ", "
-					<< this->condominio.getHabitacoes()[i]->getCodigoPostal()
+					<< this->condominio->getHabitacoes()[i]->getMorada() << ", "
+					<< this->condominio->getHabitacoes()[i]->getCodigoPostal()
 					<< endl;
 			break;
 		}
@@ -1118,15 +1120,15 @@ void Main::displayServicoRequisitadoInfo(vector<Servico> servicos, int pos) {
 	servicos[pos].info();
 	cout << endl;
 
-	for (size_t i = 0; i < this->condominio.getHabitacoes().size(); i++) {
-		if (this->condominio.getHabitacoes()[i]->getServico()
+	for (size_t i = 0; i < this->condominio->getHabitacoes().size(); i++) {
+		if (this->condominio->getHabitacoes()[i]->getServico()
 				== servicos[pos].getID()) {
 			cout << "HABITACAO" << endl;
-			cout << "Tipo: " << this->condominio.getHabitacoes()[i]->getTipo()
+			cout << "Tipo: " << this->condominio->getHabitacoes()[i]->getTipo()
 					<< endl;
 			cout << "Morada: "
-					<< this->condominio.getHabitacoes()[i]->getMorada() << ", "
-					<< this->condominio.getHabitacoes()[i]->getCodigoPostal()
+					<< this->condominio->getHabitacoes()[i]->getMorada() << ", "
+					<< this->condominio->getHabitacoes()[i]->getCodigoPostal()
 					<< endl;
 			break;
 		}
@@ -1143,24 +1145,24 @@ bool Main::fimDoMes() {
 	displayLogo();
 	gotoxy(30, 8);
 
-	if (this->condominio.updateServicosFimMes(
-			mesesAno[this->condominio.getMes()]))
+	if (this->condominio->updateServicosFimMes(
+			mesesAno[this->condominio->getMes()]))
 		notificacaoAdmin = true;
 
 	cout << "FIM DO MES\n" << endl;
 	cout << "Mes actual -> ";
 	setcolor(YELLOW, BLACK);
-	cout << mesesAno[this->condominio.getMes()];
+	cout << mesesAno[this->condominio->getMes()];
 	setcolor(WHITE, BLACK);
-	cout << "\nFundos actuais = " << this->condominio.getFundos() << "$\n"
+	cout << "\nFundos actuais = " << this->condominio->getFundos() << "$\n"
 			<< endl;
 
-	vector<Condomino> caloteiros = this->condominio.fimDoMes();
+	vector<Condomino> caloteiros = this->condominio->fimDoMes();
 	cout << "Novo mes -> ";
 	setcolor(YELLOW, BLACK);
-	cout << mesesAno[this->condominio.getMes()];
+	cout << mesesAno[this->condominio->getMes()];
 	setcolor(WHITE, BLACK);
-	cout << "\nNovos fundos = " << this->condominio.getFundos() << "$\n"
+	cout << "\nNovos fundos = " << this->condominio->getFundos() << "$\n"
 			<< endl;
 
 	if (caloteiros.empty()) {
@@ -1317,7 +1319,7 @@ int Main::menuRegisto() {
 
 	Condomino c1 = Condomino(utilizador, password, nomeCivil, NIF);
 	try {
-		this->condominio.addMorador(c1);
+		this->condominio->addMorador(c1);
 	} catch (CondominoDuplicado &except) {
 		cout << "\nNao foi possivel criar uma conta." << endl;
 		cout << except << endl;
@@ -1395,14 +1397,14 @@ int Main::menuUtilizador() {
 				return menuServicosRequisitados();
 			} else if (option == 7) { //Requisitar servico
 				vector<Habitacao*> habitacoesSemServico;
-				for (size_t i = 0; i < this->condominio.getHabitacoes().size();
+				for (size_t i = 0; i < this->condominio->getHabitacoes().size();
 						i++) {
-					if (this->condominio.getHabitacoes()[i]->getNIFProprietario()
+					if (this->condominio->getHabitacoes()[i]->getNIFProprietario()
 							== this->currentUser->getNIF())
-						if (this->condominio.getHabitacoes()[i]->getServico()
+						if (this->condominio->getHabitacoes()[i]->getServico()
 								== -1)
 							habitacoesSemServico.push_back(
-									this->condominio.getHabitacoes()[i]);
+									this->condominio->getHabitacoes()[i]);
 				}
 				resetOption();
 				return menuSelectHabitacaoServicoUtilizador(
@@ -1431,14 +1433,14 @@ int Main::menuUtilizador() {
 				return menuServicosRequisitados();
 			} else if (option == 6) { //Requisitar servico
 				vector<Habitacao*> habitacoesSemServico;
-				for (size_t i = 0; i < this->condominio.getHabitacoes().size();
+				for (size_t i = 0; i < this->condominio->getHabitacoes().size();
 						i++) {
-					if (this->condominio.getHabitacoes()[i]->getNIFProprietario()
+					if (this->condominio->getHabitacoes()[i]->getNIFProprietario()
 							== this->currentUser->getNIF())
-						if (this->condominio.getHabitacoes()[i]->getServico()
+						if (this->condominio->getHabitacoes()[i]->getServico()
 								== -1)
 							habitacoesSemServico.push_back(
-									this->condominio.getHabitacoes()[i]);
+									this->condominio->getHabitacoes()[i]);
 				}
 				resetOption();
 				return menuSelectHabitacaoServicoUtilizador(
@@ -1704,7 +1706,7 @@ int Main::menuDeleteHabitacaoPossuida(int pos, int menuOption) {
 		break;
 	case KEY_ENTER:
 		if (menuOption == 0) {
-			this->condominio.eraseHabitacaoPossuida(*currentUser, pos);
+			this->condominio->eraseHabitacaoPossuida(*currentUser, pos);
 			cout << "\nHabitacao removida." << endl;
 			if (this->option > 0)
 				option--;
@@ -1752,11 +1754,11 @@ int Main::menuSelectOrNewHabitacao() {
 		if (option == 0) { //Selecionar habitacao
 			resetOption();
 			vector<Habitacao*> habitacoesLivres;
-			for (size_t i = 0; i < this->condominio.getHabitacoes().size();
+			for (size_t i = 0; i < this->condominio->getHabitacoes().size();
 					i++) {
-				if (!this->condominio.getHabitacoes()[i]->hasProprietario())
+				if (!this->condominio->getHabitacoes()[i]->hasProprietario())
 					habitacoesLivres.push_back(
-							this->condominio.getHabitacoes()[i]);
+							this->condominio->getHabitacoes()[i]);
 			}
 			return menuSelectHabitacaoAdd(habitacoesLivres);
 		} else if (option == 1) { //Nova habitacao
@@ -1998,7 +2000,7 @@ int Main::menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1,
 		if (nova) {
 			if (option == 0) {
 				if (h1->hasProprietario()) {
-					if (this->condominio.addHabitacao(h1)) {
+					if (this->condominio->addHabitacao(h1)) {
 						cout << "\nHabitacao adicionada." << endl;
 					} else {
 						cout << "\nNao foi possivel adicionar a habitacao."
@@ -2012,7 +2014,7 @@ int Main::menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1,
 					resetOption();
 					return menuUtilizador();
 				} else {
-					this->condominio.addHabitacao(h1);
+					this->condominio->addHabitacao(h1);
 					cout << "\nHabitacao adicionada." << endl;
 					pressEnterToContinue();
 					resetOption();
@@ -2031,11 +2033,11 @@ int Main::menuConfirmAddHabitacao(Condomino condomino, Habitacao* h1,
 		} else {
 			if (option == 0) {
 				h1->setProprietario(condomino.getNIF());
-				for (size_t i = 0; i <= condominio.getMes(); i++)
+				for (size_t i = 0; i <= this->condominio->getMes(); i++)
 					h1->setPago(i);
 				cout << "\nHabitacao adicionada." << endl;
 				pressEnterToContinue();
-				this->condominio.sortHabitacoes(3);
+				this->condominio->sortHabitacoes(3);
 				resetOption();
 				return menuUtilizador();
 			} else if (option == 1) {
@@ -2083,41 +2085,41 @@ int Main::menuServicosRequisitados() {
 	case KEY_ENTER:
 		if (option == 0) { //Ver lista dos servicos requisitados terminados
 			vector<Servico> servicos;
-			for (size_t i = 0; i < this->condominio.getServicos(0).size();
+			for (size_t i = 0; i < this->condominio->getServicos(0).size();
 					i++) {
-				if (this->condominio.getServicos(0)[i].getNIFcondomino()
+				if (this->condominio->getServicos(0)[i].getNIFcondomino()
 						== this->currentUser->getNIF())
-					servicos.push_back(this->condominio.getServicos(0)[i]);
+					servicos.push_back(this->condominio->getServicos(0)[i]);
 			}
 			return menuDisplayServicosRequisitadosBy(servicos);
 		} else if (option == 1) { //Ver lista dos servicos requisitados em curso
 			resetOption();
 			vector<Servico> servicos;
-			for (size_t i = 0; i < this->condominio.getServicos(1).size();
+			for (size_t i = 0; i < this->condominio->getServicos(1).size();
 					i++) {
-				if (this->condominio.getServicos(1)[i].getNIFcondomino()
+				if (this->condominio->getServicos(1)[i].getNIFcondomino()
 						== this->currentUser->getNIF())
-					servicos.push_back(this->condominio.getServicos(1)[i]);
+					servicos.push_back(this->condominio->getServicos(1)[i]);
 			}
 			return menuDisplayServicosRequisitadosBy(servicos);
 		} else if (option == 2) { //Ver lista dos servicos requisitados em espera
 			resetOption();
 			vector<Servico> servicos;
-			for (size_t i = 0; i < this->condominio.getServicos(2).size();
+			for (size_t i = 0; i < this->condominio->getServicos(2).size();
 					i++) {
-				if (this->condominio.getServicos(2)[i].getNIFcondomino()
+				if (this->condominio->getServicos(2)[i].getNIFcondomino()
 						== this->currentUser->getNIF())
-					servicos.push_back(this->condominio.getServicos(2)[i]);
+					servicos.push_back(this->condominio->getServicos(2)[i]);
 			}
 			return menuDisplayServicosRequisitadosBy(servicos);
 		} else if (option == 3) { //Cancelar servico em espera
 			resetOption();
 			vector<Servico> servicos;
-			for (size_t i = 0; i < this->condominio.getServicos(2).size();
+			for (size_t i = 0; i < this->condominio->getServicos(2).size();
 					i++) {
-				if (this->condominio.getServicos(2)[i].getNIFcondomino()
+				if (this->condominio->getServicos(2)[i].getNIFcondomino()
 						== this->currentUser->getNIF())
-					servicos.push_back(this->condominio.getServicos(2)[i]);
+					servicos.push_back(this->condominio->getServicos(2)[i]);
 			}
 			return menuDisplayServicosRequisitados(servicos, true);
 		} else if (option == 4) { //Voltar atras
@@ -2297,9 +2299,9 @@ int Main::menuSelectHabitacaoServicoUtilizador(vector<Habitacao*> habitacoes) {
 	case KEY_ENTER:
 		pos = option;
 		resetOption();
-		for (size_t i = 0; this->condominio.getHabitacoes().size(); i++) {
+		for (size_t i = 0; this->condominio->getHabitacoes().size(); i++) {
 			if (habitacoes[pos]->getID()
-					== this->condominio.getHabitacoes()[i]->getID()) {
+					== this->condominio->getHabitacoes()[i]->getID()) {
 				pos = i;
 				break;
 			}
@@ -2345,15 +2347,15 @@ int Main::menuCancelarServico(vector<Servico> servicos, int pos,
 	case KEY_ENTER:
 		if (menuOption == 0) {
 			int position = 0;
-			for (size_t i = 0; i < this->condominio.getServicos(2).size();
+			for (size_t i = 0; i < this->condominio->getServicos(2).size();
 					i++) {
 				if (servicos[pos].getID()
-						== this->condominio.getServicos(2)[i].getID()) {
+						== this->condominio->getServicos(2)[i].getID()) {
 					position = i;
 					break;
 				}
 			}
-			this->condominio.eraseServico(position, 2);
+			this->condominio->eraseServico(position, 2);
 			cout << "\nServico cancelado." << endl;
 			if (this->option > 0)
 				option--;
@@ -2527,9 +2529,9 @@ int Main::menuDisplayCondominosBy() {
 			//Ordena os moradores e actualiza o currentUser
 			Condomino c1 = Condomino("nome", "password", "nomeCivil",
 					this->currentUser->getNIF());
-			this->condominio.sortMoradores(0);
-			int pos = sequentialSearch(this->condominio.getMoradores(), c1);
-			setCurrentUser(this->condominio.getMoradores()[pos]);
+			this->condominio->sortMoradores(0);
+			int pos = sequentialSearch(this->condominio->getMoradores(), c1);
+			setCurrentUser(this->condominio->getMoradores()[pos]);
 
 			return menuDisplayAllCondominos();
 		} else if (option == 1) { //Ordenar por nome civil
@@ -2537,9 +2539,9 @@ int Main::menuDisplayCondominosBy() {
 			//Ordena os moradores e actualiza o currentUser
 			Condomino c1 = Condomino("nome", "password", "nomeCivil",
 					this->currentUser->getNIF());
-			this->condominio.sortMoradores(1);
-			int pos = sequentialSearch(this->condominio.getMoradores(), c1);
-			setCurrentUser(this->condominio.getMoradores()[pos]);
+			this->condominio->sortMoradores(1);
+			int pos = sequentialSearch(this->condominio->getMoradores(), c1);
+			setCurrentUser(this->condominio->getMoradores()[pos]);
 
 			return menuDisplayAllCondominos();
 		} else if (option == 2) { //Ordenar por NIF
@@ -2547,9 +2549,9 @@ int Main::menuDisplayCondominosBy() {
 			//Ordena os moradores e actualiza o currentUser
 			Condomino c1 = Condomino("nome", "password", "nomeCivil",
 					this->currentUser->getNIF());
-			this->condominio.sortMoradores(2);
-			int pos = sequentialSearch(this->condominio.getMoradores(), c1);
-			setCurrentUser(this->condominio.getMoradores()[pos]);
+			this->condominio->sortMoradores(2);
+			int pos = sequentialSearch(this->condominio->getMoradores(), c1);
+			setCurrentUser(this->condominio->getMoradores()[pos]);
 
 			return menuDisplayAllCondominos();
 		} else { //Voltar atras
@@ -2597,7 +2599,7 @@ int Main::menuDisplayAllCondominos() {
 			option--;
 		break;
 	case KEY_DOWN:
-		if (option + 1 < this->condominio.getMoradores().size())
+		if (option + 1 < this->condominio->getMoradores().size())
 			option++;
 		break;
 	case KEY_ENTER:
@@ -2644,16 +2646,16 @@ int Main::menuSelectCondomino(bool remover) {
 			option--;
 		break;
 	case KEY_DOWN:
-		if (option + 1 < this->condominio.getMoradores().size())
+		if (option + 1 < this->condominio->getMoradores().size())
 			option++;
 		break;
 	case KEY_ENTER:
 		if (!remover) {
 			int pos = option;
 			resetOption();
-			return menuEditCondomino(this->condominio.getMoradores()[pos]);
+			return menuEditCondomino(this->condominio->getMoradores()[pos]);
 		} else {
-			return menuDeleteCondomino(this->condominio.getMoradores()[option],
+			return menuDeleteCondomino(this->condominio->getMoradores()[option],
 					0);
 		}
 		break;
@@ -2769,7 +2771,7 @@ int Main::menuDeleteCondomino(Condomino &condomino, int menuOption) {
 	case KEY_ENTER:
 		if (menuOption == 0) {
 			Condomino c1 = *currentUser;
-			if (this->condominio.eraseMorador(condomino))
+			if (this->condominio->eraseMorador(condomino))
 				cout << "\nUtilizador removido." << endl;
 			setCurrentUser(c1);
 			pressEnterToContinue();
@@ -2882,19 +2884,19 @@ int Main::menuDisplayHabitacoesBy() {
 		break;
 	case KEY_ENTER:
 		if (option == 0) { //Ordenar por ID
-			this->condominio.sortHabitacoes(0);
+			this->condominio->sortHabitacoes(0);
 			return menuDisplayAllHabitacoes();
 		} else if (option == 1) { //Ordenar por tipo
 			resetOption();
-			this->condominio.sortHabitacoes(1);
+			this->condominio->sortHabitacoes(1);
 			return menuDisplayAllHabitacoes();
 		} else if (option == 2) { //Ordenar por renda
 			resetOption();
-			this->condominio.sortHabitacoes(2);
+			this->condominio->sortHabitacoes(2);
 			return menuDisplayAllHabitacoes();
 		} else if (option == 3) { //Ordenar por NIF do proprietario
 			resetOption();
-			this->condominio.sortHabitacoes(3);
+			this->condominio->sortHabitacoes(3);
 			return menuDisplayAllHabitacoes();
 		} else { //Voltar atras
 			resetOption();
@@ -2929,12 +2931,12 @@ int Main::menuDisplayAllHabitacoes() {
 	cout << "[ESC] Voltar atras\n" << endl;
 	cout << "ID\tHabitacao      Renda         NIF Proprietario" << endl;
 
-	if (this->condominio.getHabitacoes().empty()) {
+	if (this->condominio->getHabitacoes().empty()) {
 		cout << "Nao existem habitacoes no condominio" << endl;
 		pressEnterToContinue();
 		return menuDisplayHabitacoesBy();
 	}
-	displaySelectHabitacao(this->condominio.getHabitacoes());
+	displaySelectHabitacao(this->condominio->getHabitacoes());
 
 	int c = getch();
 	switch (c) {
@@ -2943,7 +2945,7 @@ int Main::menuDisplayAllHabitacoes() {
 			option--;
 		break;
 	case KEY_DOWN:
-		if (option + 1 < this->condominio.getHabitacoes().size())
+		if (option + 1 < this->condominio->getHabitacoes().size())
 			option++;
 		break;
 	case KEY_ENTER:
@@ -2979,12 +2981,12 @@ int Main::menuSelectHabitacao(bool remover) {
 		cout << "[ENTER] Editar" << endl;
 	cout << "[ESC] Voltar atras\n" << endl;
 	cout << "ID\tHabitacao      Renda         NIF Proprietario" << endl;
-	if (this->condominio.getHabitacoes().empty()) {
+	if (this->condominio->getHabitacoes().empty()) {
 		cout << "Nao existem habitacoes no condominio" << endl;
 		pressEnterToContinue();
 		return menuGerirHabitacoes();
 	}
-	displaySelectHabitacao(this->condominio.getHabitacoes());
+	displaySelectHabitacao(this->condominio->getHabitacoes());
 
 	int c = getch();
 	switch (c) {
@@ -2993,7 +2995,7 @@ int Main::menuSelectHabitacao(bool remover) {
 			option--;
 		break;
 	case KEY_DOWN:
-		if (option + 1 < this->condominio.getHabitacoes().size())
+		if (option + 1 < this->condominio->getHabitacoes().size())
 			option++;
 		break;
 	case KEY_ENTER:
@@ -3002,7 +3004,7 @@ int Main::menuSelectHabitacao(bool remover) {
 		} else {
 			int pos = option;
 			resetOption();
-			return menuEditHabitacao(this->condominio.getHabitacoes()[pos]);
+			return menuEditHabitacao(this->condominio->getHabitacoes()[pos]);
 		}
 		break;
 	case KEY_ESC:
@@ -3055,7 +3057,7 @@ int Main::menuEditHabitacao(Habitacao* habitacao) {
 			return menuGerirHabitacoes();
 		} else {
 			editHabitacao(option, habitacao);
-			this->condominio.sortHabitacoes(3);
+			this->condominio->sortHabitacoes(3);
 		}
 		break;
 	case KEY_ESC:
@@ -3077,10 +3079,10 @@ int Main::menuDeleteHabitacao(int pos, int menuOption) {
 	gotoxy(0, 8);
 	cout << "DADOS DA HABITACAO\n" << endl;
 	cout << "Tipo: ";
-	this->condominio.getHabitacoes()[pos]->info();
+	this->condominio->getHabitacoes()[pos]->info();
 
 	bool owned = false;
-	if (this->condominio.getHabitacoes()[pos]->hasProprietario()) {
+	if (this->condominio->getHabitacoes()[pos]->hasProprietario()) {
 		cout << "Tem a certeza que pretende libertar esta habitacao?" << endl;
 		owned = true;
 	} else
@@ -3099,7 +3101,7 @@ int Main::menuDeleteHabitacao(int pos, int menuOption) {
 		break;
 	case KEY_ENTER:
 		if (menuOption == 0) {
-			this->condominio.eraseHabitacao(pos);
+			this->condominio->eraseHabitacao(pos);
 			if (owned)
 				cout << "\nHabitacao libertada." << endl;
 			else
@@ -3193,13 +3195,13 @@ int Main::menuSelectOwnerHabitacao() {
 			option--;
 		break;
 	case KEY_DOWN:
-		if (option + 1 < this->condominio.getMoradores().size())
+		if (option + 1 < this->condominio->getMoradores().size())
 			option++;
 		break;
 	case KEY_ENTER:
 		pos = option;
 		resetOption();
-		return menuAddHabitacao(this->condominio.getMoradores()[pos]);
+		return menuAddHabitacao(this->condominio->getMoradores()[pos]);
 		break;
 	case KEY_ESC:
 		resetOption();
@@ -3297,19 +3299,19 @@ int Main::menuDisplayFuncionariosBy() {
 		break;
 	case KEY_ENTER:
 		if (option == 0) { //Ordenar por ID
-			this->condominio.sortFuncionarios(0);
+			this->condominio->sortFuncionarios(0);
 			return menuDisplayAllFuncionarios();
 		} else if (option == 1) { //Ordenar por especialidade
 			resetOption();
-			this->condominio.sortFuncionarios(1);
+			this->condominio->sortFuncionarios(1);
 			return menuDisplayAllFuncionarios();
 		} else if (option == 2) { //Ordenar por estado de ocupacao
 			resetOption();
-			this->condominio.sortFuncionarios(2);
+			this->condominio->sortFuncionarios(2);
 			return menuDisplayAllFuncionarios();
 		} else if (option == 3) { //Ordenar por servicos feitos
 			resetOption();
-			this->condominio.sortFuncionarios(3);
+			this->condominio->sortFuncionarios(3);
 			return menuDisplayAllFuncionarios();
 		} else { //Voltar atras
 			resetOption();
@@ -3343,7 +3345,7 @@ int Main::menuDisplayAllFuncionarios() {
 	cout << "[ENTER] Ver dados" << endl;
 	cout << "[ESC] Voltar atras\n" << endl;
 	cout << "ID\tEspecialidade\tEstado\tServicos Feitos" << endl;
-	if (this->condominio.getFuncionarios().empty()) {
+	if (this->condominio->getFuncionarios().empty()) {
 		cout << "Nao existem funcionarios no condominio" << endl;
 		pressEnterToContinue();
 		return menuDisplayFuncionariosBy();
@@ -3357,7 +3359,7 @@ int Main::menuDisplayAllFuncionarios() {
 			option--;
 		break;
 	case KEY_DOWN:
-		if (option + 1 < this->condominio.getFuncionarios().size())
+		if (option + 1 < this->condominio->getFuncionarios().size())
 			option++;
 		break;
 	case KEY_ENTER:
@@ -3446,23 +3448,23 @@ int Main::menuConfirmAddFuncionario(int specialty, int menuOption) {
 	}
 
 	cout << "Numero total de funcionarios no condominio = "
-			<< this->condominio.getFuncionarios().size() << endl;
+			<< this->condominio->getFuncionarios().size() << endl;
 	if (specialty == 0)
 		cout << "Numero de funcionarios de limpeza actual = "
-				<< this->condominio.getNumFuncLimpeza() << endl;
+				<< this->condominio->getNumFuncLimpeza() << endl;
 	else if (specialty == 1)
 		cout << "Numero de canalizadores actual = "
-				<< this->condominio.getNumFuncCanalizacao() << endl;
+				<< this->condominio->getNumFuncCanalizacao() << endl;
 	else if (specialty == 2)
 		cout << "Numero de pintores actual = "
-				<< this->condominio.getNumFuncPintura() << endl;
+				<< this->condominio->getNumFuncPintura() << endl;
 
-	cout << "\nFundos do condominio = " << this->condominio.getFundos() << "$"
+	cout << "\nFundos do condominio = " << this->condominio->getFundos() << "$"
 			<< endl;
 	cout << "Preco inicial do funcionario = 1000$" << endl;
 	cout << "Salario mensal = 500$\n" << endl;
 
-	if (this->condominio.getFundos() < 1000) {
+	if (this->condominio->getFundos() < 1000) {
 		cout << "O condominio nao tem fundos para contratar o funcionario.\n"
 				<< endl;
 		pressEnterToContinue();
@@ -3485,7 +3487,7 @@ int Main::menuConfirmAddFuncionario(int specialty, int menuOption) {
 	case KEY_ENTER:
 		if (menuOption == 0) {
 			Funcionario f1 = Funcionario(especialidade);
-			this->condominio.addFuncionario(f1);
+			this->condominio->addFuncionario(f1);
 			cout << "\nFuncionario contratado." << endl;
 			pressEnterToContinue();
 			return menuAddFuncionario();
@@ -3516,7 +3518,7 @@ int Main::menuFireFuncionario() {
 	cout << "[ENTER] Despedir" << endl;
 	cout << "[ESC] Voltar atras\n" << endl;
 	cout << "ID\tEspecialidade\tEstado\tServicos Feitos" << endl;
-	if (this->condominio.getFuncionarios().empty()) {
+	if (this->condominio->getFuncionarios().empty()) {
 		cout << "Nao existem funcionarios no condominio" << endl;
 		pressEnterToContinue();
 		return menuDisplayFuncionariosBy();
@@ -3530,7 +3532,7 @@ int Main::menuFireFuncionario() {
 			option--;
 		break;
 	case KEY_DOWN:
-		if (option + 1 < this->condominio.getFuncionarios().size())
+		if (option + 1 < this->condominio->getFuncionarios().size())
 			option++;
 		break;
 	case KEY_ENTER:
@@ -3555,9 +3557,9 @@ int Main::menuDeleteFuncionario(int pos, int menuOption) {
 	displayLogo();
 	gotoxy(0, 8);
 	cout << "DADOS DO FUNCIONARIO\n" << endl;
-	this->condominio.getFuncionarios()[pos].info();
+	this->condominio->getFuncionarios()[pos].info();
 
-	if (condominio.getFuncionarios()[pos].isOcupado()) {
+	if (this->condominio->getFuncionarios()[pos].isOcupado()) {
 		cout << "Nao e possivel despedir este funcionario." << endl;
 		cout << "Este funcionario esta a fazer um servico.\n" << endl;
 		pressEnterToContinue();
@@ -3578,7 +3580,7 @@ int Main::menuDeleteFuncionario(int pos, int menuOption) {
 		break;
 	case KEY_ENTER:
 		if (menuOption == 0) {
-			this->condominio.eraseFuncionario(pos);
+			this->condominio->eraseFuncionario(pos);
 			cout << "\nFuncionario despedido." << endl;
 			if (this->option > 0)
 				option--;
@@ -3691,19 +3693,19 @@ int Main::menuDisplayServicosBy(int vectorServicos) {
 		break;
 	case KEY_ENTER:
 		if (option == 0) { //Ordenar por ID
-			this->condominio.sortServicos(vectorServicos, 0);
+			this->condominio->sortServicos(vectorServicos, 0);
 			return menuDisplayAllServicos(vectorServicos, false);
 		} else if (option == 1) { //Ordenar por tipo
 			resetOption();
-			this->condominio.sortServicos(vectorServicos, 1);
+			this->condominio->sortServicos(vectorServicos, 1);
 			return menuDisplayAllServicos(vectorServicos, false);
 		} else if (option == 2) { //Ordenar por data de inicio
 			resetOption();
-			this->condominio.sortServicos(vectorServicos, 2);
+			this->condominio->sortServicos(vectorServicos, 2);
 			return menuDisplayAllServicos(vectorServicos, false);
 		} else if (option == 3) { //Ordenar por condomino
 			resetOption();
-			this->condominio.sortServicos(vectorServicos, 3);
+			this->condominio->sortServicos(vectorServicos, 3);
 			return menuDisplayAllServicos(vectorServicos, false);
 		} else { //Voltar atras
 			resetOption();
@@ -3750,7 +3752,7 @@ int Main::menuDisplayAllServicos(int vectorServicos, bool remover) {
 	cout << "[ESC] Voltar atras\n" << endl;
 	cout << "ID\tEspecialidade\tData Inicio\t\tID Funcionario\tNIF Condomino"
 			<< endl;
-	if (this->condominio.getServicos(vectorServicos).empty()) {
+	if (this->condominio->getServicos(vectorServicos).empty()) {
 		if (vectorServicos == 0)
 			cout << "Nao existem servicos terminados no condominio." << endl;
 		else if (vectorServicos == 1)
@@ -3769,7 +3771,7 @@ int Main::menuDisplayAllServicos(int vectorServicos, bool remover) {
 			option--;
 		break;
 	case KEY_DOWN:
-		if (option + 1 < this->condominio.getServicos(vectorServicos).size())
+		if (option + 1 < this->condominio->getServicos(vectorServicos).size())
 			option++;
 		break;
 	case KEY_ENTER:
@@ -3810,11 +3812,11 @@ int Main::menuSelectHabitacaoServico() {
 	cout << "ID\tHabitacao      Renda         NIF Proprietario" << endl;
 
 	vector<Habitacao*> habitacoesSemServico;
-	for (size_t i = 0; i < this->condominio.getHabitacoes().size(); i++) {
-		if (this->condominio.getHabitacoes()[i]->hasProprietario())
-			if (this->condominio.getHabitacoes()[i]->getServico() == -1)
+	for (size_t i = 0; i < this->condominio->getHabitacoes().size(); i++) {
+		if (this->condominio->getHabitacoes()[i]->hasProprietario())
+			if (this->condominio->getHabitacoes()[i]->getServico() == -1)
 				habitacoesSemServico.push_back(
-						this->condominio.getHabitacoes()[i]);
+						this->condominio->getHabitacoes()[i]);
 	}
 	if (habitacoesSemServico.empty()) {
 		cout
@@ -3841,9 +3843,9 @@ int Main::menuSelectHabitacaoServico() {
 	case KEY_ENTER:
 		pos = option;
 		resetOption();
-		for (size_t i = 0; this->condominio.getHabitacoes().size(); i++) {
+		for (size_t i = 0; this->condominio->getHabitacoes().size(); i++) {
 			if (habitacoesSemServico[pos]->getID()
-					== this->condominio.getHabitacoes()[i]->getID()) {
+					== this->condominio->getHabitacoes()[i]->getID()) {
 				pos = i;
 				break;
 			}
@@ -3939,10 +3941,10 @@ int Main::menuAddServico(int pos, int tipo, int menuOption, bool sameUser) {
 		cout << "REQUISITAR SERVICO DE LIMPEZA\n" << endl;
 		especialidade = "Limpeza";
 		cout << "Numero total de funcionarios de limpeza = "
-				<< this->condominio.getNumFuncLimpeza() << endl;
+				<< this->condominio->getNumFuncLimpeza() << endl;
 		cout << "Numero de funcionarios de limpeza livres actual = "
-				<< this->condominio.getLivresLimpeza() << endl;
-		if (this->condominio.getNumFuncLimpeza() == 0) {
+				<< this->condominio->getLivresLimpeza() << endl;
+		if (this->condominio->getNumFuncLimpeza() == 0) {
 			cout
 					<< "\nO condominio nao tem funcionarios para este tipo de servico.\n"
 					<< endl;
@@ -3950,21 +3952,21 @@ int Main::menuAddServico(int pos, int tipo, int menuOption, bool sameUser) {
 			return menuSelectTipoServico(pos, sameUser);
 		}
 		cout << "\nData prevista para o inicio do servico: ";
-		disponibilidade = this->condominio.getDisponibilidadeServico(0);
+		disponibilidade = this->condominio->getDisponibilidadeServico(0);
 		if (disponibilidade == 0)
 			dataPrevista = "Imediata";
 		else
-			dataPrevista = convertTime(this->condominio.getMes(),
+			dataPrevista = convertTime(this->condominio->getMes(),
 					disponibilidade);
 		cout << dataPrevista << endl;
 	} else if (tipo == 1) {
 		cout << "REQUISITAR CANALIZADOR\n" << endl;
 		especialidade = "Canalizacao";
 		cout << "Numero total de canalizadores = "
-				<< this->condominio.getNumFuncCanalizacao() << endl;
+				<< this->condominio->getNumFuncCanalizacao() << endl;
 		cout << "Numero de canalizadores livres actual = "
-				<< this->condominio.getLivresCanalizacao() << endl;
-		if (this->condominio.getNumFuncCanalizacao() == 0) {
+				<< this->condominio->getLivresCanalizacao() << endl;
+		if (this->condominio->getNumFuncCanalizacao() == 0) {
 			cout
 					<< "\nO condominio nao tem funcionarios para este tipo de servico.\n"
 					<< endl;
@@ -3973,11 +3975,11 @@ int Main::menuAddServico(int pos, int tipo, int menuOption, bool sameUser) {
 		}
 
 		cout << "\nData prevista para o inicio do servico: ";
-		disponibilidade = this->condominio.getDisponibilidadeServico(1);
+		disponibilidade = this->condominio->getDisponibilidadeServico(1);
 		if (disponibilidade == 0)
 			dataPrevista = "Imediata";
 		else
-			dataPrevista = convertTime(this->condominio.getMes(),
+			dataPrevista = convertTime(this->condominio->getMes(),
 					disponibilidade);
 		cout << dataPrevista << endl;
 
@@ -3985,10 +3987,10 @@ int Main::menuAddServico(int pos, int tipo, int menuOption, bool sameUser) {
 		cout << "REQUISITAR PINTOR\n" << endl;
 		especialidade = "Pintura";
 		cout << "Numero total de pintores = "
-				<< this->condominio.getNumFuncPintura() << endl;
+				<< this->condominio->getNumFuncPintura() << endl;
 		cout << "Numero de pintores livres actual = "
-				<< this->condominio.getLivresPintura() << endl;
-		if (this->condominio.getNumFuncPintura() == 0) {
+				<< this->condominio->getLivresPintura() << endl;
+		if (this->condominio->getNumFuncPintura() == 0) {
 			cout
 					<< "\nO condominio nao tem funcionarios para este tipo de servico.\n"
 					<< endl;
@@ -3996,11 +3998,11 @@ int Main::menuAddServico(int pos, int tipo, int menuOption, bool sameUser) {
 			return menuSelectTipoServico(pos, sameUser);
 		}
 		cout << "\nData prevista para o inicio do servico: ";
-		disponibilidade = this->condominio.getDisponibilidadeServico(2);
+		disponibilidade = this->condominio->getDisponibilidadeServico(2);
 		if (disponibilidade == 0)
 			dataPrevista = "Imediata";
 		else
-			dataPrevista = convertTime(this->condominio.getMes(),
+			dataPrevista = convertTime(this->condominio->getMes(),
 					disponibilidade);
 		cout << dataPrevista << endl;
 	}
@@ -4020,16 +4022,17 @@ int Main::menuAddServico(int pos, int tipo, int menuOption, bool sameUser) {
 		break;
 	case KEY_ENTER:
 		if (menuOption == 0) {
-			Servico s1 = Servico(especialidade,
-					this->condominio.getHabitacoes()[pos]->getNIFProprietario(),
-					mesesAno[this->condominio.getMes()], time(NULL));
-			this->condominio.getHabitacoes()[pos]->setServico(s1.getID());
+			Servico s1 =
+					Servico(especialidade,
+							this->condominio->getHabitacoes()[pos]->getNIFProprietario(),
+							mesesAno[this->condominio->getMes()], time(NULL));
+			this->condominio->getHabitacoes()[pos]->setServico(s1.getID());
 			if (dataPrevista == "Imediata")
-				condominio.addServico(1, mesesAno[this->condominio.getMes()],
-						s1);
+				this->condominio->addServico(1,
+						mesesAno[this->condominio->getMes()], s1);
 			else
-				condominio.addServico(2, mesesAno[this->condominio.getMes()],
-						s1);
+				this->condominio->addServico(2,
+						mesesAno[this->condominio->getMes()], s1);
 			cout << "\nServico requisitado." << endl;
 			resetOption();
 			pressEnterToContinue();
@@ -4057,7 +4060,7 @@ int Main::menuDeleteServico(int pos, int vectorServicos, int menuOption) {
 	displayLogo();
 	gotoxy(0, 8);
 	cout << "DADOS DO SERVICO\n" << endl;
-	this->condominio.getServicos(vectorServicos)[pos].info();
+	this->condominio->getServicos(vectorServicos)[pos].info();
 
 	if (vectorServicos == 0)
 		cout << "Tem a certeza que pretende remover este servico?" << endl;
@@ -4077,7 +4080,7 @@ int Main::menuDeleteServico(int pos, int vectorServicos, int menuOption) {
 		break;
 	case KEY_ENTER:
 		if (menuOption == 0) {
-			this->condominio.eraseServico(pos, vectorServicos);
+			this->condominio->eraseServico(pos, vectorServicos);
 			if (vectorServicos == 0)
 				cout << "\nServico removido." << endl;
 			else
@@ -4132,21 +4135,54 @@ string Main::convertTime(string mes, time_t time) {
  * @retval TRUE Successfully imported data.
  * @retval FALSE Couldn't read from .txt file.
  */
-bool Main::importCondominio() {
-	ifstream myfile(pathCondominio);
+bool Main::importCondominios() {
+	ifstream myfile(pathCondominios);
 	string line = "";
+	int id = 0;
 	long int fundos = 0;
 	int currentMes = 0;
+	string designacao = "";
+	string cidade = "";
+	int coordX = 0;
+	int coordY = 0;
 
 	if (myfile.is_open()) {
 		while (getline(myfile, line)) {
+			id = atoi(line.c_str());
+			getline(myfile, line);
 			fundos = atol(line.c_str());
 			getline(myfile, line);
 			currentMes = atoi(line.c_str());
-			this->condominio.setFundos(fundos);
-			this->condominio.setCurrentMes(currentMes);
+			getline(myfile, designacao);
+			getline(myfile, cidade);
+			getline(myfile, line);
+			coordX = atoi(line.c_str());
+			getline(myfile, line);
+			coordY = atoi(line.c_str());
+			getline(myfile, line);
+
+			Posicao localizacao = Posicao();
+			localizacao.cidade = cidade;
+			localizacao.x = coordX;
+			localizacao.y = coordY;
+
+			Condominio c1 = Condominio(id, fundos, currentMes, designacao,
+					localizacao);
+
+			this->condominios.insert(c1);
 		}
 		myfile.close();
+
+		BSTItrIn<Condominio> it(this->condominios);
+		while (!it.isAtEnd()) {
+			importCondominos(it.retrieve());
+			importHabitacoes(it.retrieve());
+			importFuncionarios(it.retrieve());
+			importServicos(it.retrieve());
+
+			it.advance();
+		}
+
 		return true;
 	} else {
 		displayLogo();
@@ -4161,12 +4197,28 @@ bool Main::importCondominio() {
  * @retval TRUE Successfully exported data.
  * @retval FALSE Couldn't write to .txt file.
  */
-bool Main::exportCondominio() {
-	ofstream myfile(pathCondominio);
+bool Main::exportCondominios() {
+	ofstream myfile(pathCondominios);
+	BSTItrIn<Condominio> it(this->condominios);
 
 	if (myfile.is_open()) {
-		myfile << this->condominio.getFundos() << endl;
-		myfile << this->condominio.getMes() << endl;
+		while (!it.isAtEnd()) {
+			myfile << it.retrieve().getID() << endl;
+			myfile << it.retrieve().getFundos() << endl;
+			myfile << it.retrieve().getMes() << endl;
+			myfile << it.retrieve().getDesignacao() << endl;
+			myfile << it.retrieve().getLocalizacao().cidade << endl;
+			myfile << it.retrieve().getLocalizacao().x << endl;
+			myfile << it.retrieve().getLocalizacao().y << endl;
+			myfile << endl;
+
+			exportCondominos(it.retrieve());
+			exportHabitacoes(it.retrieve());
+			exportFuncionarios(it.retrieve());
+			exportServicos(it.retrieve());
+
+			it.advance();
+		}
 		myfile.close();
 		return true;
 	} else {
@@ -4182,8 +4234,11 @@ bool Main::exportCondominio() {
  * @retval TRUE Successfully imported data.
  * @retval FALSE Couldn't read from .txt file.
  */
-bool Main::importCondominos() {
-	ifstream myfile(pathCondominos);
+bool Main::importCondominos(Condominio &cond) {
+	stringstream ss;
+	ss << pathCondominos << cond.getID() << ".txt";
+	string path = ss.str();
+	ifstream myfile(path.c_str());
 	string line = "";
 	bool admin = false;
 	string nomeUtilizador = "";
@@ -4210,7 +4265,7 @@ bool Main::importCondominos() {
 			divida = atol(line.c_str());
 			Condomino c1 = Condomino(nomeUtilizador, password, admin, nomeCivil,
 					NIF, fundosMensais, divida);
-			this->condominio.addMorador(c1);
+			cond.addMorador(c1);
 			getline(myfile, line);
 		}
 		myfile.close();
@@ -4229,23 +4284,24 @@ bool Main::importCondominos() {
  * @retval TRUE Successfully exported data.
  * @retval FALSE Couldn't write to .txt file.
  */
-bool Main::exportCondominos() {
-	ofstream myfile(pathCondominos, ios::trunc);
+bool Main::exportCondominos(Condominio &cond) {
+	stringstream ss;
+	ss << pathCondominos << cond.getID() << ".txt";
+	string path = ss.str();
+	ofstream myfile(path.c_str(), ios::trunc);
 
 	if (myfile.is_open()) {
-		for (size_t i = 0; i < this->condominio.getMoradores().size(); i++) {
-			if (this->condominio.getMoradores()[i].isAdmin())
+		for (size_t i = 0; i < cond.getMoradores().size(); i++) {
+			if (cond.getMoradores()[i].isAdmin())
 				myfile << "1" << endl;
 			else
 				myfile << "0" << endl;
-			myfile << this->condominio.getMoradores()[i].getNomeUtilizador()
-					<< endl;
-			myfile << this->condominio.getMoradores()[i].getPassword() << endl;
-			myfile << this->condominio.getMoradores()[i].getNomeCivil() << endl;
-			myfile << this->condominio.getMoradores()[i].getNIF() << endl;
-			myfile << this->condominio.getMoradores()[i].getFundosMensais()
-					<< endl;
-			myfile << this->condominio.getMoradores()[i].getDivida() << endl;
+			myfile << cond.getMoradores()[i].getNomeUtilizador() << endl;
+			myfile << cond.getMoradores()[i].getPassword() << endl;
+			myfile << cond.getMoradores()[i].getNomeCivil() << endl;
+			myfile << cond.getMoradores()[i].getNIF() << endl;
+			myfile << cond.getMoradores()[i].getFundosMensais() << endl;
+			myfile << cond.getMoradores()[i].getDivida() << endl;
 			myfile << endl;
 		}
 		myfile.close();
@@ -4263,8 +4319,12 @@ bool Main::exportCondominos() {
  * @retval TRUE Successfully imported data.
  * @retval FALSE Couldn't read from .txt file.
  */
-bool Main::importHabitacoes() {
-	ifstream myfile(pathHabitacoes);
+bool Main::importHabitacoes(Condominio &cond) {
+	stringstream ss;
+	ss << pathHabitacoes << cond.getID() << ".txt";
+	string path = ss.str();
+	ifstream myfile(path.c_str());
+
 	string line = "";
 	int id = 0;
 	string tipo = "";
@@ -4336,8 +4396,8 @@ bool Main::importHabitacoes() {
 		}
 		myfile.close();
 		sort(habitacoes.begin(), habitacoes.end(), compHabitacaoID);
-		this->condominio.setHabitacoes(habitacoes);
-		this->condominio.updateHabitacoesCondominos();
+		cond.setHabitacoes(habitacoes);
+		cond.updateHabitacoesCondominos();
 		return true;
 	} else {
 		displayLogo();
@@ -4352,11 +4412,14 @@ bool Main::importHabitacoes() {
  * @retval TRUE Successfully exported data.
  * @retval FALSE Couldn't write to .txt file.
  */
-bool Main::exportHabitacoes() {
-	ofstream myfile(pathHabitacoes, ios::trunc);
+bool Main::exportHabitacoes(Condominio &cond) {
+	stringstream ss;
+	ss << pathHabitacoes << cond.getID() << ".txt";
+	string path = ss.str();
+	ofstream myfile(path.c_str(), ios::trunc);
 
 	if (myfile.is_open()) {
-		vector<Habitacao*> habitacoes = this->condominio.getHabitacoes();
+		vector<Habitacao*> habitacoes = cond.getHabitacoes();
 		sort(habitacoes.begin(), habitacoes.end(), compHabitacaoID);
 
 		for (size_t j = 0; j < habitacoes.size(); j++) {
@@ -4404,8 +4467,12 @@ bool Main::exportHabitacoes() {
  * @retval TRUE Successfully imported data.
  * @retval FALSE Couldn't read from .txt file.
  */
-bool Main::importFuncionarios() {
-	ifstream myfile(pathFuncionarios);
+bool Main::importFuncionarios(Condominio &cond) {
+	stringstream ss;
+	ss << pathFuncionarios << cond.getID() << ".txt";
+	string path = ss.str();
+	ifstream myfile(path.c_str());
+
 	string line = "";
 	int id = 0;
 	string especialidade = "";
@@ -4426,7 +4493,7 @@ bool Main::importFuncionarios() {
 		}
 		myfile.close();
 		insertionSort(funcionarios);
-		this->condominio.setFuncionarios(funcionarios);
+		cond.setFuncionarios(funcionarios);
 		return true;
 	} else {
 		displayLogo();
@@ -4441,11 +4508,14 @@ bool Main::importFuncionarios() {
  * @retval TRUE Successfully exported data.
  * @retval FALSE Couldn't write to .txt file.
  */
-bool Main::exportFuncionarios() {
-	ofstream myfile(pathFuncionarios, ios::trunc);
+bool Main::exportFuncionarios(Condominio &cond) {
+	stringstream ss;
+	ss << pathFuncionarios << cond.getID() << ".txt";
+	string path = ss.str();
+	ofstream myfile(path.c_str(), ios::trunc);
 
 	if (myfile.is_open()) {
-		vector<Funcionario> funcionarios = this->condominio.getFuncionarios();
+		vector<Funcionario> funcionarios = cond.getFuncionarios();
 		insertionSort(funcionarios);
 
 		for (size_t i = 0; i < funcionarios.size(); i++) {
@@ -4469,8 +4539,12 @@ bool Main::exportFuncionarios() {
  * @retval TRUE Successfully imported data.
  * @retval FALSE Couldn't read from .txt file.
  */
-bool Main::importServicos() {
-	ifstream myfile(pathServicos);
+bool Main::importServicos(Condominio &cond) {
+	stringstream ss;
+	ss << pathServicos << cond.getID() << ".txt";
+	string path = ss.str();
+	ifstream myfile(path.c_str());
+
 	string line = "";
 	int id = 0;
 	string especialidade = "";
@@ -4507,9 +4581,8 @@ bool Main::importServicos() {
 			if (vectorServicos == 0)
 				servicosTerminados.push_back(s1);
 			else if (vectorServicos == 1) {
-				if (this->condominio.getFuncionario(idFuncionario) != NULL)
-					this->condominio.getFuncionario(idFuncionario)->setOcupado(
-							true);
+				if (cond.getFuncionario(idFuncionario) != NULL)
+					cond.getFuncionario(idFuncionario)->setOcupado(true);
 				servicosEmCurso.push_back(s1);
 			} else if (vectorServicos == 2)
 				servicosEmEspera.push_back(s1);
@@ -4519,9 +4592,9 @@ bool Main::importServicos() {
 		insertionSort(servicosTerminados);
 		insertionSort(servicosEmCurso);
 		insertionSort(servicosEmEspera);
-		this->condominio.setServicos(0, servicosTerminados);
-		this->condominio.setServicos(1, servicosEmCurso);
-		this->condominio.setServicos(2, servicosEmEspera);
+		cond.setServicos(0, servicosTerminados);
+		cond.setServicos(1, servicosEmCurso);
+		cond.setServicos(2, servicosEmEspera);
 		return true;
 	} else {
 		displayLogo();
@@ -4536,17 +4609,20 @@ bool Main::importServicos() {
  * @retval TRUE Successfully exported data.
  * @retval FALSE Couldn't write to .txt file.
  */
-bool Main::exportServicos() {
-	ofstream myfile(pathServicos, ios::trunc);
+bool Main::exportServicos(Condominio &cond) {
+	stringstream ss;
+	ss << pathServicos << cond.getID() << ".txt";
+	string path = ss.str();
+	ofstream myfile(path.c_str(), ios::trunc);
 
 	if (myfile.is_open()) {
-		vector<Servico> servicosTerminados = this->condominio.getServicos(0);
+		vector<Servico> servicosTerminados = cond.getServicos(0);
 		insertionSort(servicosTerminados);
 
-		vector<Servico> servicosEmCurso = this->condominio.getServicos(1);
+		vector<Servico> servicosEmCurso = cond.getServicos(1);
 		insertionSort(servicosEmCurso);
 
-		vector<Servico> servicosEmEspera = this->condominio.getServicos(2);
+		vector<Servico> servicosEmEspera = cond.getServicos(2);
 		insertionSort(servicosEmEspera);
 
 		for (size_t i = 0; i < servicosTerminados.size(); i++) {
@@ -4601,12 +4677,12 @@ bool Main::exportServicos() {
  * @retval FALSE At least one of the called functions couldn't export data.
  */
 int Main::exitFunction() {
-	if (!this->exportCondominio() || !this->exportCondominos()
-			|| !this->exportHabitacoes() || !this->exportFuncionarios()
-			|| !this->exportServicos())
-		return EXIT_FAILURE;
-	else
-		return EXIT_SUCCESS;
+	/*if (!this->exportCondominios() || !this->exportCondominos()
+	 || !this->exportHabitacoes() || !this->exportFuncionarios()
+	 || !this->exportServicos())
+	 return EXIT_FAILURE;
+	 else*/
+	return EXIT_SUCCESS;
 }
 
 /*
@@ -4946,7 +5022,54 @@ void createMenuOptions() {
 	menuOptions[23].push_back("Data de inicio");							//2
 	menuOptions[23].push_back("Voltar atras");								//3
 
+	vector<string> menuGestaoCondominios;
+	menuOptions.push_back(menuGestaoCondominios);
+
+	menuOptions[24].push_back("Selecionar condominio");
+	menuOptions[24].push_back("Sair");
+
+	vector<string> menuGerirCondominio;
+	menuOptions.push_back(menuGerirCondominio);
+
+	menuOptions[25].push_back("Alterar fundos");
+	menuOptions[25].push_back("Alterar designacao");
+	menuOptions[25].push_back("Alterar localizacao");
+	menuOptions[25].push_back("Alterar coordenadas");
+	menuOptions[25].push_back("Voltar atras");
+
 	menu = menuOptions;
+}
+
+int Main::menuGestaoCondominios() {
+	displayLogo();
+	gotoxy(30, 8);
+	cout << "GESTAO DE CONDOMINIOS\n" << endl;
+
+	displayMenuOptions(24);
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[24].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) { //Selecionar condominio
+			//resetOption();
+			//return menuLogin();
+		} else if (option == 1) { //Sair
+			return EXIT_SUCCESS;
+		}
+		break;
+	default:
+		break;
+	}
+
+	return menuGestaoCondominios();
 }
 
 /**
@@ -4961,14 +5084,15 @@ int main() {
 	createMenuOptions();
 	main.setMenus(menu);
 
-	main.importCondominio();
-	main.importCondominos();
-	main.importHabitacoes();
-	main.importFuncionarios();
-	main.importServicos();
+	main.importCondominios();
+	/*main.importCondominos();
+	 main.importHabitacoes();
+	 main.importFuncionarios();
+	 main.importServicos();*/
 
-	main.menuInicial();
+//main.menuInicial();
+	main.menuGestaoCondominios();
 
-	return main.exitFunction();
+	return main.exportCondominios();
 }
 
