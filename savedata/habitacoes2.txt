@@ -1,0 +1,11 @@
+2
+Apartamento
+Morada1
+CodigoPostal1
+987654321
+111111000000
+3
+100
+5
+-1
+

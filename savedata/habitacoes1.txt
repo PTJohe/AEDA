@@ -1,0 +1,11 @@
+1
+Vivenda
+Morada1
+CodigoPostal1
+123456789
+111111111110
+100
+20
+1
+-1
+

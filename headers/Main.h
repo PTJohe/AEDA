@@ -158,6 +158,8 @@ public:
 
 	//Segunda Parte
 	int menuGestaoCondominios();
+	int menuDisplayAllCondominios(vector<Condominio> &conds);
+	bool displaySelectCondominio(vector<Condominio> &conds);
 
 };
 

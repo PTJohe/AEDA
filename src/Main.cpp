@@ -1219,7 +1219,8 @@ int Main::menuInicial() {
 			return menuRegisto();
 		} else
 			//Sair
-			return EXIT_SUCCESS;
+			resetOption();
+		return menuGestaoCondominios();
 		break;
 	default:
 		break;
@@ -5059,8 +5060,15 @@ int Main::menuGestaoCondominios() {
 		break;
 	case KEY_ENTER:
 		if (option == 0) { //Selecionar condominio
-			//resetOption();
-			//return menuLogin();
+			resetOption();
+			vector<Condominio> conds;
+			BSTItrIn<Condominio> it(this->condominios);
+			while (!it.isAtEnd()) {
+				conds.push_back(it.retrieve());
+				it.advance();
+			}
+			this->condominio = NULL;
+			return menuDisplayAllCondominios(conds);
 		} else if (option == 1) { //Sair
 			return EXIT_SUCCESS;
 		}
@@ -5070,6 +5078,86 @@ int Main::menuGestaoCondominios() {
 	}
 
 	return menuGestaoCondominios();
+}
+
+int Main::menuDisplayAllCondominios(vector<Condominio> &conds) {
+	displayLogo();
+
+	gotoxy(30, 8);
+	cout << "SELECIONE O CONDOMINIO:\n" << endl;
+	cout << "[ENTER] Selecionar" << endl;
+	cout << "[ESC] Voltar atras\n" << endl;
+	cout << "ID\tDesignacao\t\tNr Prop. Localizacao\t\t(X,Y)" << endl;
+	if (conds.empty()) {
+		cout << "Nao existem condominios para gerir." << endl;
+		pressEnterToContinue();
+		return menuGestaoCondominios();
+	}
+	displaySelectCondominio(conds);
+
+	BSTItrIn<Condominio> it(this->condominios);
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < conds.size())
+			option++;
+		break;
+	case KEY_ENTER:
+		while (!it.isAtEnd()) {
+			if (it.retrieve().getID() == conds[option].getID()) {
+				this->condominio = &it.retrieve();
+				resetOption();
+				return menuInicial();
+			}
+			it.advance();
+		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuGestaoCondominios();
+		break;
+	default:
+		break;
+	}
+	return menuDisplayAllCondominios(conds);
+}
+
+/**
+ * Prints a Condominio select screen.
+ * retval TRUE No error occurred.
+ * retval FALSE Invalid option.
+ */
+bool Main::displaySelectCondominio(vector<Condominio> &conds) {
+	if (option >= conds.size()) {
+		return EXIT_FAILURE;
+	}
+	for (size_t i = 0; i < conds.size(); i++) {
+		gotoxy(0, 14 + i);
+		if (i == option) {
+			setcolor(BLACK, LIGHTGREY);
+			cout << conds[i].getID() << "  - " << left << setw(25)
+					<< setfill(' ') << conds[i].getDesignacao() << " -   "
+					<< left << setw(4) << setfill(' ')
+					<< conds[i].getNumHabitacoes() << " - " << left << setw(18)
+					<< setfill(' ') << conds[i].getLocalizacao().cidade
+					<< " - (" << conds[i].getLocalizacao().x << ","
+					<< conds[i].getLocalizacao().y << ")" << endl;
+			setcolor(WHITE, BLACK);
+		} else {
+			cout << conds[i].getID() << "  - " << left << setw(25)
+					<< setfill(' ') << conds[i].getDesignacao() << " -   "
+					<< left << setw(4) << setfill(' ')
+					<< conds[i].getNumHabitacoes() << " - " << left << setw(18)
+					<< setfill(' ') << conds[i].getLocalizacao().cidade
+					<< " - (" << conds[i].getLocalizacao().x << ","
+					<< conds[i].getLocalizacao().y << ")" << endl;
+		}
+	}
+	return EXIT_SUCCESS;
 }
 
 /**

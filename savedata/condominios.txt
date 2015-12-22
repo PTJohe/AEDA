@@ -6,11 +6,19 @@ Porto
 41
 -8
 
-4
-1860
-10
-Condominio Porto
-Porto
-41
+2
+2000
+6
+Condominio Lisboa
+Lisboa
+37
+-9
+
+3
+1000
+0
+Resort de Luxo Algarve
+Algarve
+34
 -8
 

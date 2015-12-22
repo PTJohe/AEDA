@@ -254,12 +254,17 @@ void Condominio::sortMoradores(int sortOption) {
 		sort(moradores.begin(), moradores.end(), compCondominoNIF);
 }
 /**
- * Adds a tenant to the condominium.
+ * Adds a tenant to the condominium. If it's the first tenant, it's automatically given admin rights.
  * @param condomino Tenant to be added.
  * @return Position of the new tenant in the vector of tenants. Position = -1 if tenant to be added is already in the vector.
  * @throws CondominoDuplicado There is already a tenant with the same username of NIF in the condominium.
  */
 int Condominio::addMorador(Condomino condomino) {
+	if(this->moradores.empty()){
+		condomino.setAdmin(true);
+		this->moradores.push_back(condomino);
+		return 0;
+	}
 	int pos = sequentialSearch(this->moradores, condomino);
 	if (pos == -1) {
 		this->moradores.push_back(condomino);
