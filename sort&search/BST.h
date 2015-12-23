@@ -44,15 +44,21 @@ template<class Comparable>
 class BST {
 public:
 	explicit BST(const Comparable & notFound);
-	BST(){
-	    root = NULL;
+	BST() {
+		root = NULL;
 	}
 	BST(const BST & rhs);
 	~BST();
 
+	BinaryNode<Comparable>* getRoot(){
+		return this->root;
+	}
+
 	const Comparable & findMin() const;
 	const Comparable & findMax() const;
 	const Comparable & find(const Comparable & x) const;
+	void findInRange(BinaryNode<Comparable>* root, int min, int max,
+			vector<Comparable> &conds);
 	bool isEmpty() const;
 	void printTree() const;
 
@@ -125,6 +131,21 @@ const Comparable & BST<Comparable>::findMax() const {
 template<class Comparable>
 const Comparable & BST<Comparable>::find(const Comparable & x) const {
 	return elementAt(find(x, root));
+}
+
+template<class Comparable>
+void BST<Comparable>::findInRange(BinaryNode<Comparable>* root, int min,
+		int max, vector<Comparable> &conds) {
+	if (!root)
+		return;
+	if (min > max)
+		return;
+
+	findInRange(root->left, min, max, conds);
+	findInRange(root->right, min, max, conds);
+
+	if (root->element.getNumHabitacoes() >= min && root->element.getNumHabitacoes() <= max)
+		conds.push_back(root->element);
 }
 
 template<class Comparable>

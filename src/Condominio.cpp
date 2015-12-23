@@ -38,7 +38,8 @@ Condominio::Condominio(string designacao, Posicao localizacao) {
 Condominio::Condominio(int id, long int fundos, int currentMes,
 		string designacao, Posicao localizacao) {
 	this->id = id;
-	nextId = id + 1;
+	if (id >= nextId)
+		nextId = id + 1;
 	this->fundos = fundos;
 	this->currentMes = currentMes;
 
@@ -51,6 +52,10 @@ Condominio::Condominio(int id, long int fundos, int currentMes,
  */
 int Condominio::getID() const {
 	return id;
+}
+
+void Condominio::decID() {
+	nextId--;
 }
 /**
  * @return Condominium funds.
@@ -202,6 +207,14 @@ void Condominio::setServicos(int vectorServicos, vector<Servico> servicos) {
 	else if (vectorServicos == 2)
 		this->servicosEmEspera = servicos;
 }
+
+void Condominio::setDesignacao(string designacao) {
+	this->designacao = designacao;
+}
+void Condominio::setLocalizacao(Posicao localizacao) {
+	this->localizacao = localizacao;
+}
+
 /**
  * Compares two condominiums by the number of properties and/or houses.
  * @param c1 Condominium to be compared.
@@ -260,7 +273,7 @@ void Condominio::sortMoradores(int sortOption) {
  * @throws CondominoDuplicado There is already a tenant with the same username of NIF in the condominium.
  */
 int Condominio::addMorador(Condomino condomino) {
-	if(this->moradores.empty()){
+	if (this->moradores.empty()) {
 		condomino.setAdmin(true);
 		this->moradores.push_back(condomino);
 		return 0;
@@ -1147,6 +1160,38 @@ void Condominio::infoHabitacoes() const {
 /*
  * Non-class functions
  */
+
+bool compCondominioID(Condominio c1, Condominio c2) {
+	return c1.getID() < c2.getID();
+}
+bool compCondominioDesignacao(Condominio c1, Condominio c2) {
+	if (c1.getDesignacao() < c2.getDesignacao())
+		return true;
+	else if (c1.getDesignacao() > c2.getDesignacao())
+		return false;
+	else
+		return c1.getID() < c2.getID();
+}
+bool compCondominioPropriedades(Condominio c1, Condominio c2) {
+	if (c1.getNumHabitacoes() < c2.getNumHabitacoes())
+		return true;
+	else if (c1.getNumHabitacoes() > c2.getNumHabitacoes())
+		return false;
+	else if (c1.getNumVivendas() < c2.getNumVivendas())
+		return true;
+	else if (c1.getNumVivendas() > c2.getNumVivendas())
+		return false;
+	else
+		return c1.getID() < c2.getID();
+}
+bool compCondominioLocalizacao(Condominio c1, Condominio c2) {
+	if (c1.getLocalizacao().cidade < c2.getLocalizacao().cidade)
+		return true;
+	else if (c1.getLocalizacao().cidade > c2.getLocalizacao().cidade)
+		return false;
+	else
+		return c1.getID() < c2.getID();
+}
 
 /**
  * Compares two tenants by name for sorting purposes.

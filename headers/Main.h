@@ -45,6 +45,7 @@ public:
 	bool validLogin(string utilizador, string password);
 	bool validRegister(string utilizador, string password);
 
+	bool editCondominio(int editOption, Condominio &c1);
 	bool editDadosConta(int editOption);
 	bool editDadosContaAdmin(int editOption, Condomino &condomino);
 	bool editDadosCondomino(int editOption);
@@ -159,6 +160,17 @@ public:
 	//Segunda Parte
 	int menuGestaoCondominios();
 	int menuDisplayAllCondominios(vector<Condominio> &conds);
+	int menuDisplayCondominiosBy(vector<Condominio> &conds);
+	int menuConfirmSelectCondominio(vector<Condominio> &conds, int menuOption);
+	int menuFiltrarCondominios(vector<Condominio> &conds);
+	int menuAddCondominio();
+	int menuConfirmAddCondominio(Condominio &c1, int menuOption);
+	int menuSelectCondominio(vector<Condominio> &conds, bool remover);
+	int menuEditCondominio(Condominio &c1);
+	int menuDeleteCondominio(Condominio &c1, int menuOption);
+
+	vector<Condominio> getVectorCondominios();
+	void sortCondominios(vector<Condominio> &conds, int sortOption);
 	bool displaySelectCondominio(vector<Condominio> &conds);
 
 };

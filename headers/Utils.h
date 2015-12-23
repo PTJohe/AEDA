@@ -17,6 +17,8 @@ using namespace std;
 #define KEY_RIGHT 77
 #define KEY_ENTER 13
 #define KEY_ESC 27
+#define KEY_F1 59
+#define KEY_F2 60
 
 //==========================================================================================
 //COLOR CODES: (alternative: use symbolic const’s)

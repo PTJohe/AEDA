@@ -29,6 +29,7 @@ public:
 			Posicao localizacao);
 
 	int getID() const;
+	void decID();
 	long int getFundos() const;
 	int getMes() const;
 	string getDesignacao() const;
@@ -49,6 +50,8 @@ public:
 	void setHabitacoes(vector<Habitacao*> habitacoes);
 	void setFuncionarios(vector<Funcionario> funcionarios);
 	void setServicos(int vectorServicos, vector<Servico> servicos);
+	void setDesignacao(string designacao);
+	void setLocalizacao(Posicao localizacao);
 
 	bool operator <(const Condominio &c1) const;
 	bool operator ==(const Condominio &c1) const;
@@ -119,6 +122,11 @@ public:
 /*
  * Non-class functions
  */
+bool compCondominioID(Condominio c1, Condominio c2);
+bool compCondominioDesignacao(Condominio c1, Condominio c2);
+bool compCondominioPropriedades(Condominio c1, Condominio c2);
+bool compCondominioLocalizacao(Condominio c1, Condominio c2);
+
 bool compCondominoNomeCivil(Condomino c1, Condomino c2);
 bool compCondominoNIF(Condomino c1, Condomino c2);
 bool compFuncionarioEspecialidade(Funcionario f1, Funcionario f2);
