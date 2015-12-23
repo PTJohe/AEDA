@@ -322,6 +322,95 @@ bool Main::displaySelectServicoRequisitado(vector<Servico> servicos) {
 	}
 	return EXIT_SUCCESS;
 }
+/**
+ * Prints a Condominio select screen.
+ * retval TRUE No error occurred.
+ * retval FALSE Invalid option.
+ */
+bool Main::displaySelectCondominio(vector<Condominio> &conds) {
+	if (option >= conds.size()) {
+		return EXIT_FAILURE;
+	}
+	for (size_t i = 0; i < conds.size(); i++) {
+		gotoxy(0, 14 + i);
+		if (i == option) {
+			setcolor(BLACK, LIGHTGREY);
+			cout << conds[i].getID() << "  - " << left << setw(25)
+					<< setfill(' ') << conds[i].getDesignacao() << " -   "
+					<< left << setw(4) << setfill(' ')
+					<< conds[i].getNumHabitacoes() << " - " << left << setw(18)
+					<< setfill(' ') << conds[i].getLocalizacao().cidade
+					<< " - (" << conds[i].getLocalizacao().x << ","
+					<< conds[i].getLocalizacao().y << ")" << endl;
+			setcolor(WHITE, BLACK);
+		} else {
+			cout << conds[i].getID() << "  - " << left << setw(25)
+					<< setfill(' ') << conds[i].getDesignacao() << " -   "
+					<< left << setw(4) << setfill(' ')
+					<< conds[i].getNumHabitacoes() << " - " << left << setw(18)
+					<< setfill(' ') << conds[i].getLocalizacao().cidade
+					<< " - (" << conds[i].getLocalizacao().x << ","
+					<< conds[i].getLocalizacao().y << ")" << endl;
+		}
+	}
+	return EXIT_SUCCESS;
+}
+bool Main::displaySelectTransporte() {
+	if (option >= this->condominio->getTransportes().size()) {
+		return EXIT_FAILURE;
+	}
+
+	vector<Transporte> transportes;
+	priority_queue<Transporte> temp = this->condominio->getTransportes();
+	while (!temp.empty()) {
+		transportes.push_back(temp.top());
+		temp.pop();
+	}
+	for (size_t i = 0; i < transportes.size(); i++) {
+		gotoxy(0, 14 + i);
+		if (i == option) {
+			setcolor(BLACK, LIGHTGREY);
+			cout << left << setw(24) << setfill(' ') << transportes[i].getTipo()
+					<< left << setw(26) << setfill(' ')
+					<< transportes[i].getDestino()
+					<< transportes[i].getParagens().size() << endl;
+			setcolor(WHITE, BLACK);
+		} else {
+			cout << transportes[i].getTipo() << "  - " << left << setw(25)
+					<< setfill(' ') << transportes[i].getDestino() << setw(25)
+					<< setfill(' ') << " - "
+					<< transportes[i].getParagens().size() << endl;
+		}
+	}
+	return EXIT_SUCCESS;
+}
+bool Main::displaySelectParagem(Transporte &t1) {
+	if (option >= t1.getParagens().size()) {
+		return EXIT_FAILURE;
+	}
+	vector<Paragem> paragens;
+	priority_queue<Paragem> temp = t1.getParagens();
+	while (!temp.empty()) {
+		paragens.push_back(temp.top());
+		temp.pop();
+	}
+
+	for (size_t i = 0; i < paragens.size(); i++) {
+		gotoxy(0, 14 + i);
+		if (i == option) {
+			setcolor(BLACK, LIGHTGREY);
+			cout << paragens[i].getNome() << "  - " << left << setw(25)
+					<< setfill(' ') << "(" << paragens[i].getPos().x << ","
+					<< paragens[i].getPos().y << ")" << endl;
+			setcolor(WHITE, BLACK);
+		} else {
+			cout << paragens[i].getNome() << "  - " << left << setw(25)
+					<< setfill(' ') << "(" << paragens[i].getPos().x << ","
+					<< paragens[i].getPos().y << ")" << endl;
+		}
+	}
+	return EXIT_SUCCESS;
+}
 
 /**
  * Checks if the user trying to log in exists and, if so, updates currentUser.
@@ -1526,6 +1615,9 @@ int Main::menuUtilizador() {
 				resetOption();
 				return menuSelectHabitacaoServicoUtilizador(
 						habitacoesSemServico);
+			} else if (option == 8) { //Ver paragem mais proxima
+				resetOption();
+				return menuParagemMaisProxima();
 			} else { //Sair
 				resetOption();
 				return menuInicial();
@@ -1562,6 +1654,9 @@ int Main::menuUtilizador() {
 				resetOption();
 				return menuSelectHabitacaoServicoUtilizador(
 						habitacoesSemServico);
+			} else if (option == 7) { //Ver paragem mais proxima
+				resetOption();
+				return menuParagemMaisProxima();
 			} else { //Sair
 				resetOption();
 				return menuInicial();
@@ -2534,7 +2629,10 @@ int Main::menuAdministrador() {
 		} else if (option == 3) { //Gerir servicos
 			resetOption();
 			return menuGerirServicos();
-		} else if (option == 4) { //Fim do Mes
+		} else if (option == 4) { //Gerir transportes
+			resetOption();
+			return menuGerirTransportes();
+		} else if (option == 5) { //Fim do Mes
 			fimDoMes();
 		} else {
 			resetOption();
@@ -4823,7 +4921,7 @@ bool Main::importTransportes(Condominio &cond) {
 			tipo = line;
 			getline(myfile, destino);
 
-			Transporte t1 = Transporte(tipo, destino, this->condominio->getLocalizacao());
+			Transporte t1 = Transporte(tipo, destino, cond.getLocalizacao());
 
 			getline(myfile, line);
 			int n = atoi(line.c_str());
@@ -4842,14 +4940,14 @@ bool Main::importTransportes(Condominio &cond) {
 				cout << "Paragem = " << nome << " - " << coordX << "," << coordY
 						<< endl;
 
-				Paragem p1 = Paragem(nome, pos, this->condominio->getLocalizacao());
+				Paragem p1 = Paragem(nome, pos, cond.getLocalizacao());
 				t1.addParagem(p1);
 
 				cout << "Line = " << line << endl;
 				n--;
 			}
 			transportes.push(t1);
-			getline(myfile,line);
+			getline(myfile, line);
 		}
 		myfile.close();
 
@@ -5056,7 +5154,8 @@ void createMenuOptions() {
 	menuOptions[1].push_back("Adicionar habitacao");						//5
 	menuOptions[1].push_back("Ver servicos requisitados");					//6
 	menuOptions[1].push_back("Requisitar um servico");						//7
-	menuOptions[1].push_back("Sair");									//8
+	menuOptions[1].push_back("Ver paragem mais proxima");					//8
+	menuOptions[1].push_back("Sair");										//9
 
 	vector<string> menuUtilizadorNormal;
 	menuOptions.push_back(menuUtilizadorNormal);
@@ -5068,7 +5167,8 @@ void createMenuOptions() {
 	menuOptions[2].push_back("Adicionar habitacao");						//4
 	menuOptions[2].push_back("Ver servicos requisitados");					//5
 	menuOptions[2].push_back("Requisitar um servico");						//6
-	menuOptions[2].push_back("Sair");									//7
+	menuOptions[2].push_back("Ver paragem mais proxima");					//7
+	menuOptions[2].push_back("Sair");										//8
 
 	vector<string> menuDadosConta;
 	menuOptions.push_back(menuDadosConta);
@@ -5109,8 +5209,9 @@ void createMenuOptions() {
 	menuOptions[7].push_back("Gerir habitacoes");							//1
 	menuOptions[7].push_back("Gerir funcionarios");							//2
 	menuOptions[7].push_back("Gerir servicos");								//3
-	menuOptions[7].push_back("Fim do Mes");									//4
-	menuOptions[7].push_back("Voltar atras");								//5
+	menuOptions[7].push_back("Gerir transportes");							//4
+	menuOptions[7].push_back("Fim do Mes");									//5
+	menuOptions[7].push_back("Voltar atras");								//6
 
 	vector<string> menuGerirCondominos;
 	menuOptions.push_back(menuGerirCondominos);
@@ -5266,7 +5367,6 @@ void createMenuOptions() {
 
 	menuOptions[25].push_back("Alterar fundos");
 	menuOptions[25].push_back("Alterar designacao");
-	menuOptions[25].push_back("Alterar localizacao");
 	menuOptions[25].push_back("Voltar atras");
 
 	vector<string> menuDisplayCondominiosBy;
@@ -5277,6 +5377,21 @@ void createMenuOptions() {
 	menuOptions[26].push_back("Numero de propriedades");
 	menuOptions[26].push_back("Localizacao");
 	menuOptions[26].push_back("Voltar atras");
+
+	vector<string> menuParagemProxima;
+	menuOptions.push_back(menuParagemProxima);
+
+	menuOptions[27].push_back("Qualquer destino");
+	menuOptions[27].push_back("Especificar destino");
+	menuOptions[27].push_back("Voltar atras");
+
+	vector<string> menuGerirTransportes;
+	menuOptions.push_back(menuGerirTransportes);
+
+	menuOptions[28].push_back("Desactivar ponto de paragem");
+	menuOptions[28].push_back("Criar ponto de paragem");
+	menuOptions[28].push_back("Alterar destino de um transporte");
+	menuOptions[28].push_back("Voltar atras");
 
 	menu = menuOptions;
 }
@@ -5482,40 +5597,6 @@ void Main::sortCondominios(vector<Condominio> &conds, int sortOption) {
 		sort(conds.begin(), conds.end(), compCondominioLocalizacao);
 }
 
-/**
- * Prints a Condominio select screen.
- * retval TRUE No error occurred.
- * retval FALSE Invalid option.
- */
-bool Main::displaySelectCondominio(vector<Condominio> &conds) {
-	if (option >= conds.size()) {
-		return EXIT_FAILURE;
-	}
-	for (size_t i = 0; i < conds.size(); i++) {
-		gotoxy(0, 14 + i);
-		if (i == option) {
-			setcolor(BLACK, LIGHTGREY);
-			cout << conds[i].getID() << "  - " << left << setw(25)
-					<< setfill(' ') << conds[i].getDesignacao() << " -   "
-					<< left << setw(4) << setfill(' ')
-					<< conds[i].getNumHabitacoes() << " - " << left << setw(18)
-					<< setfill(' ') << conds[i].getLocalizacao().cidade
-					<< " - (" << conds[i].getLocalizacao().x << ","
-					<< conds[i].getLocalizacao().y << ")" << endl;
-			setcolor(WHITE, BLACK);
-		} else {
-			cout << conds[i].getID() << "  - " << left << setw(25)
-					<< setfill(' ') << conds[i].getDesignacao() << " -   "
-					<< left << setw(4) << setfill(' ')
-					<< conds[i].getNumHabitacoes() << " - " << left << setw(18)
-					<< setfill(' ') << conds[i].getLocalizacao().cidade
-					<< " - (" << conds[i].getLocalizacao().x << ","
-					<< conds[i].getLocalizacao().y << ")" << endl;
-		}
-	}
-	return EXIT_SUCCESS;
-}
-
 int Main::menuConfirmSelectCondominio(vector<Condominio> &conds,
 		int menuOption) {
 	displayLogo();
@@ -5568,7 +5649,6 @@ int Main::menuConfirmSelectCondominio(vector<Condominio> &conds,
 	}
 	return menuConfirmSelectCondominio(conds, menuOption);
 }
-
 int Main::menuAddCondominio() {
 	displayLogo();
 	gotoxy(0, 8);
@@ -5612,7 +5692,6 @@ int Main::menuAddCondominio() {
 
 	return menuConfirmAddCondominio(c1, 0);
 }
-
 int Main::menuConfirmAddCondominio(Condominio &c1, int menuOption) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -5670,7 +5749,6 @@ int Main::menuConfirmAddCondominio(Condominio &c1, int menuOption) {
 	}
 	return menuConfirmAddCondominio(c1, menuOption);
 }
-
 int Main::menuSelectCondominio(vector<Condominio> &conds, bool remover) {
 	displayLogo();
 
@@ -5717,7 +5795,6 @@ int Main::menuSelectCondominio(vector<Condominio> &conds, bool remover) {
 	}
 	return menuSelectCondominio(conds, remover);
 }
-
 int Main::menuEditCondominio(Condominio &c1) {
 	displayLogo();
 
@@ -5769,22 +5846,6 @@ int Main::menuEditCondominio(Condominio &c1) {
 			resetOption();
 			vector<Condominio> conds = this->getVectorCondominios();
 			return menuSelectCondominio(conds, false);
-		} else if (option == 2) { //Alterar localizacao
-			editCondominio(2, c1);
-
-			BST<Condominio> nova;
-			BSTItrIn<Condominio> it(this->condominios);
-			while (!it.isAtEnd()) {
-				if (it.retrieve().getID() == c1.getID()) {
-					nova.insert(c1);
-				} else
-					nova.insert(it.retrieve());
-				it.advance();
-			}
-			this->condominios = nova;
-			resetOption();
-			vector<Condominio> conds = this->getVectorCondominios();
-			return menuSelectCondominio(conds, false);
 		} else { //Sair
 			resetOption();
 			vector<Condominio> conds = this->getVectorCondominios();
@@ -5797,7 +5858,6 @@ int Main::menuEditCondominio(Condominio &c1) {
 
 	return menuEditCondominio(c1);
 }
-
 int Main::menuDeleteCondominio(Condominio &c1, int menuOption) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -5881,6 +5941,16 @@ int Main::menuDeleteCondominio(Condominio &c1, int menuOption) {
 			}
 			ss.str("");
 
+			ss << pathTransportes << c1.getID() << ".txt";
+			path = ss.str();
+			if (remove(path.c_str()) != 0) {
+				displayLogo();
+				cout
+						<< "ERRO: Ocorreu um problema ao apagar o ficheiro de transportes.\n";
+				pressEnterToContinue();
+			}
+			ss.str("");
+
 			cout << "Condominio removido!" << endl;
 			pressEnterToContinue();
 
@@ -5900,11 +5970,287 @@ int Main::menuDeleteCondominio(Condominio &c1, int menuOption) {
 	return menuDeleteCondominio(c1, menuOption);
 }
 
+int Main::menuParagemMaisProxima() {
+	displayLogo();
+
+	gotoxy(30, 8);
+	cout << "VER PARAGEM:\n" << endl;
+
+	displayMenuOptions(27);
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[27].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) { //Qualquer destino
+			priority_queue<Transporte> transportes =
+					this->condominio->getTransportes();
+			paragemMaisProxima(transportes);
+		} else if (option == 1) { //Especificar destino
+			resetOption();
+			menuEspecificarDestino();
+		} else { //Sair
+			resetOption();
+			return menuUtilizador();
+		}
+		break;
+	default:
+		break;
+	}
+
+	return menuParagemMaisProxima();
+}
+
+int Main::menuEspecificarDestino() {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "PARAGEM MAIS PROXIMA\n" << endl;
+
+	string destino = "";
+	cout << "Introduza o destino: ";
+	getline(cin, destino);
+
+	priority_queue<Transporte> transportes = this->condominio->getTransportes();
+	priority_queue<Transporte> final;
+
+	while (!transportes.empty()) {
+		if (transportes.top().getDestino() == destino)
+			final.push(transportes.top());
+		transportes.pop();
+	}
+	return paragemMaisProxima(final);
+}
+
+bool Main::paragemMaisProxima(priority_queue<Transporte> transportes) {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "PARAGEM MAIS PROXIMA\n" << endl;
+
+	if (transportes.empty()) {
+		cout << "\nNao existem paragens perto do condominio." << endl;
+		pressEnterToContinue();
+		return false;
+	}
+
+	Paragem p1 = transportes.top().getParagens().top();
+	Transporte t1 = transportes.top();
+	float minDistance = transportes.top().getParagens().top().calcDistancia();
+
+	while (!transportes.empty()) {
+		if (minDistance
+				> transportes.top().getParagens().top().calcDistancia()) {
+			p1 = transportes.top().getParagens().top();
+			t1 = transportes.top();
+			minDistance = transportes.top().getParagens().top().calcDistancia();
+		}
+		transportes.pop();
+	}
+
+	cout << "\nNome: " << p1.getNome() << endl;
+	cout << "Tipo de transporte: " << t1.getTipo() << endl;
+	cout << "Destino: " << t1.getDestino() << endl;
+	cout << "Posicao: (" << p1.getPos().x << "," << p1.getPos().y << ")"
+			<< endl;
+	cout << "Distancia ao condominio: " << minDistance << " km\n" << endl;
+
+	pressEnterToContinue();
+	return true;
+}
+
+int Main::menuGerirTransportes() {
+	displayLogo();
+
+	gotoxy(10, 6);
+	cout << "Bem-vindo, ";
+	setcolor(YELLOW, BLACK);
+	cout << this->currentUser->getNomeUtilizador() << "\n" << endl;
+	setcolor(WHITE, BLACK);
+
+	gotoxy(30, 8);
+	cout << "GERIR TRANSPORTES" << endl;
+	displayMenuOptions(28);
+
+	displayTime();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < menu[28].size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (option == 0) //Desactivar ponto de paragem
+			return menuSelectTransporte(0);
+		else if (option == 1) { //Criar ponto de paragem
+			resetOption();
+			return menuSelectTransporte(1);
+		} else if (option == 2) { //Alterar destino de um transporte
+			resetOption();
+			return menuSelectTransporte(2);
+		} else { //Voltar atras
+			resetOption();
+			return menuAdministrador();
+		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuAdministrador();
+		break;
+	default:
+		break;
+	}
+	return menuGerirTransportes();
+}
+
+int Main::menuSelectParagem(Transporte &t1) {
+	displayLogo();
+
+	gotoxy(30, 8);
+	cout << "SELECIONE A PARAGEM:\n" << endl;
+	cout << "[ENTER] Desactivar" << endl;
+	cout << "[ESC] Voltar atras\n" << endl;
+	cout << "Nome\t\t\t(X,Y)" << endl;
+	if (t1.getParagens().empty()) {
+		cout << "Nao existem paragens perto do condominio." << endl;
+		pressEnterToContinue();
+		return menuGerirTransportes();
+	}
+	displaySelectParagem(t1);
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < t1.getParagens().size())
+			option++;
+		break;
+	case KEY_ENTER:
+
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuGerirTransportes();
+		break;
+	default:
+		break;
+	}
+	return menuSelectParagem(t1);
+}
+int Main::menuDesactivarParagem(Transporte &t1, Paragem &p1) {
+
+}
+int Main::menuNovaParagem(Transporte &t1) {
+
+}
+
+int Main::menuSelectTransporte(int editOption) {
+	displayLogo();
+
+	gotoxy(30, 8);
+	cout << "SELECIONE O TRANSPORTE:\n" << endl;
+	if (editOption == 0)
+		cout << "[ENTER] Desactivar paragem" << endl;
+	else if (editOption == 1)
+		cout << "[ENTER] Criar paragem" << endl;
+	else if (editOption == 2)
+		cout << "[ENTER] Alterar destino" << endl;
+	cout << "[ESC] Voltar atras\n" << endl;
+	cout << "Tipo\t\t\tDestino\t\t\tParagens" << endl;
+	if (this->condominio->getTransportes().empty()) {
+		cout << "Nao existem transportes perto do condominio." << endl;
+		pressEnterToContinue();
+		return menuGerirTransportes();
+	}
+	displaySelectTransporte();
+
+	int c = getch();
+	switch (c) {
+	case KEY_UP:
+		if (option - 1 >= 0)
+			option--;
+		break;
+	case KEY_DOWN:
+		if (option + 1 < this->condominio->getTransportes().size())
+			option++;
+		break;
+	case KEY_ENTER:
+		if (editOption == 0) { //Desactivar paragem
+
+		} else if (editOption == 1) { //Criar paragem
+
+		} else if (editOption == 2) { //Alterar destino
+			vector<Transporte> transportes;
+			priority_queue<Transporte> temp =
+					this->condominio->getTransportes();
+			while (!temp.empty()) {
+				transportes.push_back(temp.top());
+				temp.pop();
+			}
+			Transporte t1 = transportes[option];
+			resetOption();
+			return menuAlterarTransporte(t1);
+		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuGerirTransportes();
+		break;
+	default:
+		break;
+	}
+	return menuSelectTransporte(editOption);
+}
+int Main::menuAlterarTransporte(Transporte t1) {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "Alterar destino:\n" << endl;
+	string destinoActual = t1.getDestino();
+	cout << "Destino actual: " << destinoActual << endl;
+	string novoDestino = "";
+	cout << "Introduza o novo destino: ";
+	getline(cin, novoDestino);
+
+	priority_queue<Transporte> temp = this->condominio->getTransportes();
+	priority_queue<Transporte> newTransportes;
+
+	Transporte antigo = t1;
+	t1.setDestino(novoDestino);
+
+	while (!temp.empty()) {
+		if (temp.top() == antigo) {
+			newTransportes.push(t1);
+		} else
+			newTransportes.push(temp.top());
+		temp.pop();
+	}
+	this->condominio->setTransportes(newTransportes);
+
+	cout << "\nDestino alterado." << endl;
+	pressEnterToContinue();
+
+	return menuGerirTransportes();
+}
+
 /**
  * Main function.
  * @retval EXIT_SUCCESS No errors occurred during the execution.
  * @retval EXIT_FAILURE Error occurred.
  */
+
 int main() {
 	Main main = Main();
 

@@ -41,6 +41,8 @@ public:
 	bool displaySelectFuncionario(vector<Funcionario> &func);
 	bool displaySelectServico(int vector);
 	bool displaySelectServicoRequisitado(vector<Servico> servicos);
+	bool displaySelectTransporte();
+	bool displaySelectParagem(Transporte &t1);
 
 	bool validLogin(string utilizador, string password);
 	bool validRegister(string utilizador, string password);
@@ -178,6 +180,19 @@ public:
 	void sortCondominios(vector<Condominio> &conds, int sortOption);
 	bool displaySelectCondominio(vector<Condominio> &conds);
 
+	int menuParagemMaisProxima();
+	int menuEspecificarDestino();
+
+	bool paragemMaisProxima(priority_queue<Transporte> transportes);
+
+	//Gerir Transportes
+	int menuGerirTransportes();
+	int menuSelectParagem(Transporte &t1);
+	int menuDesactivarParagem(Transporte &t1, Paragem &p1);
+	int menuNovaParagem(Transporte &t1);
+
+	int menuSelectTransporte(int editOption);
+	int menuAlterarTransporte(Transporte t1);
 };
 
 /*

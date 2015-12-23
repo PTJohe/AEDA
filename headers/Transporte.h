@@ -20,6 +20,8 @@ public:
 
 	bool operator <(const Paragem &par) const;
 	bool operator ==(const Paragem &trans) const;
+
+	float calcDistancia() const;
 };
 
 class Transporte {
@@ -40,7 +42,10 @@ public:
 	string getDestino() const;
 	priority_queue<Paragem> getParagens() const;
 
+	void setDestino(string destino);
+
 	bool operator <(const Transporte &trans) const;
+	bool operator ==(const Transporte &trans) const;
 
 };
 

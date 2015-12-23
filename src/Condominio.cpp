@@ -151,6 +151,11 @@ priority_queue<Transporte> Condominio::getTransportes() {
 	return this->transportes;
 }
 
+
+bool setDestinoTransporte(Transporte t1, string novoDestino){
+
+}
+
 /**
  * @return Number of properties in the condominium.
  */
@@ -1392,3 +1397,7 @@ bool compServicoNIF(Servico s1, Servico s2) {
 		return (s1.getID() < s2.getID());
 }
 
+
+bool compParagemNome(Paragem p1, Paragem p2){
+	return p1.getNome() < p2.getNome();
+}

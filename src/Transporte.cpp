@@ -7,7 +7,7 @@
  * @param destino Destination of transport
  * @param condo Condominium it is relative to
  */
-Transporte::Transporte(string tipo, string destino,Posicao condo) {
+Transporte::Transporte(string tipo, string destino, Posicao condo) {
 	this->tipo = tipo;
 	this->destino = destino;
 	this->condo = condo;
@@ -18,7 +18,7 @@ Transporte::Transporte(string tipo, string destino,Posicao condo) {
  * @param dest New destination
  * @return void
  */
-void Transporte::mudarDestino(string dest){
+void Transporte::mudarDestino(string dest) {
 	this->destino = dest;
 }
 
@@ -27,7 +27,7 @@ void Transporte::mudarDestino(string dest){
  * @param par stop to be added
  * @return void
  */
-void Transporte::addParagem(Paragem par){
+void Transporte::addParagem(Paragem par) {
 	paragens.push(par);
 }
 
@@ -36,17 +36,17 @@ void Transporte::addParagem(Paragem par){
  * @param  stop to be removed
  * @return void
  */
-void Transporte::removeParagem(Paragem toRemove){
+void Transporte::removeParagem(Paragem toRemove) {
 	vector<Paragem> temp;
-	while(!paragens.empty()){
+	while (!paragens.empty()) {
 		temp.push_back(paragens.top());
 		paragens.pop();
 	}
-	int index = sequentialSearch(temp,toRemove);
+	int index = sequentialSearch(temp, toRemove);
 
-	temp.erase(temp.begin()+index);
+	temp.erase(temp.begin() + index);
 
-	while(!temp.empty()){
+	while (!temp.empty()) {
 		paragens.push(temp.back());
 		temp.pop_back();
 	}
@@ -56,7 +56,7 @@ void Transporte::removeParagem(Paragem toRemove){
  * Gets the type of transport
  * @return tipo
  */
-string Transporte::getTipo() const{
+string Transporte::getTipo() const {
 	return tipo;
 }
 
@@ -64,7 +64,7 @@ string Transporte::getTipo() const{
  * Gets the destination of the transport
  * @return destino
  */
-string Transporte::getDestino() const{
+string Transporte::getDestino() const {
 	return destino;
 }
 
@@ -72,45 +72,50 @@ string Transporte::getDestino() const{
  * Gets the stops queue
  * @return paragens
  */
-priority_queue<Paragem> Transporte::getParagens() const{
+priority_queue<Paragem> Transporte::getParagens() const {
 	return paragens;
 }
 
+void Transporte::setDestino(string destino){
+	this->destino = destino;
+}
 
-
-bool Transporte::operator <(const Transporte &trans) const{
-	int xc,yc;
+bool Transporte::operator <(const Transporte &trans) const {
+	int xc, yc;
 	xc = this->condo.x;
 	yc = this->condo.y;
 
-	int xo,yo;
+	int xo, yo;
 	xo = this->paragens.top().getPos().x;
 	yo = this->paragens.top().getPos().y;
-	float dist1 = sqrt(pow(xc-xo,2)+pow(yc-yo,2));
+	float dist1 = sqrt(pow(xc - xo, 2) + pow(yc - yo, 2));
 
-	int xa,ya;
+	int xa, ya;
 	xa = trans.paragens.top().getPos().x;
 	ya = trans.paragens.top().getPos().y;
-	float dist2 = sqrt(pow(xc-xa,2)+pow(yc-ya,2));
-
+	float dist2 = sqrt(pow(xc - xa, 2) + pow(yc - ya, 2));
 
 	//Inverti o retorno para que na fila o mais distante
 	//em relação ao condomínio fique em útimo lugar e vice-versa
-	if(dist1 < dist2)
+	if (dist1 < dist2)
 		return false;
 	else
 		return true;
 }
 
-
-
+bool Transporte::operator ==(const Transporte &trans) const {
+	if (this->tipo == trans.getTipo() && this->destino == trans.getDestino()
+			&& this->paragens.size() == trans.getParagens().size())
+		return true;
+	return false;
+}
 /**
  * Constructor of a new stop.
  * @param nome Name of the stop
  * @param pos Position of the stop
  * @param condo Condominium it is relative to
  */
-Paragem::Paragem(string nome,Posicao pos,Posicao condo){
+Paragem::Paragem(string nome, Posicao pos, Posicao condo) {
 	this->nome = nome;
 	this->pos = pos;
 	this->condo = condo;
@@ -120,48 +125,56 @@ Paragem::Paragem(string nome,Posicao pos,Posicao condo){
  * Gets the name of the stop
  * @return Name
  */
-string Paragem::getNome() const{
+string Paragem::getNome() const {
 	return this->nome;
 }
 /**
  * Gets the position of the stop
  * @return Position
  */
-Posicao Paragem::getPos()const{
+Posicao Paragem::getPos() const {
 	return pos;
 }
 
-
-
-bool Paragem::operator <(const Paragem &par) const{
-	int xc,yc;
+bool Paragem::operator <(const Paragem &par) const {
+	int xc, yc;
 	xc = this->condo.x;
 	yc = this->condo.y;
 
-	int xo,yo;
+	int xo, yo;
 	xo = this->pos.x;
 	yo = this->pos.y;
-	float dist1 = sqrt(pow(xc-xo,2)+pow(yc-yo,2));
+	float dist1 = sqrt(pow(xc - xo, 2) + pow(yc - yo, 2));
 
-	int xa,ya;
+	int xa, ya;
 	xa = par.pos.x;
 	ya = par.pos.y;
-	float dist2 = sqrt(pow(xc-xa,2)+pow(yc-ya,2));
-
+	float dist2 = sqrt(pow(xc - xa, 2) + pow(yc - ya, 2));
 
 	//Inverti o retorno para que na fila o mais distante
 	//em relação ao condomínio fique em útimo lugar e vice-versa
-	if(dist1 < dist2)
+	if (dist1 < dist2)
 		return false;
 	else
 		return true;
 }
 
-bool Paragem::operator ==(const Paragem &par) const{
-	if(nome == par.nome &&
-		pos.x == par.pos.x &&
-		pos.y == par.pos.y)
+bool Paragem::operator ==(const Paragem &par) const {
+	if (nome == par.nome && pos.x == par.pos.x && pos.y == par.pos.y)
 		return true;
 	else
 		return false;
+}
+
+float Paragem::calcDistancia() const {
+	int xc, yc;
+	xc = this->condo.x;
+	yc = this->condo.y;
+
+	int xo, yo;
+	xo = this->pos.x;
+	yo = this->pos.y;
+	float dist1 = sqrt(pow(xc - xo, 2) + pow(yc - yo, 2));
+
+	return dist1;
 }

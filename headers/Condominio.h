@@ -59,6 +59,7 @@ public:
 	void setFuncionarios(vector<Funcionario> funcionarios);
 	void setServicos(int vectorServicos, vector<Servico> servicos);
 	void setTransportes(priority_queue<Transporte> transportes);
+	bool setDestinoTransporte(Transporte t1, string novoDestino);
 
 	bool operator <(const Condominio &c1) const;
 	bool operator ==(const Condominio &c1) const;
@@ -146,5 +147,7 @@ bool compFuncionarioServicos(Funcionario f1, Funcionario f2);
 bool compServicoTipo(Servico s1, Servico s2);
 bool compServicoDataInicio(Servico s1, Servico s2);
 bool compServicoNIF(Servico s1, Servico s2);
+
+bool compParagemNome(Paragem p1, Paragem p2);
 
 #endif
