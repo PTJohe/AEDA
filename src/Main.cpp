@@ -399,13 +399,13 @@ bool Main::displaySelectParagem(Transporte &t1) {
 		gotoxy(0, 14 + i);
 		if (i == option) {
 			setcolor(BLACK, LIGHTGREY);
-			cout << paragens[i].getNome() << "  - " << left << setw(25)
-					<< setfill(' ') << "(" << paragens[i].getPos().x << ","
+			cout << left << setw(25) << setfill(' ') << paragens[i].getNome()
+					<< "(" << paragens[i].getPos().x << ","
 					<< paragens[i].getPos().y << ")" << endl;
 			setcolor(WHITE, BLACK);
 		} else {
-			cout << paragens[i].getNome() << "  - " << left << setw(25)
-					<< setfill(' ') << "(" << paragens[i].getPos().x << ","
+			cout << left << setw(25) << setfill(' ') << paragens[i].getNome()
+					<< "(" << paragens[i].getPos().x << ","
 					<< paragens[i].getPos().y << ")" << endl;
 		}
 	}
@@ -6120,13 +6120,17 @@ int Main::menuSelectParagem(Transporte &t1) {
 	cout << "SELECIONE A PARAGEM:\n" << endl;
 	cout << "[ENTER] Desactivar" << endl;
 	cout << "[ESC] Voltar atras\n" << endl;
-	cout << "Nome\t\t\t(X,Y)" << endl;
+	cout << "Nome\t\t\t\t(X,Y)" << endl;
 	if (t1.getParagens().empty()) {
 		cout << "Nao existem paragens perto do condominio." << endl;
 		pressEnterToContinue();
 		return menuGerirTransportes();
 	}
 	displaySelectParagem(t1);
+
+	int n = option;
+	priority_queue<Paragem> temp = t1.getParagens();
+	Paragem p1 = temp.top();
 
 	int c = getch();
 	switch (c) {
@@ -6139,7 +6143,13 @@ int Main::menuSelectParagem(Transporte &t1) {
 			option++;
 		break;
 	case KEY_ENTER:
+		while(n > 0){
+			temp.pop();
+			n--;
+		}
+		p1 = temp.top();
 
+		return menuDesactivarParagem(t1, p1, 0);
 		break;
 	case KEY_ESC:
 		resetOption();
@@ -6150,9 +6160,67 @@ int Main::menuSelectParagem(Transporte &t1) {
 	}
 	return menuSelectParagem(t1);
 }
-int Main::menuDesactivarParagem(Transporte &t1, Paragem &p1) {
+int Main::menuDesactivarParagem(Transporte &t1, Paragem &p1, int menuOption) {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "DADOS DA PARAGEM\n" << endl;
+	cout << "\nNome: " << p1.getNome() << endl;
+	cout << "Tipo de transporte: " << t1.getTipo() << endl;
+	cout << "Destino: " << t1.getDestino() << endl;
+	cout << "Posicao: (" << p1.getPos().x << "," << p1.getPos().y << ")"
+			<< endl;
+	cout << "Distancia ao condominio: " << p1.calcDistancia() << " km\n"
+			<< endl;
 
+	cout << "\nTem a certeza que pretende desactivar esta paragem?" << endl;
+	displayYesNo(menuOption);
+
+	int c = getch();
+	switch (c) {
+	case KEY_LEFT:
+		if (menuOption - 1 >= 0)
+			menuOption--;
+		break;
+	case KEY_RIGHT:
+		if (menuOption + 1 < 2)
+			menuOption++;
+		break;
+	case KEY_ENTER:
+		if (menuOption == 0) {
+			if (this->option > 0)
+				option--;
+
+
+			priority_queue<Transporte> temp =
+					this->condominio->getTransportes();
+			priority_queue<Transporte> newTransportes;
+
+			Transporte antigo = t1;
+			t1.removeParagem(p1);
+
+			while (!temp.empty()) {
+				if (temp.top() == antigo) {
+					newTransportes.push(t1);
+				} else
+					newTransportes.push(temp.top());
+				temp.pop();
+			}
+			this->condominio->setTransportes(newTransportes);
+
+			cout << "Paragem desactivada!" << endl;
+			pressEnterToContinue();
+			return menuSelectParagem(t1);
+
+		} else if (menuOption == 1) {
+			return menuSelectParagem(t1);
+		}
+		break;
+	default:
+		break;
+	}
+	return menuDesactivarParagem(t1, p1, menuOption);
 }
+
 int Main::menuNovaParagem(Transporte &t1) {
 
 }
@@ -6189,9 +6257,27 @@ int Main::menuSelectTransporte(int editOption) {
 		break;
 	case KEY_ENTER:
 		if (editOption == 0) { //Desactivar paragem
-
+			vector<Transporte> transportes;
+			priority_queue<Transporte> temp =
+					this->condominio->getTransportes();
+			while (!temp.empty()) {
+				transportes.push_back(temp.top());
+				temp.pop();
+			}
+			Transporte t1 = transportes[option];
+			resetOption();
+			return menuSelectParagem(t1);
 		} else if (editOption == 1) { //Criar paragem
-
+			vector<Transporte> transportes;
+			priority_queue<Transporte> temp =
+					this->condominio->getTransportes();
+			while (!temp.empty()) {
+				transportes.push_back(temp.top());
+				temp.pop();
+			}
+			Transporte t1 = transportes[option];
+			resetOption();
+			return menuNovaParagem(t1);
 		} else if (editOption == 2) { //Alterar destino
 			vector<Transporte> transportes;
 			priority_queue<Transporte> temp =

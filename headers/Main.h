@@ -188,7 +188,7 @@ public:
 	//Gerir Transportes
 	int menuGerirTransportes();
 	int menuSelectParagem(Transporte &t1);
-	int menuDesactivarParagem(Transporte &t1, Paragem &p1);
+	int menuDesactivarParagem(Transporte &t1, Paragem &p1, int menuOption);
 	int menuNovaParagem(Transporte &t1);
 
 	int menuSelectTransporte(int editOption);
