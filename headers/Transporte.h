@@ -13,7 +13,11 @@ private:
 
 public:
 	Paragem(string nome,Posicao pos,Condominio * condo);
-	bool operator <(const Paragem &par);
+
+	Posicao getPos()const;
+
+	bool operator <(const Paragem &par) const;
+	bool operator ==(const Paragem &trans) const;
 };
 
 class Transporte {
@@ -21,15 +25,19 @@ private:
 	string tipo;
 	string destino;
 	priority_queue<Paragem> paragens;
-	Condominio *condo;
+	Condominio * condo;
 
 public:
 	Transporte(string tipo, string destino, Condominio * condo);
 
 	void addParagem(Paragem par);
+	void removeParagem(Paragem toRemove);
 
+	bool operator <(const Transporte &trans) const;
 
 };
+
+
 
 
 

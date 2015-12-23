@@ -2,7 +2,7 @@
 #define SORT_SEARCH_HASHTABLE_H_
 
 #include <tr1/unordered_set>
-#include "Funcionario.h"
+#include "../headers/Funcionario.h"
 
 struct funcHash {
 	int operator()(const Funcionario &f1) const {
