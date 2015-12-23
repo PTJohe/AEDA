@@ -14,6 +14,7 @@ private:
 	long int fundosMensais;
 	long int divida;
 	vector<Habitacao *> habitacoes;
+
 public:
 	Condomino(string nomeUtilizador, string password);
 	Condomino(string nomeUtilizador, string password, string nomeCivil,
