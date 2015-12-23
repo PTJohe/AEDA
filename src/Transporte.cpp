@@ -56,7 +56,7 @@ void Transporte::removeParagem(Paragem toRemove){
  * Gets the type of transport
  * @return tipo
  */
-string Transporte::getTipo(){
+string Transporte::getTipo() const{
 	return tipo;
 }
 
@@ -64,7 +64,7 @@ string Transporte::getTipo(){
  * Gets the destination of the transport
  * @return destino
  */
-string Transporte::getDestino(){
+string Transporte::getDestino() const{
 	return destino;
 }
 
@@ -72,7 +72,7 @@ string Transporte::getDestino(){
  * Gets the stops queue
  * @return paragens
  */
-priority_queue<Paragem> Transporte::getParagens(){
+priority_queue<Paragem> Transporte::getParagens() const{
 	return paragens;
 }
 
@@ -116,6 +116,13 @@ Paragem::Paragem(string nome,Posicao pos,Condominio * condo){
 	this->condo = condo;
 }
 
+/**
+ * Gets the name of the stop
+ * @return Name
+ */
+string Paragem::getNome() const{
+	return this->nome;
+}
 /**
  * Gets the position of the stop
  * @return Position

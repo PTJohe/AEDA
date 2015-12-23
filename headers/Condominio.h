@@ -45,18 +45,20 @@ public:
 	vector<Funcionario> getFuncionarios();
 	Funcionario getFuncionario(int id);
 	vector<Servico> getServicos(int vectorServicos);
+	priority_queue<Transporte> getTransportes();
 	int getNumHabitacoes() const;
 	int getNumVivendas() const;
 	int getNumMoradores() const;
 
 	void setFundos(long int fundos);
+	void setDesignacao(string designacao);
+	void setLocalizacao(Posicao localizacao);
 	void setCurrentMes(int currentMes);
 	void setMoradores(vector<Condomino> moradores);
 	void setHabitacoes(vector<Habitacao*> habitacoes);
 	void setFuncionarios(vector<Funcionario> funcionarios);
 	void setServicos(int vectorServicos, vector<Servico> servicos);
-	void setDesignacao(string designacao);
-	void setLocalizacao(Posicao localizacao);
+	void setTransportes(priority_queue<Transporte> transportes);
 
 	bool operator <(const Condominio &c1) const;
 	bool operator ==(const Condominio &c1) const;

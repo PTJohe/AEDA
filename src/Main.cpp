@@ -9,6 +9,7 @@
 #define pathHabitacoes "../savedata/habitacoes"
 #define pathFuncionarios "../savedata/funcionarios"
 #define pathServicos "../savedata/servicos"
+#define pathTransportes "../savedata/transportes"
 
 vector<string> mesesAno;
 vector<vector<string> > menu;
@@ -1226,7 +1227,7 @@ bool Main::searchFuncionario() {
 	} while (!isNumber(line));
 	id = atoi(line.c_str());
 
-	if (this->condominio->getFuncionario(id).getID() == -1){
+	if (this->condominio->getFuncionario(id).getID() == -1) {
 		cout << "Nao existe nenhum funcionario com esse ID." << endl;
 		pressEnterToContinue();
 		return false;
@@ -1234,8 +1235,8 @@ bool Main::searchFuncionario() {
 
 	int pos = -1;
 	vector<Funcionario> funcionarios = this->condominio->getFuncionarios();
-	for(size_t i = 0; i < funcionarios.size(); i++){
-		if(funcionarios[i].getID() == id){
+	for (size_t i = 0; i < funcionarios.size(); i++) {
+		if (funcionarios[i].getID() == id) {
 			pos = i;
 			break;
 		}
@@ -4303,6 +4304,7 @@ bool Main::importCondominios() {
 			importHabitacoes(it.retrieve());
 			importFuncionarios(it.retrieve());
 			importServicos(it.retrieve());
+			importTransportes(it.retrieve());
 
 			it.advance();
 		}
@@ -4340,6 +4342,7 @@ bool Main::exportCondominios() {
 			exportHabitacoes(conds[i]);
 			exportFuncionarios(conds[i]);
 			exportServicos(conds[i]);
+			exportTransportes(conds[i]);
 		}
 		myfile.close();
 		return true;
@@ -4793,6 +4796,111 @@ bool Main::exportServicos(Condominio &cond) {
 		return false;
 	}
 }
+/**
+ * Imports transport data from a .txt file. Updates condominium transports.
+ * @retval TRUE Successfully imported data.
+ * @retval FALSE Couldn't read from .txt file.
+ */
+bool Main::importTransportes(Condominio &cond) {
+	stringstream ss;
+	ss << pathTransportes << cond.getID() << ".txt";
+	string path = ss.str();
+	ifstream myfile(path.c_str());
+
+	string line = "";
+
+	string tipo = "";
+	string destino = "";
+
+	string nome = "";
+	int coordX = 0;
+	int coordY = 0;
+
+	priority_queue<Transporte> transportes;
+
+	if (myfile.is_open()) {
+		while (getline(myfile, line)) {
+			tipo = line;
+			getline(myfile, destino);
+
+			Transporte t1 = Transporte(tipo, destino, this->condominio);
+
+			getline(myfile, line);
+			int n = atoi(line.c_str());
+			while (n > 0) {
+				getline(myfile, line);
+				nome = line;
+				getline(myfile, line);
+				coordX = atoi(line.c_str());
+				getline(myfile, line);
+				coordY = atoi(line.c_str());
+
+				Posicao pos;
+				pos.x = coordX;
+				pos.y = coordY;
+
+				cout << "Paragem = " << nome << " - " << coordX << "," << coordY
+						<< endl;
+
+				Paragem p1 = Paragem(nome, pos, this->condominio);
+				t1.addParagem(p1);
+
+				cout << "Line = " << line << endl;
+				n--;
+			}
+			transportes.push(t1);
+			getline(myfile,line);
+		}
+		myfile.close();
+
+		cond.setTransportes(transportes);
+		return true;
+	} else {
+		displayLogo();
+		cout
+				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro de transportes.\n";
+		pressEnterToContinue();
+		return false;
+	}
+}
+/**
+ * Exports transport data to a .txt file. Exports condominium transports.
+ * @retval TRUE Successfully exported data.
+ * @retval FALSE Couldn't write to .txt file.
+ */
+bool Main::exportTransportes(Condominio &cond) {
+	stringstream ss;
+	ss << pathTransportes << cond.getID() << ".txt";
+	string path = ss.str();
+	ofstream myfile(path.c_str(), ios::trunc);
+
+	if (myfile.is_open()) {
+		priority_queue<Transporte> transportes = cond.getTransportes();
+		while (!transportes.empty()) {
+			myfile << transportes.top().getTipo() << endl;
+			myfile << transportes.top().getDestino() << endl;
+			priority_queue<Paragem> paragens = transportes.top().getParagens();
+			myfile << paragens.size() << endl;
+			while (!paragens.empty()) {
+				myfile << paragens.top().getNome() << endl;
+				myfile << paragens.top().getPos().x << endl;
+				myfile << paragens.top().getPos().y << endl;
+				paragens.pop();
+			}
+			myfile << endl;
+			transportes.pop();
+		}
+		myfile.close();
+		return true;
+	} else {
+		displayLogo();
+		cout
+				<< "ERRO: Ocorreu um problema ao aceder ao ficheiro de transportes.\n";
+		pressEnterToContinue();
+		return false;
+	}
+}
+
 /**
  * Calls functions to export data to several .txt files.
  * @retval TRUE Successfully exported data.

@@ -157,6 +157,9 @@ public:
 	bool importServicos(Condominio &cond);
 	bool exportServicos(Condominio &cond);
 
+	bool importTransportes(Condominio &cond);
+	bool exportTransportes(Condominio &cond);
+
 	int exitFunction();
 
 	//Segunda Parte
