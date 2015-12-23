@@ -1,4 +1,5 @@
 #include "../headers/Transporte.h"
+#include "../headers/Condominio.h"
 
 /**
  * Constructor of a new transport.
@@ -51,6 +52,31 @@ void Transporte::removeParagem(Paragem toRemove){
 	}
 }
 
+/**
+ * Gets the type of transport
+ * @return tipo
+ */
+string Transporte::getTipo(){
+	return tipo;
+}
+
+/**
+ * Gets the destination of the transport
+ * @return destino
+ */
+string Transporte::getDestino(){
+	return destino;
+}
+
+/**
+ * Gets the stops queue
+ * @return paragens
+ */
+priority_queue<Paragem> Transporte::getParagens(){
+	return paragens;
+}
+
+
 
 bool Transporte::operator <(const Transporte &trans) const{
 	int xc,yc;
@@ -91,7 +117,7 @@ Paragem::Paragem(string nome,Posicao pos,Condominio * condo){
 }
 
 /**
- * Gets de position of the stop
+ * Gets the position of the stop
  * @return Position
  */
 Posicao Paragem::getPos()const{

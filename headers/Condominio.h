@@ -5,7 +5,7 @@
 #include "../headers/Condomino.h"
 #include "../headers/Servico.h"
 #include "../sort&search/HashTable.h"
-
+#include "../headers/Transporte.h"
 
 
 class Condominio {
@@ -24,6 +24,7 @@ private:
 	int id;
 	string designacao;
 	Posicao localizacao;
+	priority_queue<Transporte> transportes;
 
 
 public:
@@ -105,6 +106,9 @@ public:
 	bool updateServicos(string mes, Condomino* currentUser,
 			int &servicosCurrentUser);
 	bool updateServicosFimMes(string mes);
+
+	//Transportes
+	void addTransporte(Transporte toAdd);
 
 	vector<Condomino> fimDoMes();
 

@@ -53,9 +53,7 @@ Condominio::Condominio(int id, long int fundos, int currentMes,
 int Condominio::getID() const {
 	return id;
 }
-/**
- * Decrements condominium's nextID.
- */
+
 void Condominio::decID() {
 	nextId--;
 }
@@ -222,17 +220,10 @@ void Condominio::setServicos(int vectorServicos, vector<Servico> servicos) {
 	else if (vectorServicos == 2)
 		this->servicosEmEspera = servicos;
 }
-/**
- * Sets the condominium's name.
- * @param designacao New name.
- */
+
 void Condominio::setDesignacao(string designacao) {
 	this->designacao = designacao;
 }
-/**
- * Sets the condominium's address.
- * @param localizacao New address.
- */
 void Condominio::setLocalizacao(Posicao localizacao) {
 	this->localizacao = localizacao;
 }
@@ -264,9 +255,7 @@ bool Condominio::operator <(const Condominio &c1) const {
 bool Condominio::operator ==(const Condominio &c1) const {
 	return this->getID() == c1.getID();
 }
-/**
- * Print condominium overload.
- */
+
 ostream& operator<<(ostream& os, Condominio &c1) {
 	os << c1.getID() << endl;
 	os << c1.getFundos() << endl;
@@ -608,10 +597,6 @@ bool Condominio::eraseFuncionario(Funcionario &f1) {
 	this->funcionarios.erase(f1);
 	return true;
 }
-/**
- * Sets an employee status to busy.
- * @param f1 Employee to be changed.
- */
 void Condominio::setOcupado(Funcionario f1){
 	vector<Funcionario> funcionarios = this->getFuncionarios();
 	for(size_t i = 0; i < funcionarios.size(); i++){
@@ -1218,19 +1203,9 @@ void Condominio::infoHabitacoes() const {
  * Non-class functions
  */
 
-/**
- * Compares two condominiums by ID for sorting purposes.
- * @retval TRUE If first condominium is "lower" than the second one.
- * @retval FALSE If the first condominium is "equal or higher" than the second one.
- */
 bool compCondominioID(Condominio c1, Condominio c2) {
 	return c1.getID() < c2.getID();
 }
-/**
- * Compares two condominiums by name for sorting purposes.
- * @retval TRUE If first condominium is "lower" than the second one.
- * @retval FALSE If the first condominium is "equal or higher" than the second one.
- */
 bool compCondominioDesignacao(Condominio c1, Condominio c2) {
 	if (c1.getDesignacao() < c2.getDesignacao())
 		return true;
@@ -1239,11 +1214,6 @@ bool compCondominioDesignacao(Condominio c1, Condominio c2) {
 	else
 		return c1.getID() < c2.getID();
 }
-/**
- * Compares two condominiums by number of properties for sorting purposes.
- * @retval TRUE If first condominium is "lower" than the second one.
- * @retval FALSE If the first condominium is "equal or higher" than the second one.
- */
 bool compCondominioPropriedades(Condominio c1, Condominio c2) {
 	if (c1.getNumHabitacoes() < c2.getNumHabitacoes())
 		return true;
@@ -1256,11 +1226,6 @@ bool compCondominioPropriedades(Condominio c1, Condominio c2) {
 	else
 		return c1.getID() < c2.getID();
 }
-/**
- * Compares two condominiums by address for sorting purposes.
- * @retval TRUE If first condominium is "lower" than the second one.
- * @retval FALSE If the first condominium is "equal or higher" than the second one.
- */
 bool compCondominioLocalizacao(Condominio c1, Condominio c2) {
 	if (c1.getLocalizacao().cidade < c2.getLocalizacao().cidade)
 		return true;
@@ -1369,3 +1334,4 @@ bool compServicoNIF(Servico s1, Servico s2) {
 	else
 		return (s1.getID() < s2.getID());
 }
+

@@ -2,7 +2,8 @@
 #define HEADERS_TRANSPORTE_H_
 
 #include "../headers/Header.h"
-#include "../headers/Condominio.h"
+
+class Condominio;
 
 
 class Paragem {
@@ -33,6 +34,10 @@ public:
 	void mudarDestino(string dest);
 	void addParagem(Paragem par);
 	void removeParagem(Paragem toRemove);
+
+	string getTipo();
+	string getDestino();
+	priority_queue<Paragem> getParagens();
 
 	bool operator <(const Transporte &trans) const;
 
