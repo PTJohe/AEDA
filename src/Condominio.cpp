@@ -1335,3 +1335,12 @@ bool compServicoNIF(Servico s1, Servico s2) {
 		return (s1.getID() < s2.getID());
 }
 
+/**
+ * Adds new transport to the list
+ * @param toAdd Transport to be added
+ * @return void
+ */
+void Condominio::addTransporte(Transporte toAdd){
+	transportes.push(toAdd);
+}
+
