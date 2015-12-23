@@ -11,6 +11,9 @@
 #include <stdlib.h>
 #include <algorithm>
 #include <ctime>
+//
+#include <queue>
+#include <cmath>
 
 #include "../sort&search/insertionSort.h"
 #include "../sort&search/sequentialSearch.h"
