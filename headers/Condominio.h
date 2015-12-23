@@ -22,6 +22,7 @@ private:
 	int id;
 	string designacao;
 	Posicao localizacao;
+	priority_queue<Paragem> transportes;
 
 public:
 	Condominio();

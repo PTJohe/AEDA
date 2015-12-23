@@ -30,6 +30,7 @@ private:
 public:
 	Transporte(string tipo, string destino, Condominio * condo);
 
+	void mudarDestino(string dest);
 	void addParagem(Paragem par);
 	void removeParagem(Paragem toRemove);
 

@@ -13,6 +13,15 @@ Transporte::Transporte(string tipo, string destino,Condominio * condo) {
 }
 
 /**
+ * Changes the transport destination
+ * @param dest New destination
+ * @return void
+ */
+void Transporte::mudarDestino(string dest){
+	this->destino = dest;
+}
+
+/**
  * Adds a stop to the route of the transport
  * @param par stop to be added
  * @return void
