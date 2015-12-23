@@ -4823,7 +4823,7 @@ bool Main::importTransportes(Condominio &cond) {
 			tipo = line;
 			getline(myfile, destino);
 
-			Transporte t1 = Transporte(tipo, destino, this->condominio);
+			Transporte t1 = Transporte(tipo, destino, this->condominio->getLocalizacao());
 
 			getline(myfile, line);
 			int n = atoi(line.c_str());
@@ -4842,7 +4842,7 @@ bool Main::importTransportes(Condominio &cond) {
 				cout << "Paragem = " << nome << " - " << coordX << "," << coordY
 						<< endl;
 
-				Paragem p1 = Paragem(nome, pos, this->condominio);
+				Paragem p1 = Paragem(nome, pos, this->condominio->getLocalizacao());
 				t1.addParagem(p1);
 
 				cout << "Line = " << line << endl;

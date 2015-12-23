@@ -7,7 +7,7 @@
  * @param destino Destination of transport
  * @param condo Condominium it is relative to
  */
-Transporte::Transporte(string tipo, string destino,Condominio * condo) {
+Transporte::Transporte(string tipo, string destino,Posicao condo) {
 	this->tipo = tipo;
 	this->destino = destino;
 	this->condo = condo;
@@ -80,8 +80,8 @@ priority_queue<Paragem> Transporte::getParagens() const{
 
 bool Transporte::operator <(const Transporte &trans) const{
 	int xc,yc;
-	xc = this->condo->getLocalizacao().x;
-	yc = this->condo->getLocalizacao().y;
+	xc = this->condo.x;
+	yc = this->condo.y;
 
 	int xo,yo;
 	xo = this->paragens.top().getPos().x;
@@ -110,7 +110,7 @@ bool Transporte::operator <(const Transporte &trans) const{
  * @param pos Position of the stop
  * @param condo Condominium it is relative to
  */
-Paragem::Paragem(string nome,Posicao pos,Condominio * condo){
+Paragem::Paragem(string nome,Posicao pos,Posicao condo){
 	this->nome = nome;
 	this->pos = pos;
 	this->condo = condo;
@@ -135,8 +135,8 @@ Posicao Paragem::getPos()const{
 
 bool Paragem::operator <(const Paragem &par) const{
 	int xc,yc;
-	xc = this->condo->getLocalizacao().x;
-	yc = this->condo->getLocalizacao().y;
+	xc = this->condo.x;
+	yc = this->condo.y;
 
 	int xo,yo;
 	xo = this->pos.x;

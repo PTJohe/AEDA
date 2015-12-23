@@ -10,10 +10,10 @@ class Paragem {
 private:
 	string nome;
 	Posicao pos;
-	Condominio * condo;
+	Posicao condo;
 
 public:
-	Paragem(string nome,Posicao pos,Condominio * condo);
+	Paragem(string nome,Posicao pos,Posicao condo);
 
 	string getNome() const;
 	Posicao getPos() const;
@@ -27,10 +27,10 @@ private:
 	string tipo;
 	string destino;
 	priority_queue<Paragem> paragens;
-	Condominio * condo;
+	Posicao condo;
 
 public:
-	Transporte(string tipo, string destino, Condominio * condo);
+	Transporte(string tipo, string destino, Posicao condo);
 
 	void mudarDestino(string dest);
 	void addParagem(Paragem par);
