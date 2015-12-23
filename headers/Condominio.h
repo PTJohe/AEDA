@@ -4,14 +4,15 @@
 #include "../headers/Header.h"
 #include "../headers/Condomino.h"
 #include "../headers/Servico.h"
-#include "../headers/Funcionario.h"
+#include "../sort&search/HashTable.h"
 
 class Condominio {
 private:
 	long int fundos;
 	vector<Condomino> moradores;
 	vector<Habitacao*> habitacoes;
-	vector<Funcionario> funcionarios;
+	//vector<Funcionario> funcionarios;
+	tabHFunc funcionarios;
 	vector<Servico> servicosTerminados;
 	vector<Servico> servicosEmCurso;
 	vector<Servico> servicosEmEspera;
@@ -38,7 +39,7 @@ public:
 	vector<Condomino> getMoradores();
 	vector<Habitacao*> getHabitacoes();
 	vector<Funcionario> getFuncionarios();
-	Funcionario* getFuncionario(int id);
+	Funcionario getFuncionario(int id);
 	vector<Servico> getServicos(int vectorServicos);
 	int getNumHabitacoes() const;
 	int getNumVivendas() const;
@@ -82,15 +83,16 @@ public:
 
 	//Funcoes Funcionario
 
-	void sortFuncionarios(int sortOption);
+	vector<Funcionario> sortFuncionarios(int sortOption);
 	bool addFuncionario(Funcionario funcionario);
-	bool eraseFuncionario(int pos);
+	bool eraseFuncionario(Funcionario &f1);
+	void setOcupado(Funcionario f1);
 	int getNumFuncLimpeza();
-	int getLivresLimpeza();
+	int getLivresLimpeza(vector<Funcionario> &funcionarios);
 	int getNumFuncCanalizacao();
-	int getLivresCanalizacao();
+	int getLivresCanalizacao(vector<Funcionario> &funcionarios);
 	int getNumFuncPintura();
-	int getLivresPintura();
+	int getLivresPintura(vector<Funcionario> &funcionarios);
 
 	//Funcoes Servico
 	void sortServicos(int vectorServicos, int sortOption);

@@ -210,36 +210,30 @@ bool Main::displaySelectHabitacao(vector<Habitacao*> habitacoes) {
  * retval TRUE No error occurred.
  * retval FALSE Invalid option.
  */
-bool Main::displaySelectFuncionario() {
-	if (option >= this->condominio->getFuncionarios().size()) {
+bool Main::displaySelectFuncionario(vector<Funcionario> &func) {
+	if (option >= func.size()) {
 		return EXIT_FAILURE;
 	}
-	for (size_t i = 0; i < this->condominio->getFuncionarios().size(); i++) {
+	for (size_t i = 0; i < func.size(); i++) {
 		gotoxy(0, 14 + i);
 		if (i == option) {
 			setcolor(BLACK, LIGHTGREY);
-			cout << this->condominio->getFuncionarios()[i].getID() << "\t"
-					<< left << setw(16) << setfill(' ')
-					<< this->condominio->getFuncionarios()[i].getEspecialidade();
-			if (this->condominio->getFuncionarios()[i].isOcupado())
+			cout << func[i].getID() << "\t" << left << setw(16) << setfill(' ')
+					<< func[i].getEspecialidade();
+			if (func[i].isOcupado())
 				cout << "Ocupado" << "\t\t";
 			else
 				cout << "Livre" << "\t\t";
-			cout
-					<< this->condominio->getFuncionarios()[i].getServicosEfectuados()
-					<< endl;
+			cout << func[i].getServicosEfectuados() << endl;
 			setcolor(WHITE, BLACK);
 		} else {
-			cout << this->condominio->getFuncionarios()[i].getID() << "\t"
-					<< left << setw(16) << setfill(' ')
-					<< this->condominio->getFuncionarios()[i].getEspecialidade();
-			if (this->condominio->getFuncionarios()[i].isOcupado())
+			cout << func[i].getID() << "\t" << left << setw(16) << setfill(' ')
+					<< func[i].getEspecialidade();
+			if (func[i].isOcupado())
 				cout << "Ocupado" << "\t\t";
 			else
 				cout << "Livre" << "\t\t";
-			cout
-					<< this->condominio->getFuncionarios()[i].getServicosEfectuados()
-					<< endl;
+			cout << func[i].getServicosEfectuados() << endl;
 		}
 	}
 	return EXIT_SUCCESS;
@@ -1214,6 +1208,41 @@ void Main::displayServicoRequisitadoInfo(vector<Servico> servicos, int pos) {
 		}
 	}
 	pressEnterToContinue();
+}
+
+bool Main::searchFuncionario() {
+	displayLogo();
+	gotoxy(30, 8);
+	cout << "PESQUISAR FUNCIONARIO\n" << endl;
+
+	int id = 0;
+	string line = "";
+
+	do {
+		cout << "Introduza o ID do funcionario a pesquisar:\n";
+		getline(cin, line);
+		if (!isNumber(line))
+			cout << "Tem que ser um numero inteiro positivo.\n" << endl;
+	} while (!isNumber(line));
+	id = atoi(line.c_str());
+
+	if (this->condominio->getFuncionario(id).getID() == -1){
+		cout << "Nao existe nenhum funcionario com esse ID." << endl;
+		pressEnterToContinue();
+		return false;
+	}
+
+	int pos = -1;
+	vector<Funcionario> funcionarios = this->condominio->getFuncionarios();
+	for(size_t i = 0; i < funcionarios.size(); i++){
+		if(funcionarios[i].getID() == id){
+			pos = i;
+			break;
+		}
+	}
+
+	displayFuncionarioInfo(pos);
+	return true;
 }
 
 /**
@@ -3386,20 +3415,20 @@ int Main::menuDisplayFuncionariosBy() {
 		break;
 	case KEY_ENTER:
 		if (option == 0) { //Ordenar por ID
-			this->condominio->sortFuncionarios(0);
-			return menuDisplayAllFuncionarios();
+			vector<Funcionario> func = this->condominio->sortFuncionarios(0);
+			return menuDisplayAllFuncionarios(func);
 		} else if (option == 1) { //Ordenar por especialidade
 			resetOption();
-			this->condominio->sortFuncionarios(1);
-			return menuDisplayAllFuncionarios();
+			vector<Funcionario> func = this->condominio->sortFuncionarios(1);
+			return menuDisplayAllFuncionarios(func);
 		} else if (option == 2) { //Ordenar por estado de ocupacao
 			resetOption();
-			this->condominio->sortFuncionarios(2);
-			return menuDisplayAllFuncionarios();
+			vector<Funcionario> func = this->condominio->sortFuncionarios(2);
+			return menuDisplayAllFuncionarios(func);
 		} else if (option == 3) { //Ordenar por servicos feitos
 			resetOption();
-			this->condominio->sortFuncionarios(3);
-			return menuDisplayAllFuncionarios();
+			vector<Funcionario> func = this->condominio->sortFuncionarios(3);
+			return menuDisplayAllFuncionarios(func);
 		} else { //Voltar atras
 			resetOption();
 			return menuGerirFuncionarios();
@@ -3418,7 +3447,7 @@ int Main::menuDisplayFuncionariosBy() {
  * Display all employees menu. The admin can choose an employee to view its info.
  * @return A new menu.
  */
-int Main::menuDisplayAllFuncionarios() {
+int Main::menuDisplayAllFuncionarios(vector<Funcionario> &func) {
 	displayLogo();
 
 	gotoxy(10, 6);
@@ -3429,15 +3458,15 @@ int Main::menuDisplayAllFuncionarios() {
 
 	gotoxy(30, 8);
 	cout << "SELECIONE O FUNCIONARIO:\n" << endl;
-	cout << "[ENTER] Ver dados" << endl;
+	cout << "[ENTER] Ver dados\t[F1] Pesquisar" << endl;
 	cout << "[ESC] Voltar atras\n" << endl;
 	cout << "ID\tEspecialidade\tEstado\tServicos Feitos" << endl;
-	if (this->condominio->getFuncionarios().empty()) {
+	if (func.empty()) {
 		cout << "Nao existem funcionarios no condominio" << endl;
 		pressEnterToContinue();
 		return menuDisplayFuncionariosBy();
 	}
-	displaySelectFuncionario();
+	displaySelectFuncionario(func);
 
 	int c = getch();
 	switch (c) {
@@ -3446,7 +3475,7 @@ int Main::menuDisplayAllFuncionarios() {
 			option--;
 		break;
 	case KEY_DOWN:
-		if (option + 1 < this->condominio->getFuncionarios().size())
+		if (option + 1 < func.size())
 			option++;
 		break;
 	case KEY_ENTER:
@@ -3456,10 +3485,14 @@ int Main::menuDisplayAllFuncionarios() {
 		resetOption();
 		return menuDisplayFuncionariosBy();
 		break;
+	case KEY_F1:
+		resetOption();
+		searchFuncionario();
+		break;
 	default:
 		break;
 	}
-	return menuDisplayAllFuncionarios();
+	return menuDisplayAllFuncionarios(func);
 }
 /**
  * Hire employee menu. The admin can choose a type of employee to hire.
@@ -3610,7 +3643,8 @@ int Main::menuFireFuncionario() {
 		pressEnterToContinue();
 		return menuDisplayFuncionariosBy();
 	}
-	displaySelectFuncionario();
+	vector<Funcionario> funcionarios = this->condominio->getFuncionarios();
+	displaySelectFuncionario(funcionarios);
 
 	int c = getch();
 	switch (c) {
@@ -3667,7 +3701,8 @@ int Main::menuDeleteFuncionario(int pos, int menuOption) {
 		break;
 	case KEY_ENTER:
 		if (menuOption == 0) {
-			this->condominio->eraseFuncionario(pos);
+			this->condominio->eraseFuncionario(
+					this->condominio->getFuncionarios()[pos]);
 			cout << "\nFuncionario despedido." << endl;
 			if (this->option > 0)
 				option--;
@@ -4024,13 +4059,15 @@ int Main::menuAddServico(int pos, int tipo, int menuOption, bool sameUser) {
 	time_t disponibilidade = 0;
 	string dataPrevista = "";
 
+	vector<Funcionario> funcionarios = this->condominio->getFuncionarios();
+
 	if (tipo == 0) {
 		cout << "REQUISITAR SERVICO DE LIMPEZA\n" << endl;
 		especialidade = "Limpeza";
 		cout << "Numero total de funcionarios de limpeza = "
 				<< this->condominio->getNumFuncLimpeza() << endl;
 		cout << "Numero de funcionarios de limpeza livres actual = "
-				<< this->condominio->getLivresLimpeza() << endl;
+				<< this->condominio->getLivresLimpeza(funcionarios) << endl;
 		if (this->condominio->getNumFuncLimpeza() == 0) {
 			cout
 					<< "\nO condominio nao tem funcionarios para este tipo de servico.\n"
@@ -4052,7 +4089,7 @@ int Main::menuAddServico(int pos, int tipo, int menuOption, bool sameUser) {
 		cout << "Numero total de canalizadores = "
 				<< this->condominio->getNumFuncCanalizacao() << endl;
 		cout << "Numero de canalizadores livres actual = "
-				<< this->condominio->getLivresCanalizacao() << endl;
+				<< this->condominio->getLivresCanalizacao(funcionarios) << endl;
 		if (this->condominio->getNumFuncCanalizacao() == 0) {
 			cout
 					<< "\nO condominio nao tem funcionarios para este tipo de servico.\n"
@@ -4076,7 +4113,7 @@ int Main::menuAddServico(int pos, int tipo, int menuOption, bool sameUser) {
 		cout << "Numero total de pintores = "
 				<< this->condominio->getNumFuncPintura() << endl;
 		cout << "Numero de pintores livres actual = "
-				<< this->condominio->getLivresPintura() << endl;
+				<< this->condominio->getLivresPintura(funcionarios) << endl;
 		if (this->condominio->getNumFuncPintura() == 0) {
 			cout
 					<< "\nO condominio nao tem funcionarios para este tipo de servico.\n"
@@ -4666,8 +4703,8 @@ bool Main::importServicos(Condominio &cond) {
 			if (vectorServicos == 0)
 				servicosTerminados.push_back(s1);
 			else if (vectorServicos == 1) {
-				if (cond.getFuncionario(idFuncionario) != NULL)
-					cond.getFuncionario(idFuncionario)->setOcupado(true);
+				if (cond.getFuncionario(idFuncionario).getID() != -1)
+					cond.getFuncionario(idFuncionario).setOcupado(true);
 				servicosEmCurso.push_back(s1);
 			} else if (vectorServicos == 2)
 				servicosEmEspera.push_back(s1);

@@ -38,7 +38,7 @@ public:
 	bool displaySelectCondomino();
 	bool displaySelectHabitacao(vector<Habitacao*> habitacoes);
 	bool displaySelectHabitacaoPossuida();
-	bool displaySelectFuncionario();
+	bool displaySelectFuncionario(vector<Funcionario> &func);
 	bool displaySelectServico(int vector);
 	bool displaySelectServicoRequisitado(vector<Servico> servicos);
 
@@ -62,6 +62,8 @@ public:
 	void displayFuncionarioInfo(int pos);
 	void displayServicoInfo(int pos, int vectorServicos);
 	void displayServicoRequisitadoInfo(vector<Servico> servicos, int pos);
+
+	bool searchFuncionario();
 
 	bool fimDoMes();
 
@@ -121,7 +123,7 @@ public:
 	//Gerir Funcionarios
 	int menuGerirFuncionarios();
 	int menuDisplayFuncionariosBy();
-	int menuDisplayAllFuncionarios();
+	int menuDisplayAllFuncionarios(vector<Funcionario> &funcionarios);
 	int menuAddFuncionario();
 	int menuConfirmAddFuncionario(int specialty, int menuOption);
 	int menuFireFuncionario();

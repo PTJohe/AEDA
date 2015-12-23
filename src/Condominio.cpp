@@ -106,19 +106,28 @@ vector<Habitacao*> Condominio::getHabitacoes() {
  * @return Vector of condominium's employees.
  */
 vector<Funcionario> Condominio::getFuncionarios() {
-	return funcionarios;
+	tabHFunc::iterator it = funcionarios.begin();
+	vector<Funcionario> vec;
+	for (it; it != funcionarios.end(); it++) {
+		vec.push_back(*it);
+	}
+	return vec;
 }
 /**
  * Returns a pointer to an employee using its id.
  * @param id Employee id.
  * @return A pointer to the employee.
  */
-Funcionario* Condominio::getFuncionario(int id) {
-	for (size_t i = 0; i < funcionarios.size(); i++) {
-		if (funcionarios[i].getID() == id)
-			return &funcionarios[i];
+Funcionario Condominio::getFuncionario(int id) {
+	Funcionario f1 = Funcionario("", -1, 0);
+	tabHFunc::iterator it = funcionarios.begin();
+	for (it; it != funcionarios.end(); it++) {
+		if ((*it).getID() == id){
+			f1 = (*it);
+			break;
+		}
 	}
-	return NULL;
+	return f1;
 }
 
 /**
@@ -192,7 +201,11 @@ void Condominio::setHabitacoes(vector<Habitacao*> habitacoes) {
  * @param funcionarios New vector of employees.
  */
 void Condominio::setFuncionarios(vector<Funcionario> funcionarios) {
-	this->funcionarios = funcionarios;
+	this->funcionarios.clear();
+
+	for (size_t i = 0; i < funcionarios.size(); i++) {
+		this->funcionarios.insert(funcionarios[i]);
+	}
 }
 /**
  * Sets the condominium's services.
@@ -535,7 +548,8 @@ bool Condominio::updateHabitacoesCondominos() {
  * Sorts employees according to a specified option.
  * @param sortOption 0 = ID, 1 = Specialty, 2 = Occupation status.
  */
-void Condominio::sortFuncionarios(int sortOption) {
+vector<Funcionario> Condominio::sortFuncionarios(int sortOption) {
+	vector<Funcionario> funcionarios = this->getFuncionarios();
 	if (sortOption == 0)
 		insertionSort(funcionarios);
 	else if (sortOption == 1)
@@ -545,6 +559,7 @@ void Condominio::sortFuncionarios(int sortOption) {
 		sort(funcionarios.begin(), funcionarios.end(), compFuncionarioOcupacao);
 	else if (sortOption == 3)
 		sort(funcionarios.begin(), funcionarios.end(), compFuncionarioServicos);
+	return funcionarios;
 }
 /**
  * Adds a given employee to the condominium.
@@ -554,7 +569,7 @@ void Condominio::sortFuncionarios(int sortOption) {
  */
 bool Condominio::addFuncionario(Funcionario funcionario) {
 	if (this->fundos >= 1000) {
-		this->funcionarios.push_back(funcionario);
+		this->funcionarios.insert(funcionario);
 		this->fundos -= 1000;
 		return true;
 	} else
@@ -566,29 +581,38 @@ bool Condominio::addFuncionario(Funcionario funcionario) {
  * @retval TRUE Employee successfully removed.
  * @retval FALSE Invalid position.
  */
-bool Condominio::eraseFuncionario(int pos) {
-	if (pos >= this->funcionarios.size())
+bool Condominio::eraseFuncionario(Funcionario &f1) {
+	if (this->funcionarios.find(f1) == funcionarios.end())
 		return false;
-	if (funcionarios[pos].isOcupado())
+	if (f1.isOcupado())
 		for (size_t i = 0; i < this->servicosEmCurso.size(); i++) {
-			if (this->servicosEmCurso[i].getIDFuncionario()
-					== this->funcionarios[pos].getID())
+			if (this->servicosEmCurso[i].getIDFuncionario() == f1.getID())
 				this->eraseServico(i, 1);
 		}
 	else {
 		for (size_t j = 0; j < this->servicosEmEspera.size(); j++)
-			if (this->servicosEmEspera[j].getIDFuncionario()
-					== this->funcionarios[pos].getID())
+			if (this->servicosEmEspera[j].getIDFuncionario() == f1.getID())
 				this->eraseServico(j, 2);
 	}
-	this->funcionarios.erase(funcionarios.begin() + pos);
+	this->funcionarios.erase(f1);
 	return true;
+}
+void Condominio::setOcupado(Funcionario f1){
+	vector<Funcionario> funcionarios = this->getFuncionarios();
+	for(size_t i = 0; i < funcionarios.size(); i++){
+		if(funcionarios[i] == f1){
+			funcionarios[i].setOcupado(true);
+			break;
+		}
+	}
+	this->setFuncionarios(funcionarios);
 }
 
 /**
  * @return Number of cleaning employees hired by the condominium.
  */
 int Condominio::getNumFuncLimpeza() {
+	vector<Funcionario> funcionarios = this->getFuncionarios();
 	int total = 0;
 	for (size_t i = 0; i < this->funcionarios.size(); i++)
 		if (funcionarios[i].getEspecialidade() == "Limpeza")
@@ -598,7 +622,7 @@ int Condominio::getNumFuncLimpeza() {
 /**
  * @return Number of cleaning employees available to do a service.
  */
-int Condominio::getLivresLimpeza() {
+int Condominio::getLivresLimpeza(vector<Funcionario> &funcionarios) {
 	int total = 0;
 	for (size_t i = 0; i < this->funcionarios.size(); i++)
 		if (funcionarios[i].getEspecialidade() == "Limpeza")
@@ -610,6 +634,7 @@ int Condominio::getLivresLimpeza() {
  * @return Number of plumbers hired by the condominium.
  */
 int Condominio::getNumFuncCanalizacao() {
+	vector<Funcionario> funcionarios = this->getFuncionarios();
 	int total = 0;
 	for (size_t i = 0; i < this->funcionarios.size(); i++)
 		if (funcionarios[i].getEspecialidade() == "Canalizacao")
@@ -619,7 +644,7 @@ int Condominio::getNumFuncCanalizacao() {
 /**
  * @return Number of plumbers available to do a service.
  */
-int Condominio::getLivresCanalizacao() {
+int Condominio::getLivresCanalizacao(vector<Funcionario> &funcionarios) {
 	int total = 0;
 	for (size_t i = 0; i < this->funcionarios.size(); i++)
 		if (funcionarios[i].getEspecialidade() == "Canalizacao")
@@ -631,6 +656,7 @@ int Condominio::getLivresCanalizacao() {
  * @return Number of painters hired by the condominium.
  */
 int Condominio::getNumFuncPintura() {
+	vector<Funcionario> funcionarios = this->getFuncionarios();
 	int total = 0;
 	for (size_t i = 0; i < this->funcionarios.size(); i++)
 		if (funcionarios[i].getEspecialidade() == "Pintura")
@@ -640,7 +666,7 @@ int Condominio::getNumFuncPintura() {
 /**
  * @return Number of painters available to do a service.
  */
-int Condominio::getLivresPintura() {
+int Condominio::getLivresPintura(vector<Funcionario> &funcionarios) {
 	int total = 0;
 	for (size_t i = 0; i < this->funcionarios.size(); i++)
 		if (funcionarios[i].getEspecialidade() == "Pintura")
@@ -701,6 +727,7 @@ void Condominio::sortServicos(int vectorServicos, int sortOption) {
  * @retval TRUE Service successfully added.
  */
 bool Condominio::addServico(int vectorServicos, string mes, Servico servico) {
+	vector<Funcionario> funcionarios = this->getFuncionarios();
 	if (vectorServicos == 1) {
 		int idFuncionario = 0;
 		for (size_t i = 0; i < funcionarios.size(); i++) {
@@ -717,6 +744,7 @@ bool Condominio::addServico(int vectorServicos, string mes, Servico servico) {
 	} else if (vectorServicos == 2) {
 		servicosEmEspera.push_back(servico);
 	}
+	this->setFuncionarios(funcionarios);
 	return true;
 }
 /**
@@ -727,6 +755,8 @@ bool Condominio::addServico(int vectorServicos, string mes, Servico servico) {
  * @retval False Invalid position.
  */
 bool Condominio::eraseServico(int pos, int vectorServicos) {
+	vector<Funcionario> funcionarios = this->getFuncionarios();
+
 	if (vectorServicos == 0) { //Remover servico terminado
 		if (pos >= servicosTerminados.size())
 			return false;
@@ -735,8 +765,10 @@ bool Condominio::eraseServico(int pos, int vectorServicos) {
 	} else if (vectorServicos == 1) { //Cancelar servico em curso
 		for (size_t i = 0; i < this->funcionarios.size(); i++) {
 			if (funcionarios[i].getID()
-					== servicosEmCurso[pos].getIDFuncionario())
+					== servicosEmCurso[pos].getIDFuncionario()){
 				funcionarios[i].setOcupado(false);
+				this->setFuncionarios(funcionarios);
+			}
 		}
 		for (size_t i = 0; i < this->servicosEmCurso.size(); i++) {
 			if (pos == i) {
@@ -776,8 +808,10 @@ bool Condominio::eraseServico(int pos, int vectorServicos) {
  */
 time_t Condominio::getDisponibilidadeServico(int tipo) {
 	time_t disponibilidade = 0;
+	vector<Funcionario> funcionarios = this->getFuncionarios();
+
 	if (tipo == 0) { //Limpeza
-		if (this->getLivresLimpeza() > 0)
+		if (this->getLivresLimpeza(funcionarios) > 0)
 			return disponibilidade;
 		else {
 			for (size_t i = 0; i < this->servicosEmEspera.size(); i++) {
@@ -802,7 +836,7 @@ time_t Condominio::getDisponibilidadeServico(int tipo) {
 			return disponibilidade;
 		}
 	} else if (tipo == 1) { //Canalizacao
-		if (this->getLivresCanalizacao() > 0)
+		if (this->getLivresCanalizacao(funcionarios) > 0)
 			return disponibilidade;
 		else {
 			for (size_t i = 0; i < this->servicosEmEspera.size(); i++) {
@@ -828,7 +862,7 @@ time_t Condominio::getDisponibilidadeServico(int tipo) {
 			return disponibilidade;
 		}
 	} else if (tipo == 2) { //Pintura
-		if (this->getLivresPintura() > 0)
+		if (this->getLivresPintura(funcionarios) > 0)
 			return disponibilidade;
 		else {
 			for (size_t i = 0; i < this->servicosEmEspera.size(); i++) {
@@ -870,7 +904,9 @@ bool Condominio::updateServicos(string mes, Condomino* currentUser,
 
 	int servicosQueAcabaram = 0;
 
-//Verifica se algum servico terminou e liberta o funcionario
+	vector<Funcionario> funcionarios = this->getFuncionarios();
+
+	//Verifica se algum servico terminou e liberta o funcionario
 	for (size_t i = 0; i < servicosEmCurso.size(); i++) {
 		if (servicosEmCurso[i].getDataFim() < time(NULL)) {
 			for (size_t j = 0; j < funcionarios.size(); j++)
@@ -898,9 +934,9 @@ bool Condominio::updateServicos(string mes, Condomino* currentUser,
 		}
 	}
 
-	int funcLimpeza = this->getLivresLimpeza();
-	int funcCanalizacao = this->getLivresCanalizacao();
-	int funcPintura = this->getLivresPintura();
+	int funcLimpeza = this->getLivresLimpeza(funcionarios);
+	int funcCanalizacao = this->getLivresCanalizacao(funcionarios);
+	int funcPintura = this->getLivresPintura(funcionarios);
 
 	if (funcLimpeza > 0 || funcCanalizacao > 0 || funcPintura > 0) {
 		for (size_t i = 0; i < servicosEmEspera.size(); i++) {
@@ -932,6 +968,8 @@ bool Condominio::updateServicos(string mes, Condomino* currentUser,
 		}
 	}
 
+	this->setFuncionarios(funcionarios);
+
 	if (servicosQueAcabaram > 0)
 		return true;
 	else
@@ -951,7 +989,9 @@ bool Condominio::updateServicosFimMes(string mes) {
 	if (!servicosEmCurso.empty())
 		existemServicos = true;
 
-//Termina todos os servicos em curso e liberta os funcionarios
+	vector<Funcionario> funcionarios = this->getFuncionarios();
+
+	//Termina todos os servicos em curso e liberta os funcionarios
 	for (size_t i = 0; i < servicosEmCurso.size(); i++) {
 		servicosTerminados.push_back(servicosEmCurso[i]);
 		for (size_t j = 0; j < funcionarios.size(); j++)
@@ -965,22 +1005,22 @@ bool Condominio::updateServicosFimMes(string mes) {
 			i--;
 	}
 
-//Inicia ao mesmo tempo tantos servicos de limpeza em espera como os funcionarios de limpeza existentes,
-//a partir dai, os servicos iniciam-se sequencialmente, um apos o outro
-	int funcLimpeza = this->getLivresLimpeza();
+	//Inicia ao mesmo tempo tantos servicos de limpeza em espera como os funcionarios de limpeza existentes,
+	//a partir dai, os servicos iniciam-se sequencialmente, um apos o outro
+	int funcLimpeza = this->getLivresLimpeza(funcionarios);
 	time_t prevDataLimpeza = 0;
 
-//Inicia ao mesmo tempo tantos servicos de canalizacao em espera como os canalizadores existentes,
-//a partir dai, os servicos iniciam-se sequencialmente, um apos o outro
-	int funcCanalizacao = this->getLivresCanalizacao();
+	//Inicia ao mesmo tempo tantos servicos de canalizacao em espera como os canalizadores existentes,
+	//a partir dai, os servicos iniciam-se sequencialmente, um apos o outro
+	int funcCanalizacao = this->getLivresCanalizacao(funcionarios);
 	time_t prevDataCanalizacao = 0;
 
-//Inicia ao mesmo tempo tantos servicos de pintura em espera como os pintores existentes,
-//a partir dai, os servicos iniciam-se sequencialmente, um apos o outro
-	int funcPintura = this->getLivresPintura();
+	//Inicia ao mesmo tempo tantos servicos de pintura em espera como os pintores existentes,
+	//a partir dai, os servicos iniciam-se sequencialmente, um apos o outro
+	int funcPintura = this->getLivresPintura(funcionarios);
 	time_t prevDataPintura = 0;
 
-//Inicia e termina todos os servicos em espera possiveis
+	//Inicia e termina todos os servicos em espera possiveis
 	for (size_t i = 0; i < servicosEmEspera.size(); i++) {
 		if (servicosEmEspera[i].getEspecialidade() == "Limpeza") {
 			//Se nao houver funcionarios de limpeza, o servico continua em espera no proximo mes
@@ -1065,6 +1105,8 @@ bool Condominio::updateServicosFimMes(string mes) {
 			continue;
 		}
 	}
+	this->setFuncionarios(funcionarios);
+
 	return existemServicos;
 }
 
