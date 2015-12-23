@@ -6,6 +6,8 @@
 #include "../headers/Servico.h"
 #include "../sort&search/HashTable.h"
 
+
+
 class Condominio {
 private:
 	long int fundos;
@@ -22,7 +24,7 @@ private:
 	int id;
 	string designacao;
 	Posicao localizacao;
-	priority_queue<Paragem> transportes;
+
 
 public:
 	Condominio();
