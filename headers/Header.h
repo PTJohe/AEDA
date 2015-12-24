@@ -14,6 +14,7 @@
 //
 #include <queue>
 #include <cmath>
+#include <climits>
 
 #include "../sort&search/insertionSort.h"
 #include "../sort&search/sequentialSearch.h"

@@ -13,6 +13,7 @@ private:
 	Posicao condo;
 
 public:
+	Paragem(){};
 	Paragem(string nome,Posicao pos,Posicao condo);
 
 	string getNome() const;
@@ -32,6 +33,7 @@ private:
 	Posicao condo;
 
 public:
+	Transporte(){};
 	Transporte(string tipo, string destino, Posicao condo);
 
 	void mudarDestino(string dest);

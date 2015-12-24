@@ -76,11 +76,16 @@ priority_queue<Paragem> Transporte::getParagens() const {
 	return paragens;
 }
 
-void Transporte::setDestino(string destino){
+void Transporte::setDestino(string destino) {
 	this->destino = destino;
 }
 
 bool Transporte::operator <(const Transporte &trans) const {
+	if (this->paragens.empty() && !trans.paragens.empty()) {
+		return true;
+	} else if (!this->paragens.empty() && trans.paragens.empty())
+		return false;
+
 	int xc, yc;
 	xc = this->condo.x;
 	yc = this->condo.y;

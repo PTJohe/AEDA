@@ -377,9 +377,9 @@ bool Main::displaySelectTransporte() {
 			setcolor(WHITE, BLACK);
 		} else {
 			cout << left << setw(24) << setfill(' ') << transportes[i].getTipo()
-								<< left << setw(26) << setfill(' ')
-								<< transportes[i].getDestino()
-								<< transportes[i].getParagens().size() << endl;
+					<< left << setw(26) << setfill(' ')
+					<< transportes[i].getDestino()
+					<< transportes[i].getParagens().size() << endl;
 		}
 	}
 	return EXIT_SUCCESS;
@@ -1422,9 +1422,13 @@ int Main::menuInicial() {
 		} else if (option == 1) { //Menu Registo
 			resetOption();
 			return menuRegisto();
-		} else
-			//Sair
+		} else { //Sair
 			resetOption();
+			return menuGestaoCondominios();
+		}
+		break;
+	case KEY_ESC:
+		resetOption();
 		return menuGestaoCondominios();
 		break;
 	default:
@@ -1662,6 +1666,10 @@ int Main::menuUtilizador() {
 				return menuInicial();
 			}
 		}
+		break;
+	case KEY_ESC:
+		resetOption();
+		return menuInicial();
 		break;
 	default:
 		break;
@@ -5391,6 +5399,7 @@ void createMenuOptions() {
 	menuOptions[28].push_back("Desactivar ponto de paragem");
 	menuOptions[28].push_back("Criar ponto de paragem");
 	menuOptions[28].push_back("Alterar destino de um transporte");
+	menuOptions[28].push_back("Criar transporte");
 	menuOptions[28].push_back("Voltar atras");
 
 	menu = menuOptions;
@@ -5615,7 +5624,8 @@ int Main::menuConfirmSelectCondominio(vector<Condominio> &conds,
 			<< endl;
 	cout << "Numero de funcionarios: " << conds[option].getFuncionarios().size()
 			<< endl;
-	cout << "Tipos de transporte: " << conds[option].getTransportes().size() << endl;
+	cout << "Numero de transportes: " << conds[option].getTransportes().size()
+			<< endl;
 
 	cout << "\nTem a certeza que pretende selecionar este condominio?" << endl;
 	displayYesNo(menuOption);
@@ -6002,6 +6012,10 @@ int Main::menuParagemMaisProxima() {
 			return menuUtilizador();
 		}
 		break;
+	case KEY_ESC:
+		resetOption();
+		return menuUtilizador();
+		break;
 	default:
 		break;
 	}
@@ -6034,24 +6048,30 @@ bool Main::paragemMaisProxima(priority_queue<Transporte> transportes) {
 	gotoxy(0, 8);
 	cout << "PARAGEM MAIS PROXIMA\n" << endl;
 
-	if (transportes.empty()) {
+	bool existemParagens = false;
+
+	Paragem p1;
+	Transporte t1;
+	float minDistance = INT_MAX;
+
+	while (!transportes.empty()) {
+		if (!transportes.top().getParagens().empty()) {
+			if (minDistance
+					> transportes.top().getParagens().top().calcDistancia()) {
+				existemParagens = true;
+				p1 = transportes.top().getParagens().top();
+				t1 = transportes.top();
+				minDistance =
+						transportes.top().getParagens().top().calcDistancia();
+			}
+		}
+		transportes.pop();
+	}
+
+	if (!existemParagens) {
 		cout << "\nNao existem paragens perto do condominio." << endl;
 		pressEnterToContinue();
 		return false;
-	}
-
-	Paragem p1 = transportes.top().getParagens().top();
-	Transporte t1 = transportes.top();
-	float minDistance = transportes.top().getParagens().top().calcDistancia();
-
-	while (!transportes.empty()) {
-		if (minDistance
-				> transportes.top().getParagens().top().calcDistancia()) {
-			p1 = transportes.top().getParagens().top();
-			t1 = transportes.top();
-			minDistance = transportes.top().getParagens().top().calcDistancia();
-		}
-		transportes.pop();
 	}
 
 	cout << "\nNome: " << p1.getNome() << endl;
@@ -6099,6 +6119,9 @@ int Main::menuGerirTransportes() {
 		} else if (option == 2) { //Alterar destino de um transporte
 			resetOption();
 			return menuSelectTransporte(2);
+		} else if (option == 3) { //Criar transporte
+			resetOption();
+			return menuAddTransporte();
 		} else { //Voltar atras
 			resetOption();
 			return menuAdministrador();
@@ -6426,6 +6449,84 @@ int Main::menuAlterarTransporte(Transporte t1) {
 	return menuGerirTransportes();
 }
 
+int Main::menuAddTransporte() {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "ADICIONAR TRANSPORTE\n" << endl;
+
+	string tipo = "";
+	string destino = "";
+
+	cout << "Introduza o tipo de transporte: ";
+	getline(cin, tipo);
+	cout << "Introduza o destino: ";
+	getline(cin, destino);
+
+	Transporte t1 = Transporte(tipo, destino,
+			this->condominio->getLocalizacao());
+
+	return menuConfirmAddTransporte(t1, 0);
+}
+
+int Main::menuConfirmAddTransporte(Transporte &t1, int menuOption) {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "DADOS DO TRANSPORTE\n" << endl;
+	cout << "\nTipo: " << t1.getTipo() << endl;
+	cout << "Destino: " << t1.getDestino() << endl;
+
+	cout << "\nTem a certeza que pretende criar este transporte?" << endl;
+	displayYesNo(menuOption);
+
+	int c = getch();
+	switch (c) {
+	case KEY_LEFT:
+		if (menuOption - 1 >= 0)
+			menuOption--;
+		break;
+	case KEY_RIGHT:
+		if (menuOption + 1 < 2)
+			menuOption++;
+		break;
+	case KEY_ENTER:
+		if (menuOption == 0) {
+			priority_queue<Transporte> temp =
+					this->condominio->getTransportes();
+			priority_queue<Transporte> newTransportes;
+
+			bool existe = false;
+
+			while (!temp.empty()) {
+				if (temp.top().getTipo() == t1.getTipo()
+						&& temp.top().getDestino() == t1.getDestino()) {
+					existe = true;
+				} else
+					newTransportes.push(temp.top());
+				temp.pop();
+			}
+			if (existe) {
+				cout
+						<< "Ja existe um transporte com o mesmo tipo e destino neste condominio."
+						<< endl;
+				pressEnterToContinue();
+				return menuGerirTransportes();
+			}
+
+			newTransportes.push(t1);
+			this->condominio->setTransportes(newTransportes);
+
+			cout << "Transporte criado!" << endl;
+			pressEnterToContinue();
+			return menuGerirTransportes();
+		} else if (menuOption == 1) {
+			return menuGerirTransportes();
+		}
+		break;
+	default:
+		break;
+	}
+	return menuConfirmAddTransporte(t1, menuOption);
+}
 /**
  * Main function.
  * @retval EXIT_SUCCESS No errors occurred during the execution.

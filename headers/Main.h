@@ -195,6 +195,7 @@ public:
 	int menuSelectTransporte(int editOption);
 	int menuAlterarTransporte(Transporte t1);
 	int menuAddTransporte();
+	int menuConfirmAddTransporte(Transporte &t1, int menuOption);
 };
 
 /*
