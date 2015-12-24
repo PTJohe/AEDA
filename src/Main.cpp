@@ -399,12 +399,12 @@ bool Main::displaySelectParagem(Transporte &t1) {
 		gotoxy(0, 14 + i);
 		if (i == option) {
 			setcolor(BLACK, LIGHTGREY);
-			cout << left << setw(25) << setfill(' ') << paragens[i].getNome()
+			cout << left << setw(30) << setfill(' ') << paragens[i].getNome()
 					<< "(" << paragens[i].getPos().x << ","
 					<< paragens[i].getPos().y << ")" << endl;
 			setcolor(WHITE, BLACK);
 		} else {
-			cout << left << setw(25) << setfill(' ') << paragens[i].getNome()
+			cout << left << setw(30) << setfill(' ') << paragens[i].getNome()
 					<< "(" << paragens[i].getPos().x << ","
 					<< paragens[i].getPos().y << ")" << endl;
 		}
@@ -5652,7 +5652,7 @@ int Main::menuConfirmSelectCondominio(vector<Condominio> &conds,
 int Main::menuAddCondominio() {
 	displayLogo();
 	gotoxy(0, 8);
-	cout << "ADICIONAR DO CONDOMINIO\n" << endl;
+	cout << "ADICIONAR CONDOMINIO\n" << endl;
 
 	string designacao = "";
 	string cidade = "";
@@ -6143,7 +6143,7 @@ int Main::menuSelectParagem(Transporte &t1) {
 			option++;
 		break;
 	case KEY_ENTER:
-		while(n > 0){
+		while (n > 0) {
 			temp.pop();
 			n--;
 		}
@@ -6190,7 +6190,6 @@ int Main::menuDesactivarParagem(Transporte &t1, Paragem &p1, int menuOption) {
 			if (this->option > 0)
 				option--;
 
-
 			priority_queue<Transporte> temp =
 					this->condominio->getTransportes();
 			priority_queue<Transporte> newTransportes;
@@ -6222,9 +6221,104 @@ int Main::menuDesactivarParagem(Transporte &t1, Paragem &p1, int menuOption) {
 }
 
 int Main::menuNovaParagem(Transporte &t1) {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "ADICIONAR PARAGEM\n" << endl;
+
+	cout << "Tipo de transporte: " << t1.getTipo() << endl;
+	cout << "Destino: " << t1.getDestino() << "\n" << endl;
+
+	string nome = "";
+	string line = "";
+	int coordX = 0;
+	int coordY = 0;
+
+	cout << "Introduza o nome da paragem: ";
+	getline(cin, nome);
+	cout << "Introduza a localizacao:" << endl;
+	do {
+		cout << "Coordenada X: ";
+		getline(cin, line);
+		if (!isNumber(line))
+			cout << "A coordenada tem que ser um numero inteiro positivo.\n"
+					<< endl;
+	} while (!isNumber(line));
+	coordX = atoi(line.c_str());
+
+	do {
+		cout << "Coordenada Y: ";
+		getline(cin, line);
+		if (!isNumber(line))
+			cout << "A coordenada tem que ser um numero inteiro positivo.\n"
+					<< endl;
+	} while (!isNumber(line));
+	coordY = atoi(line.c_str());
+
+	Posicao localizacao;
+	localizacao.x = coordX;
+	localizacao.y = coordY;
+
+	Paragem p1 = Paragem(nome, localizacao, this->condominio->getLocalizacao());
+
+	return menuConfirmAddParagem(t1, p1, 0);
 
 }
 
+int Main::menuConfirmAddParagem(Transporte &t1, Paragem &p1, int menuOption) {
+	displayLogo();
+	gotoxy(0, 8);
+	cout << "DADOS DA PARAGEM\n" << endl;
+	cout << "\nNome: " << p1.getNome() << endl;
+	cout << "Tipo de transporte: " << t1.getTipo() << endl;
+	cout << "Destino: " << t1.getDestino() << endl;
+	cout << "Posicao: (" << p1.getPos().x << "," << p1.getPos().y << ")"
+			<< endl;
+	cout << "Distancia ao condominio: " << p1.calcDistancia() << " km\n"
+			<< endl;
+
+	cout << "\nTem a certeza que pretende criar esta paragem?" << endl;
+	displayYesNo(menuOption);
+
+	int c = getch();
+	switch (c) {
+	case KEY_LEFT:
+		if (menuOption - 1 >= 0)
+			menuOption--;
+		break;
+	case KEY_RIGHT:
+		if (menuOption + 1 < 2)
+			menuOption++;
+		break;
+	case KEY_ENTER:
+		if (menuOption == 0) {
+			priority_queue<Transporte> temp =
+					this->condominio->getTransportes();
+			priority_queue<Transporte> newTransportes;
+
+			Transporte antigo = t1;
+			t1.addParagem(p1);
+
+			while (!temp.empty()) {
+				if (temp.top() == antigo) {
+					newTransportes.push(t1);
+				} else
+					newTransportes.push(temp.top());
+				temp.pop();
+			}
+			this->condominio->setTransportes(newTransportes);
+
+			cout << "Paragem criada!" << endl;
+			pressEnterToContinue();
+			return menuGerirTransportes();
+		} else if (menuOption == 1) {
+			return menuSelectTransporte(1);
+		}
+		break;
+	default:
+		break;
+	}
+	return menuConfirmAddParagem(t1, p1, menuOption);
+}
 int Main::menuSelectTransporte(int editOption) {
 	displayLogo();
 

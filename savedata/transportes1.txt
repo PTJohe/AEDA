@@ -1,7 +1,13 @@
 Comboio
 Algarve
-1
-S. Bento	
+3
+S. Bento
 20
 20
+Boavista
+20
+20
+24 de Agosto
+30
+30
 

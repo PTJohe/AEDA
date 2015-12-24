@@ -190,6 +190,7 @@ public:
 	int menuSelectParagem(Transporte &t1);
 	int menuDesactivarParagem(Transporte &t1, Paragem &p1, int menuOption);
 	int menuNovaParagem(Transporte &t1);
+	int menuConfirmAddParagem(Transporte &t1, Paragem &p1, int menuOption);
 
 	int menuSelectTransporte(int editOption);
 	int menuAlterarTransporte(Transporte t1);
