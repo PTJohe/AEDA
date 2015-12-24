@@ -1,13 +1,23 @@
 Comboio
 Algarve
 3
-S. Bento
-20
-20
 Boavista
 20
 20
+S. Bento
+20
+20
 24 de Agosto
+30
+30
+
+Autocarro
+Lisboa
+2
+S. Bento
+20
+20
+Campanha
 30
 30
 

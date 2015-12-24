@@ -376,10 +376,10 @@ bool Main::displaySelectTransporte() {
 					<< transportes[i].getParagens().size() << endl;
 			setcolor(WHITE, BLACK);
 		} else {
-			cout << transportes[i].getTipo() << "  - " << left << setw(25)
-					<< setfill(' ') << transportes[i].getDestino() << setw(25)
-					<< setfill(' ') << " - "
-					<< transportes[i].getParagens().size() << endl;
+			cout << left << setw(24) << setfill(' ') << transportes[i].getTipo()
+								<< left << setw(26) << setfill(' ')
+								<< transportes[i].getDestino()
+								<< transportes[i].getParagens().size() << endl;
 		}
 	}
 	return EXIT_SUCCESS;
@@ -5615,6 +5615,7 @@ int Main::menuConfirmSelectCondominio(vector<Condominio> &conds,
 			<< endl;
 	cout << "Numero de funcionarios: " << conds[option].getFuncionarios().size()
 			<< endl;
+	cout << "Tipos de transporte: " << conds[option].getTransportes().size() << endl;
 
 	cout << "\nTem a certeza que pretende selecionar este condominio?" << endl;
 	displayYesNo(menuOption);
@@ -6439,12 +6440,7 @@ int main() {
 	main.setMenus(menu);
 
 	main.importCondominios();
-	/*main.importCondominos();
-	 main.importHabitacoes();
-	 main.importFuncionarios();
-	 main.importServicos();*/
 
-//main.menuInicial();
 	main.menuGestaoCondominios();
 
 	return main.exportCondominios();
