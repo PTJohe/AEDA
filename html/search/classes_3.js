@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['funcionario',['Funcionario',['../class_funcionario.html',1,'']]]
+  ['dadosinvalidos',['DadosInvalidos',['../class_dados_invalidos.html',1,'']]]
 ];

@@ -17,8 +17,5 @@ var class_vivenda =
     [ "setAreaInterior", "class_vivenda.html#afdb42bddcb0adc64278c47951321442d", null ],
     [ "setPiscina", "class_vivenda.html#ace80f2df38edfce929984cc2f5ed48d6", null ],
     [ "setPiso", "class_vivenda.html#ab13f60c253e2af6d38621805347f1f33", null ],
-    [ "setTipologia", "class_vivenda.html#a17f0b69b475c4cee330d1b0e9f1fbf6a", null ],
-    [ "areaExterior", "class_vivenda.html#a96dcd57560f486246c8255bd96b0112a", null ],
-    [ "areaInterior", "class_vivenda.html#a5c6a41ba81afcb9db19674faf0777160", null ],
-    [ "piscina", "class_vivenda.html#a56bc7afb3365fa80a01837ff8b5f2232", null ]
+    [ "setTipologia", "class_vivenda.html#a17f0b69b475c4cee330d1b0e9f1fbf6a", null ]
 ];

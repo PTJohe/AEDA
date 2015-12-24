@@ -8,27 +8,19 @@ var NAVTREE =
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", "functions_func" ],
-        [ "Variables", "functions_vars.html", null ],
         [ "Related Functions", "functions_rela.html", null ]
       ] ]
     ] ],
     [ "Files", null, [
-      [ "File List", "files.html", "files" ],
-      [ "File Members", "globals.html", [
-        [ "All", "globals.html", null ],
-        [ "Functions", "globals_func.html", null ],
-        [ "Variables", "globals_vars.html", null ],
-        [ "Macros", "globals_defs.html", null ]
-      ] ]
+      [ "File List", "files.html", "files" ]
     ] ]
   ] ]
 ];
 
 var NAVTREEINDEX =
 [
-"_condominio_8cpp.html",
-"class_habitacao.html#a08955211f43e8410833b0545e268e16e",
-"hierarchy.html"
+"_b_s_t_8h_source.html",
+"class_main.html#a232d18af6efb0324e60ec7a05c027885"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

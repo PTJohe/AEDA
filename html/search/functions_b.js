@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['pressentertocontinue',['pressEnterToContinue',['../_main_8h.html#a0692652d53d290e0bd1e4d5b8ac0713c',1,'pressEnterToContinue():&#160;Main.cpp'],['../_main_8cpp.html#a0692652d53d290e0bd1e4d5b8ac0713c',1,'pressEnterToContinue():&#160;Main.cpp']]]
+  ['removeparagem',['removeParagem',['../class_transporte.html#ad66497e6566d5b1ac016957dbe62285c',1,'Transporte']]],
+  ['resetoption',['resetOption',['../class_main.html#afbb6c7cfaedc1eddc27f670c062cadb0',1,'Main']]],
+  ['resetpago',['resetPago',['../class_habitacao.html#ae0676a4f321201514f713cf994605c26',1,'Habitacao']]]
 ];

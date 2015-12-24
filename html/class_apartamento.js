@@ -17,8 +17,5 @@ var class_apartamento =
     [ "setAreaInterior", "class_apartamento.html#a1045a0f1c291e738fd76d574df1c2e3e", null ],
     [ "setPiscina", "class_apartamento.html#a7b73c9c7d08388e20d8906d2cb39388d", null ],
     [ "setPiso", "class_apartamento.html#af620ef11e65b67939773cf23bc9a2582", null ],
-    [ "setTipologia", "class_apartamento.html#a4d66d10fb8c13d78296df641a640a13b", null ],
-    [ "areaInterior", "class_apartamento.html#a0c08fcb7b0a098078cc53e07c5bdde0d", null ],
-    [ "piso", "class_apartamento.html#a4f164e14a6a5e5afc812efe2ec5754ce", null ],
-    [ "tipologia", "class_apartamento.html#aa89d946aa15a6a36911f755b3d1ec5cd", null ]
+    [ "setTipologia", "class_apartamento.html#a4d66d10fb8c13d78296df641a640a13b", null ]
 ];

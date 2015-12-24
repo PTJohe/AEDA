@@ -19,15 +19,5 @@ var class_servico =
     [ "operator<", "class_servico.html#a53a1da7cf76e3bfec0fac19322a0db03", null ],
     [ "setDuracao", "class_servico.html#adf664f95bcbd3405b99fd980e2192b82", null ],
     [ "setEspecialidade", "class_servico.html#a2c6b270f2cfd207b087067605e35a297", null ],
-    [ "setIDFuncionario", "class_servico.html#ab3ec8bd95b2782e9662689123c18ac90", null ],
-    [ "dataFim", "class_servico.html#ad4f4c98d05fd8bd661f19dc9a1b1d7e6", null ],
-    [ "dataInicio", "class_servico.html#a6da96a8273c62f41bb8d4c24fb914626", null ],
-    [ "dataRequisitado", "class_servico.html#a73819fb3f929d6d146f63994cdd182f8", null ],
-    [ "duracao", "class_servico.html#a3f64d00ed9c54ba3996cc89d7e5c74ae", null ],
-    [ "especialidade", "class_servico.html#a9315aef58dca2e7437590c612719d8db", null ],
-    [ "id", "class_servico.html#ab2fb4b8130f3a7f8575bea042d0850b9", null ],
-    [ "idFuncionario", "class_servico.html#ae4746f7eebbc21e51c0d27d7aa736a76", null ],
-    [ "mesInicio", "class_servico.html#a7e0cabe46557328e938e437d4cc4f6cd", null ],
-    [ "mesRequisitado", "class_servico.html#a641aa99bf174ff7c3913fcc439fa6c58", null ],
-    [ "NIFcondomino", "class_servico.html#a496f4d4dacfac23c40f361f34f152597", null ]
+    [ "setIDFuncionario", "class_servico.html#ab3ec8bd95b2782e9662689123c18ac90", null ]
 ];

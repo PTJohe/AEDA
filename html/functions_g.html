@@ -78,7 +78,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li class="current"><a href="functions.html"><span>All</span></a></li>
       <li><a href="functions_func.html"><span>Functions</span></a></li>
-      <li><a href="functions_vars.html"><span>Variables</span></a></li>
       <li><a href="functions_rela.html"><span>Related&#160;Functions</span></a></li>
     </ul>
   </div>
@@ -93,7 +92,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_h.html#index_h"><span>h</span></a></li>
       <li><a href="functions_i.html#index_i"><span>i</span></a></li>
       <li><a href="functions_m.html#index_m"><span>m</span></a></li>
-      <li><a href="functions_n.html#index_n"><span>n</span></a></li>
       <li><a href="functions_o.html#index_o"><span>o</span></a></li>
       <li><a href="functions_p.html#index_p"><span>p</span></a></li>
       <li><a href="functions_r.html#index_r"><span>r</span></a></li>
@@ -101,7 +99,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_t.html#index_t"><span>t</span></a></li>
       <li><a href="functions_u.html#index_u"><span>u</span></a></li>
       <li><a href="functions_v.html#index_v"><span>v</span></a></li>
-      <li><a href="functions_~.html#index_~"><span>~</span></a></li>
     </ul>
   </div>
 </div><!-- top -->
@@ -134,17 +131,14 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 </div>
 
 <div class="contents">
-<div class="textblock">Here is a list of all class members with links to the classes they belong to:</div>
+<div class="textblock">Here is a list of all documented class members with links to the class documentation for each member:</div>
 
 <h3><a class="anchor" id="index_g"></a>- g -</h3><ul>
 <li>getAreaExterior()
-: <a class="el" href="class_apartamento.html#af4258ac828347b0862031220cfb4dd8f">Apartamento</a>
-, <a class="el" href="class_habitacao.html#a0847837c56ecb6cad67697eeb9128d0d">Habitacao</a>
-, <a class="el" href="class_vivenda.html#afc20c98b9017f2e40cf69d8466907e70">Vivenda</a>
+: <a class="el" href="class_vivenda.html#afc20c98b9017f2e40cf69d8466907e70">Vivenda</a>
 </li>
 <li>getAreaInterior()
 : <a class="el" href="class_apartamento.html#ab9338abe2fe42449cb5fa624a6e73736">Apartamento</a>
-, <a class="el" href="class_habitacao.html#a7d9d9035076c012e73d7390a670b246a">Habitacao</a>
 , <a class="el" href="class_vivenda.html#a9e6f7968c4f14d9046d050a056a20cf6">Vivenda</a>
 </li>
 <li>getCodigoPostal()
@@ -162,6 +156,12 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 <li>getDataRequisitado()
 : <a class="el" href="class_servico.html#aacfc38ac0f1d90604624b018a4e75a29">Servico</a>
 </li>
+<li>getDesignacao()
+: <a class="el" href="class_condominio.html#a1c9390d8d9fcfe834568d74041a49e04">Condominio</a>
+</li>
+<li>getDestino()
+: <a class="el" href="class_transporte.html#a6d079327773093b74724bae9c919cbf0">Transporte</a>
+</li>
 <li>getDisponibilidadeServico()
 : <a class="el" href="class_condominio.html#a14efd2200bbd1917fd956c4036459431">Condominio</a>
 </li>
@@ -176,7 +176,7 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 , <a class="el" href="class_servico.html#a876a103f9c358f9fef7aeb504814b777">Servico</a>
 </li>
 <li>getFuncionario()
-: <a class="el" href="class_condominio.html#afa9ab0a2531a3a7cc304af4d114aa3aa">Condominio</a>
+: <a class="el" href="class_condominio.html#a1b6bd2ba8292fc784610c2dba5e55a0e">Condominio</a>
 </li>
 <li>getFuncionarios()
 : <a class="el" href="class_condominio.html#a614a3c7e44fbeb131a2276677fba8071">Condominio</a>
@@ -192,7 +192,8 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 , <a class="el" href="class_condomino.html#a233d5dff6e7fca21e3733cf40022e086">Condomino</a>
 </li>
 <li>getID()
-: <a class="el" href="class_funcionario.html#a14339a80fef6ecd7162ef62c44964014">Funcionario</a>
+: <a class="el" href="class_condominio.html#a7f709dcd2850e66eb99953a01735f50e">Condominio</a>
+, <a class="el" href="class_funcionario.html#a14339a80fef6ecd7162ef62c44964014">Funcionario</a>
 , <a class="el" href="class_habitacao.html#a94ab214209039c5b4a11696d0479c23f">Habitacao</a>
 , <a class="el" href="class_servico.html#a936345ced1a083fc70b2da772f6f84fd">Servico</a>
 </li>
@@ -200,13 +201,16 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 : <a class="el" href="class_servico.html#a99e6113186b146efd17bb42b8d62be96">Servico</a>
 </li>
 <li>getLivresCanalizacao()
-: <a class="el" href="class_condominio.html#a7a298ed28cb3b1908b07148145d6d53b">Condominio</a>
+: <a class="el" href="class_condominio.html#ac4cc4a38505785ac6a6dd082d3b9b4be">Condominio</a>
 </li>
 <li>getLivresLimpeza()
-: <a class="el" href="class_condominio.html#a19ce74e804b53031f9239f6cc3761e93">Condominio</a>
+: <a class="el" href="class_condominio.html#aee6ca0c5a9608c1c88a45a287a7c5fd6">Condominio</a>
 </li>
 <li>getLivresPintura()
-: <a class="el" href="class_condominio.html#a96bb83fbd586b7477647871576424159">Condominio</a>
+: <a class="el" href="class_condominio.html#ad363a7e0a988870d972aeb90ce86adfc">Condominio</a>
+</li>
+<li>getLocalizacao()
+: <a class="el" href="class_condominio.html#a8a7f828ae91ee7fc420e5cf88180b663">Condominio</a>
 </li>
 <li>getMes()
 : <a class="el" href="class_condominio.html#a0726aa5a6ee715e39c3f3b0a14226374">Condominio</a>
@@ -232,12 +236,14 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 <li>getNIFProprietario()
 : <a class="el" href="class_habitacao.html#a40dc6e3f92cff1866c9d2a861ff50b3e">Habitacao</a>
 </li>
+<li>getNome()
+: <a class="el" href="class_paragem.html#a66005ac30b71cd3c3dce1e5a56f90577">Paragem</a>
+</li>
 <li>getNomeCivil()
 : <a class="el" href="class_condomino.html#a56145ce0dffb71cb188b5536a0104392">Condomino</a>
 </li>
 <li>getNomeUtilizador()
 : <a class="el" href="class_condomino.html#aa2453ec80d2ea5427eaad20a4896d918">Condomino</a>
-, <a class="el" href="class_nome_utilizador_indisponivel.html#a27df45b663f9209567005f98154a03bf">NomeUtilizadorIndisponivel</a>
 </li>
 <li>getNumFuncCanalizacao()
 : <a class="el" href="class_condominio.html#a16d993399088fcb0853432f6f2cc635a">Condominio</a>
@@ -248,21 +254,32 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 <li>getNumFuncPintura()
 : <a class="el" href="class_condominio.html#aa5e7bdead97c5aa003163119ff0ddf93">Condominio</a>
 </li>
+<li>getNumHabitacoes()
+: <a class="el" href="class_condominio.html#a16f01bca14488c22ff0ee3865d629930">Condominio</a>
+</li>
+<li>getNumMoradores()
+: <a class="el" href="class_condominio.html#ae155288a3fbe673b0f905fe6442dcfc1">Condominio</a>
+</li>
+<li>getNumVivendas()
+: <a class="el" href="class_condominio.html#a47e2e368a9e643017cad7a2e30a4c087">Condominio</a>
+</li>
 <li>getPago()
 : <a class="el" href="class_habitacao.html#a88144fccbd33296a1cc789ad1ca04d14">Habitacao</a>
+</li>
+<li>getParagens()
+: <a class="el" href="class_transporte.html#a181eb7068ebec1f639fee9c1159ae459">Transporte</a>
 </li>
 <li>getPassword()
 : <a class="el" href="class_condomino.html#aa8297d47b07327015965ebf2bad9b7d2">Condomino</a>
 </li>
 <li>getPiscina()
-: <a class="el" href="class_apartamento.html#a77dfc92d9de8af7ededa339608431871">Apartamento</a>
-, <a class="el" href="class_habitacao.html#a0ef7d18d08b6e2c7851861ecb04e5404">Habitacao</a>
-, <a class="el" href="class_vivenda.html#ad4bc9908f19d1c31593c9bfe9a886c04">Vivenda</a>
+: <a class="el" href="class_vivenda.html#ad4bc9908f19d1c31593c9bfe9a886c04">Vivenda</a>
 </li>
 <li>getPiso()
 : <a class="el" href="class_apartamento.html#a63f2569f807dc98bb632b4830ed18af4">Apartamento</a>
-, <a class="el" href="class_habitacao.html#a991f693432c856bbfb4cbfa94cfeaece">Habitacao</a>
-, <a class="el" href="class_vivenda.html#a13b1ec049318bbcb419e305fbf12366a">Vivenda</a>
+</li>
+<li>getPos()
+: <a class="el" href="class_paragem.html#af781a432a29f9908564b1718ef9fdafd">Paragem</a>
 </li>
 <li>getServico()
 : <a class="el" href="class_habitacao.html#a56ffff9c7d2834e2b18b5921feba0a0e">Habitacao</a>
@@ -275,16 +292,20 @@ $(document).ready(function(){initNavTree('functions_g.html','');});
 </li>
 <li>getTipo()
 : <a class="el" href="class_apartamento.html#a9c31a437222c745d1afcab9d2a2a642c">Apartamento</a>
-, <a class="el" href="class_habitacao.html#a096058731c6a8a8cf921b7af8f3f0888">Habitacao</a>
+, <a class="el" href="class_transporte.html#a576613e04037fa3aba7e1d76af0c7cd8">Transporte</a>
 , <a class="el" href="class_vivenda.html#a88f7b14e25b997de1cf5b67b015b163d">Vivenda</a>
 </li>
 <li>getTipologia()
 : <a class="el" href="class_apartamento.html#a8f933db9b6eb43fc714246e30b4bcf24">Apartamento</a>
-, <a class="el" href="class_habitacao.html#abb02624e33459eff478f169a3d2a9851">Habitacao</a>
-, <a class="el" href="class_vivenda.html#a7847a042bd0f565413ba850f0b8fe761">Vivenda</a>
 </li>
 <li>getTotalRenda()
 : <a class="el" href="class_condomino.html#ad3253cca8cab019cfa3343ac745a1f90">Condomino</a>
+</li>
+<li>getTransportes()
+: <a class="el" href="class_condominio.html#add4499da3b0650a09a808c5d593eefb0">Condominio</a>
+</li>
+<li>getVectorCondominios()
+: <a class="el" href="class_main.html#a523b4777688b1b55a7a145cacaf64426">Main</a>
 </li>
 </ul>
 </div><!-- contents -->

@@ -1299,7 +1299,11 @@ void Main::displayServicoRequisitadoInfo(vector<Servico> servicos, int pos) {
 	}
 	pressEnterToContinue();
 }
-
+/**
+ * Searches for a specified employee given its ID and, if it exists, displays its info.
+ * @retval TRUE Employee exists.
+ * @retval FALSE Employee doesn't exist.
+ */
 bool Main::searchFuncionario() {
 	displayLogo();
 	gotoxy(30, 8);
@@ -5405,6 +5409,13 @@ void createMenuOptions() {
 	menu = menuOptions;
 }
 
+/*
+ * SEGUNDA PARTE
+ */
+/**
+ * Converts BST of condominiums into a vector that can be sorted.
+ * @return Vector of condominiums.
+ */
 vector<Condominio> Main::getVectorCondominios() {
 	vector<Condominio> conds;
 	BSTItrIn<Condominio> it(this->condominios);
@@ -5415,7 +5426,10 @@ vector<Condominio> Main::getVectorCondominios() {
 	sort(conds.begin(), conds.end(), compCondominioID);
 	return conds;
 }
-
+/**
+ * Manage condominiums menu. The company can choose a condominium to manage, edit or remove, or add a new one.
+ * @return A new menu.
+ */
 int Main::menuGestaoCondominios() {
 	displayLogo();
 	gotoxy(30, 8);
@@ -5459,7 +5473,11 @@ int Main::menuGestaoCondominios() {
 
 	return menuGestaoCondominios();
 }
-
+/**
+ * Displays all condominiums menu. The company can choose a condominium to manage.
+ * @param conds Vector of condominums to be listed.
+ * @return A new menu.
+ */
 int Main::menuDisplayAllCondominios(vector<Condominio> &conds) {
 	displayLogo();
 
@@ -5505,7 +5523,11 @@ int Main::menuDisplayAllCondominios(vector<Condominio> &conds) {
 	}
 	return menuDisplayAllCondominios(conds);
 }
-
+/**
+ * List condominiums by menu. The company can list the condominiums by ID, name, properties and address.
+ * @param conds Vector of condominiums to be listed.
+ * @return A new menu.
+ */
 int Main::menuDisplayCondominiosBy(vector<Condominio> &conds) {
 	displayLogo();
 
@@ -5553,7 +5575,11 @@ int Main::menuDisplayCondominiosBy(vector<Condominio> &conds) {
 	}
 	return menuDisplayCondominiosBy(conds);
 }
-
+/**
+ * Filter condominiums menu. The company can list condominiums with a number of properties between a range.
+ * @param conds Vector of condominiums to be listed.
+ * @return A new menu.
+ */
 int Main::menuFiltrarCondominios(vector<Condominio> &conds) {
 	displayLogo();
 	gotoxy(30, 8);
@@ -5594,7 +5620,11 @@ int Main::menuFiltrarCondominios(vector<Condominio> &conds) {
 	pressEnterToContinue();
 	return menuDisplayAllCondominios(condos);
 }
-
+/**
+ * Sort condominiums.
+ * @param conds Vector of condominiums to be sorted.
+ * @param sortOption 0 = ID, 1 = Name, 2 = Nr of properties, 3 = Address.
+ */
 void Main::sortCondominios(vector<Condominio> &conds, int sortOption) {
 	if (sortOption == 0)
 		sort(conds.begin(), conds.end(), compCondominioID);
@@ -5605,7 +5635,11 @@ void Main::sortCondominios(vector<Condominio> &conds, int sortOption) {
 	else if (sortOption == 3)
 		sort(conds.begin(), conds.end(), compCondominioLocalizacao);
 }
-
+/**
+ * Confirm select condominium menu. Shows the condominium info and prompts the company to confirm the condominium to be managed.
+ * @param menuOption 0 = Yes, 1 = No.
+ * @return A new menu.
+ */
 int Main::menuConfirmSelectCondominio(vector<Condominio> &conds,
 		int menuOption) {
 	displayLogo();
@@ -5660,6 +5694,10 @@ int Main::menuConfirmSelectCondominio(vector<Condominio> &conds,
 	}
 	return menuConfirmSelectCondominio(conds, menuOption);
 }
+/**
+ * Add a new condominium menu.
+ * return A new menu.
+ */
 int Main::menuAddCondominio() {
 	displayLogo();
 	gotoxy(0, 8);
@@ -5703,6 +5741,11 @@ int Main::menuAddCondominio() {
 
 	return menuConfirmAddCondominio(c1, 0);
 }
+/**
+ * Confirm add condominium menu.
+ * @param c1 Condominium to be added.
+ * @param menuOption 0 = Yes, 1 = No.
+ */
 int Main::menuConfirmAddCondominio(Condominio &c1, int menuOption) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -5760,6 +5803,12 @@ int Main::menuConfirmAddCondominio(Condominio &c1, int menuOption) {
 	}
 	return menuConfirmAddCondominio(c1, menuOption);
 }
+/**
+ * Select condominium menu. The company can choose a condominium to edit or remove.
+ * @param conds Vector of condominiums to be listed.
+ * @param remover If true, selecting a condominium will remove it. If false, selecting a condominium will edit it.
+ * @return A new menu.
+ */
 int Main::menuSelectCondominio(vector<Condominio> &conds, bool remover) {
 	displayLogo();
 
@@ -5806,6 +5855,11 @@ int Main::menuSelectCondominio(vector<Condominio> &conds, bool remover) {
 	}
 	return menuSelectCondominio(conds, remover);
 }
+/**
+ * Edit condominium menu. The company can edit the condominium's funds, name or address.
+ * @param c1 Condominium to be edited.
+ * @return A new menu.
+ */
 int Main::menuEditCondominio(Condominio &c1) {
 	displayLogo();
 
@@ -5869,6 +5923,12 @@ int Main::menuEditCondominio(Condominio &c1) {
 
 	return menuEditCondominio(c1);
 }
+/**
+ * Delete condominium menu. The company can confirm if they want to remove a condominium or not.
+ * @param c1 Condominium to be removed.
+ * @param menuOption 0 = Yes, 1 = No.
+ * @return A new menu.
+ */
 int Main::menuDeleteCondominio(Condominio &c1, int menuOption) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -5981,6 +6041,10 @@ int Main::menuDeleteCondominio(Condominio &c1, int menuOption) {
 	return menuDeleteCondominio(c1, menuOption);
 }
 
+/**
+ * Closest stop menu. The user can select to see the closest stop or the closest with a specified destination.
+ * @return A new menu.
+ */
 int Main::menuParagemMaisProxima() {
 	displayLogo();
 
@@ -6022,7 +6086,10 @@ int Main::menuParagemMaisProxima() {
 
 	return menuParagemMaisProxima();
 }
-
+/**
+ * Specify destination menu. The user is prompted to enter the destination of the stop he wishes to search.
+ * @return A new menu.
+ */
 int Main::menuEspecificarDestino() {
 	displayLogo();
 	gotoxy(0, 8);
@@ -6042,7 +6109,12 @@ int Main::menuEspecificarDestino() {
 	}
 	return paragemMaisProxima(final);
 }
-
+/**
+ * Gives info about the closest stop in a given queue of transports.
+ * @param transportes Queue of transports.
+ * @retval TRUE There's at least one stop in the queue.
+ * @retval FALSE Empty queue.
+ */
 bool Main::paragemMaisProxima(priority_queue<Transporte> transportes) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -6084,7 +6156,10 @@ bool Main::paragemMaisProxima(priority_queue<Transporte> transportes) {
 	pressEnterToContinue();
 	return true;
 }
-
+/**
+ * Manage transports menu. The admin can delete or create a stop, and change destination of a transport or create a new one.
+ * @return A new menu.
+ */
 int Main::menuGerirTransportes() {
 	displayLogo();
 
@@ -6136,7 +6211,11 @@ int Main::menuGerirTransportes() {
 	}
 	return menuGerirTransportes();
 }
-
+/**
+ * Select stop menu. The admin can select a stop to delete.
+ * @param t1 Transport that has the stops.
+ * @return A new menu.
+ */
 int Main::menuSelectParagem(Transporte &t1) {
 	displayLogo();
 
@@ -6184,6 +6263,13 @@ int Main::menuSelectParagem(Transporte &t1) {
 	}
 	return menuSelectParagem(t1);
 }
+/**
+ * Delete stop menu. The admin is prompted to confirm that he wants to delete the stop.
+ * @param t1 Transport that has the stop.
+ * @param p1 Stop to be deleted.
+ * @param menuOption 0 = Yes, 1 = No.
+ * @return A new menu.
+ */
 int Main::menuDesactivarParagem(Transporte &t1, Paragem &p1, int menuOption) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -6243,7 +6329,11 @@ int Main::menuDesactivarParagem(Transporte &t1, Paragem &p1, int menuOption) {
 	}
 	return menuDesactivarParagem(t1, p1, menuOption);
 }
-
+/**
+ * New stop menu. The admin can create a new stop.
+ * @param t1 Transport on which the stop will be created.
+ * @return A new menu.
+ */
 int Main::menuNovaParagem(Transporte &t1) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -6287,7 +6377,13 @@ int Main::menuNovaParagem(Transporte &t1) {
 	return menuConfirmAddParagem(t1, p1, 0);
 
 }
-
+/**
+ * Confirm add stop menu. The admin is prompted to confirm that he wants to create a new stop.
+ * @param t1 Transport on which the stop will be created.
+ * @param p1 Stop to be created.
+ * @param menuOption 0 = Yes, 1 = No.
+ * @return A new menu.
+ */
 int Main::menuConfirmAddParagem(Transporte &t1, Paragem &p1, int menuOption) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -6343,6 +6439,11 @@ int Main::menuConfirmAddParagem(Transporte &t1, Paragem &p1, int menuOption) {
 	}
 	return menuConfirmAddParagem(t1, p1, menuOption);
 }
+/**
+ * Select transport menu. The admin can select a transport to delete or create stops, or change its destination.
+ * @param editOption 0 = Delete stop, 1 = Create stop, 2 = Change destination.
+ * @return A new menu.
+ */
 int Main::menuSelectTransporte(int editOption) {
 	displayLogo();
 
@@ -6418,6 +6519,11 @@ int Main::menuSelectTransporte(int editOption) {
 	}
 	return menuSelectTransporte(editOption);
 }
+/**
+ * Change transport menu. The admin can change the transport destination.
+ * @param t1 Transport to be changed.
+ * @return A new menu.
+ */
 int Main::menuAlterarTransporte(Transporte t1) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -6448,7 +6554,10 @@ int Main::menuAlterarTransporte(Transporte t1) {
 
 	return menuGerirTransportes();
 }
-
+/**
+ * Add transport menu. The admin can add a new transport.
+ * @return A new menu.
+ */
 int Main::menuAddTransporte() {
 	displayLogo();
 	gotoxy(0, 8);
@@ -6467,7 +6576,12 @@ int Main::menuAddTransporte() {
 
 	return menuConfirmAddTransporte(t1, 0);
 }
-
+/**
+ * Confirm add transport menu. The admin is prompted to confirm that he wants to add the transport.
+ * @param t1 Transport to be added.
+ * @param menuOption 0 = Yes, 1 = No.
+ * @return A new menu.
+ */
 int Main::menuConfirmAddTransporte(Transporte &t1, int menuOption) {
 	displayLogo();
 	gotoxy(0, 8);
@@ -6527,12 +6641,12 @@ int Main::menuConfirmAddTransporte(Transporte &t1, int menuOption) {
 	}
 	return menuConfirmAddTransporte(t1, menuOption);
 }
+
 /**
  * Main function.
  * @retval EXIT_SUCCESS No errors occurred during the execution.
  * @retval EXIT_FAILURE Error occurred.
  */
-
 int main() {
 	Main main = Main();
 

@@ -148,6 +148,5 @@ bool compServicoTipo(Servico s1, Servico s2);
 bool compServicoDataInicio(Servico s1, Servico s2);
 bool compServicoNIF(Servico s1, Servico s2);
 
-bool compParagemNome(Paragem p1, Paragem p2);
 
 #endif

@@ -11,10 +11,5 @@ var class_funcionario =
     [ "operator<", "class_funcionario.html#a8e69568fa18b4ffdb17bbdccb79bf389", null ],
     [ "operator==", "class_funcionario.html#ad399b5b0001a2566186a9fa0da45973a", null ],
     [ "setEspecialidade", "class_funcionario.html#a799ba2c679c393ca1ee07bb917213f3a", null ],
-    [ "setOcupado", "class_funcionario.html#a23ac5096c85b3e1a5c6874d0d169c26d", null ],
-    [ "especialidade", "class_funcionario.html#a5c00b81a6b19fc36187cbcfd451a3d2f", null ],
-    [ "id", "class_funcionario.html#a56039516079bcb2181c224c0ffd906ca", null ],
-    [ "nome", "class_funcionario.html#a9415993338314799ac6ec08f4441578e", null ],
-    [ "ocupado", "class_funcionario.html#a14fce7208c7a222647e8c8d76971d29f", null ],
-    [ "servicosEfectuados", "class_funcionario.html#a9ac4d97aefe4fa740743d4c5da1e6ea7", null ]
+    [ "setOcupado", "class_funcionario.html#a23ac5096c85b3e1a5c6874d0d169c26d", null ]
 ];

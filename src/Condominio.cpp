@@ -151,7 +151,13 @@ priority_queue<Transporte> Condominio::getTransportes() {
 	return this->transportes;
 }
 
-
+/**
+ * Sets a new destination for a given transport.
+ * @param t1 Transport to be changed.
+ * @param novoDestino New destination.
+ * @retval TRUE Transport exists.
+ * @retval FALSE Transport doesn't exist.
+ */
 bool setDestinoTransporte(Transporte t1, string novoDestino){
 
 }
@@ -1398,6 +1404,4 @@ bool compServicoNIF(Servico s1, Servico s2) {
 }
 
 
-bool compParagemNome(Paragem p1, Paragem p2){
-	return p1.getNome() < p2.getNome();
-}
+

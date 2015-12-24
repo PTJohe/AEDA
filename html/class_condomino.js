@@ -31,13 +31,5 @@ var class_condomino =
     [ "setNomeUtilizador", "class_condomino.html#ade0b3cfa45df158da54906bc0f2a6b19", null ],
     [ "setPassword", "class_condomino.html#a60fa357cfb2e2e5a4d2f00ed0c90e50c", null ],
     [ "sortHabitacoes", "class_condomino.html#ae4d3cacb7f58f57bd85ee6319f0a35c2", null ],
-    [ "validPassword", "class_condomino.html#a87a3c11acfdc2a2f75ebe13291c03886", null ],
-    [ "admin", "class_condomino.html#a90fc04c34d71c3e40d537bed3601e90f", null ],
-    [ "divida", "class_condomino.html#a13e49db42c3066ab2a81b5cfe9093bbe", null ],
-    [ "fundosMensais", "class_condomino.html#a89bce5939990227d1cb7986f61b81da6", null ],
-    [ "habitacoes", "class_condomino.html#a5b0095b50429591270062d1c4d0f3b4a", null ],
-    [ "NIF", "class_condomino.html#af0fcb9cc4ebbb44b0c6d65cdeeb42df3", null ],
-    [ "nomeCivil", "class_condomino.html#a566b495e3447ccba908902085d946727", null ],
-    [ "nomeUtilizador", "class_condomino.html#ab37667f83a2dd69869089e382830691e", null ],
-    [ "password", "class_condomino.html#a51ebe77ee2f301fe55387536d7951c8f", null ]
+    [ "validPassword", "class_condomino.html#a87a3c11acfdc2a2f75ebe13291c03886", null ]
 ];

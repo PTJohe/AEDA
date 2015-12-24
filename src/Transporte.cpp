@@ -76,10 +76,20 @@ priority_queue<Paragem> Transporte::getParagens() const {
 	return paragens;
 }
 
+/**
+ * Sets a new destination.
+ * @param destino New destination.
+ */
 void Transporte::setDestino(string destino) {
 	this->destino = destino;
 }
 
+/**
+ * Compares two transports by their distance to the condominium.
+ * @param trans Transport to be compared.
+ * @retval TRUE Transport has a "lower" distance than trans.
+ * @retval FALSE Transport has an "equal or higher" distance than trans.
+ */
 bool Transporte::operator <(const Transporte &trans) const {
 	if (this->paragens.empty() && !trans.paragens.empty()) {
 		return true;
@@ -107,7 +117,12 @@ bool Transporte::operator <(const Transporte &trans) const {
 	else
 		return true;
 }
-
+/**
+ * Compares two transports by their type, destination and number of stops.
+ * @param trans Transport to be compared.
+ * @retval TRUE Equal type, destination and number of stops.
+ * @retval FALSE Transports are different.
+ */
 bool Transporte::operator ==(const Transporte &trans) const {
 	if (this->tipo == trans.getTipo() && this->destino == trans.getDestino()
 			&& this->paragens.size() == trans.getParagens().size())
@@ -140,7 +155,12 @@ string Paragem::getNome() const {
 Posicao Paragem::getPos() const {
 	return pos;
 }
-
+/**
+ * Compares two stops by their distance to the condominium.
+ * @param par Stop to be compared.
+ * @retval TRUE Stop has a "lower" distance than par.
+ * @retval FALSE Stop has an "equal or higher" distance than par.
+ */
 bool Paragem::operator <(const Paragem &par) const {
 	int xc, yc;
 	xc = this->condo.x;
@@ -163,14 +183,21 @@ bool Paragem::operator <(const Paragem &par) const {
 	else
 		return true;
 }
-
+/**
+ * Compares two stops by their name and position.
+ * @param par Stop to be compared.
+ * @retval TRUE Equal name and position.
+ * @retval FALSE Stops are different.
+ */
 bool Paragem::operator ==(const Paragem &par) const {
 	if (nome == par.nome && pos.x == par.pos.x && pos.y == par.pos.y)
 		return true;
 	else
 		return false;
 }
-
+/**
+ * @return Distance of stop to condominium.
+ */
 float Paragem::calcDistancia() const {
 	int xc, yc;
 	xc = this->condo.x;
